@@ -1,6 +1,9 @@
 # TopRecordsFinder
 
-One Paragraph of project description goes here
+This project's main intention is to findout the closest top 3 records from existing records. It should show top 3 records based on what page you are on. If the record type is lead then there should be top3 records on screen. Top records will be decided by different criteria.
+1. Industry type should match.
+2. It should be closest distance from current address.
+3. The revenue should be close the current record. 
 
 ## Getting Started
 
