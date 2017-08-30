@@ -1,4 +1,4 @@
-<apex:page standardController="Account" showHeader="true" tabStyle="account" >
+<apex:page standardController="Account" extensions="topResultFinder" showHeader="true" tabStyle="account" >
     <apex:includeScript value="{!$Resource.JQuery}"/>
     <style>
         .activeTab {background-color: #236FBD; color:white; background-image:none}
@@ -44,6 +44,24 @@
                 industry.change(function(){
                     var indDynamic = $('#acc7j_id0_j_id3_j_id4_j_id5').val();
                     console.log("Change to: " + indDynamic);
+                    /*
+                        This is JS remoting that will allow us to communicate to the controller
+                        and submit the information changed on the layout and returning back its
+                        result as well as passing it to the sidebar widget for visualization
+                    */
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.topResultFinder.getTesting}',        // Accessing Class through remote action
+                        indDynamic,                                             // Industry field value
+                        function(result,event){
+                            if(event.status){
+                                console.log('Works: ' + result);
+                                $("#066g0000000FqFq").contents().find("#SectionOne").text(result);
+                                
+                            } else {
+                                console.log('Broken :(' + result);
+                            }
+                        }
+                    )
                 });
                 
             }
