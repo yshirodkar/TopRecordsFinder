@@ -1,0 +1,52 @@
+<apex:page showHeader="false" tabStyle="account" >
+    <apex:includeScript value="{!$Resource.JQuery}" />
+    <style>
+    .headerLayout{
+        background: #1797c0;
+        border-radius: 5px;
+        height: 23px;
+    }
+    
+   /*
+    .masterLayout{
+        border-style: solid;
+        border-width: 1px;
+        height: 138px;
+        border-color: lightgrey;
+    }
+    */
+    .peasantLayout{
+        //border-style: solid;
+        border-width: 1px;
+        height: 112px;
+        border-color: lightgrey;   
+        background: #CFEEF8;
+        border-radius: 4px; 
+        margin-top: 2px;
+    }
+    .sectionOne{
+    
+    }
+    .sectionTwo{
+    
+    }
+    </style>
+    <script>
+    </script>
+    <apex:outputPanel id="BoxTracker" layout="block">
+        <div id="masterLayout" class="masterLayout">
+            <div id="headerLayout" class="headerLayout">Box Tracker</div>
+            <div id="Peasant" class="peasantLayout">
+                <div id="Master" class="bodyBoxOne">
+                    <div id="SectionOne" class="sectionOne">Section # 1
+                    </div>
+                </div>
+                <div id="Peasant" class="bodyBoxTwo">
+                    <div id="SectionTwo" class="sectionTwo">Section # 2
+                        <span value="" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </apex:outputPanel>
+</apex:page>
