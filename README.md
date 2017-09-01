@@ -11,7 +11,10 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+For geolocation Account and Lead need to activate data validation rule to make sure address is right
+Instructions are here https://help.salesforce.com/articleView?id=custom_field_geolocate_overview.htm&type=0
+
+    Also to see the top record you need to go accountPage visualforce page(in case of account).
 
 ```
 Give examples

@@ -14,50 +14,33 @@ global with sharing class topResultFinder {
      * @return Map<String, String> result Top results and their orders.
      */
     public topResultFinder(ApexPages.StandardController stdController) {}
-    //public topResultFinder() {}
-    public String inputText1 {get;set;}
+
     @RemoteAction
-    global static String getTesting(String test_val) {
-      System.debug('I was here'+test_val);
-      //PageReference pf = new PageReference('/apex/boxTracker?att='+inputText1);
-      //pf .setRedirect(true);
-      //GoToPage2();
-      return test_val;
-    }
-    
-    public pageReference GoToPage2() {
-     String inputText1 = 'here here';
-     inputText1 = 'testing';
-        PageReference pf = new PageReference('/apex/boxTracker?att='+inputText1);
-        pf .setRedirect(true);
-        return pf;
-    }
-    
-    @RemoteAction
-    global static Map<String, Map<String, String>> getTopResults(String object_type, String industry_type, Map<string,string>filters) {
+    global static Map<String, Map<String, String>> getTopResults(String object_type, String record_id, Map<string,string>filters) {
         Map<String, Map<String, String>> result = new Map<String, Map<String, String>>();
         Map<String, Map<String, String>> top_list = new Map<String, Map<String, String>>(); 
-        object_type.toUpperCase();
-        industry_type.toLowerCase();
+        object_type.toLowerCase();
         if (object_type.length() > 0
-            && (object_type == 'LEAD' || object_type == 'ACCOUNT')) {
-            String industry_query = 'SELECT Id FROM '+ object_type + ' WHERE Industry = '+ industry_type;
-            sObject industry_filter_records = Database.query(industry_query);
+            && (object_type == 'lead' || object_type == 'account')) {
             if (filters.size() > 0) {
-                result = filterReults(industry_filter_records, filters);
-            } else {
-                result = distanceFilter(industry_filter_records);
+                if (object_type == 'lead') {
+                    result = filterResultsLead(record_id, filters);
+                } else {
+                    //String record_id = '001f4000005YxYk';
+                    result = filterResultsAccount (record_id, filters);
+                    top_list = result;
+                }
             }
         }
         return top_list;
     }
-    
-    public static Map<String, Map<String,String>> filterReults (sObject industry_filter_records, Map<string,string>filters) {
-        
+
+    public static Map<String, Map<String,String>> filterResultsLead (String lead_id, Map<string,string>filters) {
+
         Map<String, Map<String, String>> result = new Map<String, Map<String, String>>();
         Map<String, String> error = new Map<String, String>();
         System.debug('filters: '+ filters);
-        Id lead_id =  '00Qf4000002H52C';
+        //Id lead_id =  '00Qf4000002H52C';
 
         Integer revenue =  Integer.valueof(filters.get('AnnualRevenue'));
         String soql_query = 'SELECT Latitude, Longitude FROM Lead WHERE Id = \''+lead_id+'\' LIMIT 1';
@@ -104,11 +87,60 @@ global with sharing class topResultFinder {
 
         return result;
     }
-    
-    public static Map<String, Map<String,String>> distanceFilter (sObject industry_filter_records) {
+
+    public static Map<String, Map<String,String>> filterResultsAccount (String account_id, Map<string,string>filters) {
+        
         Map<String, Map<String, String>> result = new Map<String, Map<String, String>>();
+        Map<String, String> error = new Map<String, String>();
+        System.debug('filters'+ filters);
         
+        Integer revenue =  Integer.valueof(filters.get('AnnualRevenue'));
+        String soql_query = 'SELECT BillingLatitude, BillingLongitude FROM Account WHERE Id = \''+account_id+'\' LIMIT 1';
+        List<SObject> lead_address_stats = database.query(soql_query);
         
+        Decimal lat = (Decimal)lead_address_stats[0].get('BillingLatitude');
+        Decimal lng = (Decimal)lead_address_stats[0].get('BillingLongitude');
+        String distance_val = 'DISTANCE(BillingAddress, GEOLOCATION(' + lat + ', ' + lng + ' ), \'mi\')';
+        soql_query = 'SELECT Id, Name, BillingAddress, AnnualRevenue FROM Account WHERE ';
+        if (String.isNotEmpty(filters.get('industry')) && String.isNotBlank(filters.get('industry'))) {
+            soql_query += ' industry = \''+ String.valueOf(filters.get('industry')) +'\' ';
+            soql_query += 'AND '+ distance_val;
+            if (String.isNotEmpty(filters.get('distance')) && String.isNotBlank(filters.get('distance'))) {
+                soql_query += ' < '+filters.get('distance');
+            } else {
+                soql_query += '< 500';
+            }
+            soql_query += ' ORDER BY '+distance_val+ ' ASC LIMIT 3';
+            System.debug('query'+ soql_query);
+            List<Account> lead_address_stats_result = database.query(soql_query);
+            System.debug('Result from query '+lead_address_stats_result);
+            Location from_loc = Location.newInstance(lat ,lng);
+            Integer order = 1;
+            for (Account record: lead_address_stats_result) {
+                Location loc = record.BillingAddress;
+                Double new_lat = loc.latitude;
+                Double new_lon = loc.longitude;
+                Location to_loc = Location.newInstance(new_lat, new_lon);
+                String dist = String.valueof(from_loc.getDistance(to_loc, 'mi'));
+                Map<String, String> record_send = new Map<String, String>();
+                record_send.put('id', record.id);
+                record_send.put('Name', record.name);
+                record_send.put('dist', dist);
+                String revenue_diff = String.valueof(revenue);
+                if (record.AnnualRevenue > 0) {
+                    revenue_diff = String.valueof(Math.abs(record.AnnualRevenue - revenue));
+                }
+                record_send.put('revenue_diff', revenue_diff);
+                result.put(String.valueof(order), record_send);
+                order++;
+            }
+        } else {
+            error.put('success', '0');
+            error.put('message', 'Industry not selected.');
+            result.put('Success', error);
+        }
+        System.debug('result '+ result);
         return result;
     }
+
 }
