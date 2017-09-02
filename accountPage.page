@@ -17,6 +17,61 @@
             mode on - SF known bug and the only workaround is to add it through apex:iframe
             but we will have to remove them from the main layout.
     */
+    
+    /*
+        Global variables per instance
+        Find instance type
+    */
+    var sandboxId       = 'cs17';
+    var production      = 'cs20';                       // NEEDS TO BE CHANGED - This instance is not the correct one
+    var url             = $(location).attr('href');
+    var sandbox         = url.search(sandbox);
+    var production      = url.search(production);
+    var fieldArray      = [];
+    
+    // SANDBOX
+    /*
+        IMPORTANT: Only add field ids NOT '_ileinner' the code programatically will add this as require.
+        
+        Fields:
+        1. Industry
+        2. Billing Address
+        3. Annual Revenue
+        4. Boxes Per Day
+        5. # Of Product SKUs
+        6. SIC Code
+    */
+    if (sandbox >= 0){
+        var fieldEdit       = '_ileinner';
+        var iframeWidget    = '#066g0000000FqFq';
+        // Fields
+        var industryId      = '#acc7j_id0_j_id3_j_id4_j_id5';
+        var addrId          = '#acc17j_id0_j_id3_j_id4_j_id5';
+        var revenueId       = '#acc8j_id0_j_id3_j_id4_j_id5';
+        var boxesId         = '#00N5000000ALllbj_id0_j_id3_j_id4_j_id5';
+        var productskuId    = '#00Ng0000002NOejj_id0_j_id3_j_id4_j_id5';
+        var sicId           = '#acc16j_id0_j_id3_j_id4_j_id5';
+        // Adding all fields to global array
+        fieldArray.push(industryId,addrId,revenueId,boxesId,productskuId,sicId);
+        console.log('SANDBOX!! - Total Fields in Array: ' + fieldArray.length);
+    } 
+    // SANDBOX
+    if (production >= 0) {
+        var fieldEdit       = '_ileinner';
+        var iframeWidget    = '#';
+        // Fields
+        var industryId      = '#';
+        var addrId          = '#';
+        var revenueId       = '#';
+        var boxesId         = '#';
+        var productskuId    = '#';
+        var sicId           = '#';
+        // Adding all fields to global array
+        fieldArray.push(industryId,addrId,revenueId,boxesId,productskuId,sicId);
+        console.log('PRODUCTION!! - Total Fields in Array: ' + fieldArray.length);
+    }
+    // Building Array global array of fields
+    
     // This function is available for other single click usage not require at the moment
     var buttonBind = function(){
         console.log( "button bind" );
@@ -35,14 +90,18 @@
         }, 500);
         
         var findEditIndustry = function(){
-            var industry = $('#acc7j_id0_j_id3_j_id4_j_id5');
+            var industry = $(industryId);
             if(industry !== null || industry !== undefined){
                 console.log("Edit Industry Found");
                 clearInterval(b);
-                var industryValue = $('#acc7j_id0_j_id3_j_id4_j_id5').val();
+                var industryValue = $(industryId).val();
                 console.log( "Current Industry field value: " + industryValue );
                 industry.change(function(){
-                    var indDynamic = $('#acc7j_id0_j_id3_j_id4_j_id5').val();
+                    var indDynamic  = $(industryId).val();
+                    var filter      = {
+                        'industry' : indDynamic
+                    }
+                    var accountId   = document.getElementById('j_id0:j_id3:accountId').value;
                     console.log("Change to: " + indDynamic);
                     /*
                         This is JS remoting that will allow us to communicate to the controller
@@ -50,15 +109,21 @@
                         result as well as passing it to the sidebar widget for visualization
                     */
                     Visualforce.remoting.Manager.invokeAction(
-                        '{!$RemoteAction.topResultFinder.getTesting}',        // Accessing Class through remote action
-                        indDynamic,                                             // Industry field value
+                        '{!$RemoteAction.topResultFinder.getTopResults}',       // Accessing Class through remote action
+                        'Account',
+                        accountId,                                              // Industry field value
+                        filter,                                                 // var filter_json = {'industry':''+indDynamic+'', 'AnnualRevenue':'350000000'};
                         function(result,event){
                             if(event.status){
-                                console.log('Works: ' + result);
-                                $("#066g0000000FqFq").contents().find("#SectionOne").text(result);
+                                console.log('Works: ' + JSON.stringify(result));
                                 
+                                if(jQuery.isEmptyObject(result) == true){
+                                    console.log('Empty JSON');
+                                } else {
+                                    $(iframeWidget).contents().find("#SectionOne").text(result[1].id + ' - ' + result[1].Name + ' - ' + result[1].revenue_diff);                                
+                                }
                             } else {
-                                console.log('Broken :(' + result);
+                                console.log('Broken :' + result);
                             }
                         }
                     )
@@ -78,18 +143,32 @@
             object.on("dblclick",fieldBind);
         }
     }   
-    // Is all loaded and READY!
+    // Is window LOADED and READY!
     var ready = function(){
         $( document ).ready(function() {
             console.log( "document loaded" );
             $( window ).load(function() {
                 console.log( "window loaded" );
                 console.log( "<------- READY ----->" );   
-                // Inline Industry Field
-                var industryInLine =  $('#acc7j_id0_j_id3_j_id4_j_id5_ileinner');
+                // Inline Fields
+                var industryInLine  =   $(industryId + fieldEdit);
+                var addrInLine      =   $(addrId + fieldEdit);
+                var revenueInLine   =   $(revenueId + fieldEdit);
+                var boxesInLine     =   $(boxesId + fieldEdit);
+                var productInLine   =   $(productskuId + fieldEdit);
+                var sicInLine       =   $(sicId);
+            
                 if (industryInLine != null){
+                    for (var i = 0; i < fieldArray.length; i++){
+                        console.log(fieldArray[i]);
+                    }                   
                     console.log('found');
                     objectBind(industryInLine, 'double');
+                    //objectBind(addrInLine,'double');
+                    //objectBind(revenueInLine,'double');
+                    //objectBind(boxesInLine,'double');
+                    //objectBind(productInLine,'double');
+                    //objectBind(sicInLine,'double');
                 } else {
                     console.log('Keep looking');
                 }
@@ -101,6 +180,7 @@
     </script>
     
     <apex:form >
+        <apex:inputHidden id="accountId" value="{!Account.Id}"/>
         <apex:pageBlock mode="inlineEdit">
             <apex:detail oncomplete="location.reload()" relatedList="false" title="true" inlineEdit="true" />
             <iframe height="400px" id="theIframe" name="theIframe" title="Hierarchy" src="https://trachier.cs17.visual.force.com/apex/Hierarchy?id=001g000001jDtGE" width="100%"></iframe>          
