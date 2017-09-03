@@ -32,58 +32,15 @@ global with sharing class topResultFinder {
                 }
             }
         }
+        //if (!top_list.isEmpty()) {
+        //    upsert_records(top_list);
+        //}
         return top_list;
     }
 
     public static Map<String, Map<String,String>> filterResultsLead (String lead_id, Map<string,string>filters) {
 
         Map<String, Map<String, String>> result = new Map<String, Map<String, String>>();
-        Map<String, String> error = new Map<String, String>();
-        System.debug('filters: '+ filters);
-        //Id lead_id =  '00Qf4000002H52C';
-
-        Integer revenue =  Integer.valueof(filters.get('AnnualRevenue'));
-        String soql_query = 'SELECT Latitude, Longitude FROM Lead WHERE Id = \''+lead_id+'\' LIMIT 1';
-        List<SObject> lead_address_stats = database.query(soql_query);
-        
-        Decimal lat = (Decimal)lead_address_stats[0].get('Latitude');
-        Decimal lng = (Decimal)lead_address_stats[0].get('Longitude');
-        String distance_val = 'DISTANCE(Address, GEOLOCATION(' + lat + ', ' + lng + ' ), \'mi\')';
-        soql_query = 'SELECT Id, Name, Address, AnnualRevenue FROM LEAD WHERE ';
-        if (String.isNotEmpty(filters.get('industry')) && String.isNotBlank(filters.get('industry'))) {
-            soql_query += ' industry = \''+ String.valueOf(filters.get('industry')) +'\' ';
-        } else {
-            error.put('success', '0');
-            error.put('message', 'Industry not selected.');
-            result.put('Success', error);
-        }
-        soql_query += 'AND '+ distance_val;
-        if (String.isNotEmpty(filters.get('distance')) && String.isNotBlank(filters.get('distance'))) {
-            soql_query += ' < '+filters.get('distance');
-        } else {
-            soql_query += '< 500';
-        }
-        soql_query += ' ORDER BY '+distance_val+ ' ASC';
-        
-        List<Lead> lead_address_stats_result = database.query(soql_query);
-        System.debug('Result from query '+lead_address_stats_result);
-        Location from_loc = Location.newInstance(lat ,lng);
-        Integer order = 1;
-        for (LEAD record: lead_address_stats_result) {
-            Location loc = record.Address;
-            Double new_lat = loc.latitude;
-            Double new_lon = loc.longitude;
-            Location to_loc = Location.newInstance(new_lat, new_lon);
-            String dist = String.valueof(from_loc.getDistance(to_loc, 'mi'));
-            String revenue_diff = String.valueof(Math.abs(record.AnnualRevenue - revenue));
-            Map<String, String> record_send = new Map<String, String>();
-            record_send.put('id', record.id);
-            record_send.put('Name', record.name);
-            record_send.put('dist', dist);
-            record_send.put('revenue_diff', revenue_diff);
-            result.put(String.valueof(order), record_send);
-            order++;
-        }
 
         return result;
     }
@@ -93,45 +50,58 @@ global with sharing class topResultFinder {
         Map<String, Map<String, String>> result = new Map<String, Map<String, String>>();
         Map<String, String> error = new Map<String, String>();
         System.debug('filters'+ filters);
-        
-        Integer revenue =  Integer.valueof(filters.get('AnnualRevenue'));
-        String soql_query = 'SELECT BillingLatitude, BillingLongitude FROM Account WHERE Id = \''+account_id+'\' LIMIT 1';
-        List<SObject> lead_address_stats = database.query(soql_query);
-        
-        Decimal lat = (Decimal)lead_address_stats[0].get('BillingLatitude');
-        Decimal lng = (Decimal)lead_address_stats[0].get('BillingLongitude');
-        String distance_val = 'DISTANCE(BillingAddress, GEOLOCATION(' + lat + ', ' + lng + ' ), \'mi\')';
-        soql_query = 'SELECT Id, Name, BillingAddress, AnnualRevenue FROM Account WHERE ';
-        if (String.isNotEmpty(filters.get('industry')) && String.isNotBlank(filters.get('industry'))) {
-            soql_query += ' industry = \''+ String.valueOf(filters.get('industry')) +'\' ';
-            soql_query += 'AND '+ distance_val;
-            if (String.isNotEmpty(filters.get('distance')) && String.isNotBlank(filters.get('distance'))) {
-                soql_query += ' < '+filters.get('distance');
-            } else {
-                soql_query += '< 500';
+
+        if (filters.containsKey('industry') &&
+            String.isNotEmpty(filters.get('industry')) &&
+            String.isNotBlank(filters.get('industry'))
+        ) {
+            // Getting revenue value
+            Integer parent_revenue = 0;
+            if (filters.containsKey('AnnualRevenue')) {
+                parent_revenue =  Integer.valueof(filters.get('AnnualRevenue'));
             }
+
+            //Getting address data
+            List<SObject> account_address = getAddress(account_id);
+
+            //Getting geolocation values
+            Decimal lat         = (Decimal)account_address[0].get('BillingLatitude');
+            Decimal lng         = (Decimal)account_address[0].get('BillingLongitude');
+            Location from_loc   = Location.newInstance(lat ,lng);
+
+            // Formatting distance calculation
+            String object_type  = getObjectType((ID)account_id);
+            String distance_val = getDistanceString(object_type, lat, lng);
+            String soql_query   = getMainSOQLString(object_type);
+
+            soql_query += getWhereForSOQL(object_type, distance_val, filters);
+            soql_query += ' AND Id NOT IN (\''+account_id+'\')';
             soql_query += ' ORDER BY '+distance_val+ ' ASC LIMIT 3';
             System.debug('query'+ soql_query);
-            List<Account> lead_address_stats_result = database.query(soql_query);
-            System.debug('Result from query '+lead_address_stats_result);
-            Location from_loc = Location.newInstance(lat ,lng);
+            List<Account> account_results = database.query(soql_query);
+
+            // Result calculation
             Integer order = 1;
-            for (Account record: lead_address_stats_result) {
-                Location loc = record.BillingAddress;
-                Double new_lat = loc.latitude;
-                Double new_lon = loc.longitude;
-                Location to_loc = Location.newInstance(new_lat, new_lon);
-                String dist = String.valueof(from_loc.getDistance(to_loc, 'mi'));
-                Map<String, String> record_send = new Map<String, String>();
-                record_send.put('id', record.id);
-                record_send.put('Name', record.name);
-                record_send.put('dist', dist);
-                String revenue_diff = String.valueof(revenue);
+            for (Account record: account_results) {
+                Map<String, String> record_to_send = new Map<String, String>();
+
+                //distance calulcation
+                Location new_loc = record.BillingAddress;
+                String dist = getDistanceFromParentRecord(from_loc, new_loc);
+
+                //revenue calculation
+                String revenue_diff = String.valueof(parent_revenue);
                 if (record.AnnualRevenue > 0) {
-                    revenue_diff = String.valueof(Math.abs(record.AnnualRevenue - revenue));
+                    revenue_diff = String.valueof(Math.abs(record.AnnualRevenue - parent_revenue));
                 }
-                record_send.put('revenue_diff', revenue_diff);
-                result.put(String.valueof(order), record_send);
+
+                record_to_send.put('id', record.id);
+                record_to_send.put('Name', record.name);
+                record_to_send.put('dist', dist);
+                record_to_send.put('revenue_diff', revenue_diff);
+
+                //put the calculated values to result
+                result.put(String.valueof(order), record_to_send);
                 order++;
             }
         } else {
@@ -143,4 +113,118 @@ global with sharing class topResultFinder {
         return result;
     }
 
+    /**
+     * This function is used to get Address Latitude and Longitude
+     *
+     * @param String record_id Record Id
+     *
+     * @return List<SObject> address_lat_lng Address Latitude and Longitude values.
+     */
+    public static List<SObject> getAddress (String record_id) {
+        String object_type = getObjectType((ID)record_id);
+        String soql_query = '';
+        if (object_type == 'account') {
+            soql_query = 'SELECT BillingLatitude, BillingLongitude'+
+                ' FROM Account WHERE Id = \''+record_id+'\' LIMIT 1';
+        } else if (object_type == 'lead') {
+            soql_query = 'SELECT Latitude, Longitude'+
+                ' FROM Lead WHERE Id = \''+record_id+'\' LIMIT 1';
+        }
+
+        List<SObject> address_lat_lng = database.query(soql_query);
+        return address_lat_lng;
+    }
+
+    /**
+     * This function is used to get Object Type
+     *
+     * @param Id record_id Record Id
+     *
+     * @return String object_type Object Type.
+     */
+    public static String getObjectType (Id record_id) {
+        String object_type = String.valueOf(record_id.getsobjecttype()).toLowerCase();
+        return object_type;
+    }
+
+    /**
+     * This function is used to get distance calculation string
+     *
+     * @param String object_type Object Type
+     * @param Decimal Lat Latitude
+     * @param Decimal Lng Longitude
+     *
+     * @return String distance_string Distance calculation string.
+     */
+    public static String getDistanceString (String object_type, Decimal lat, Decimal lng) {
+        String address_key = 'Address';
+        if (object_type == 'account') {
+            address_key = 'BillingAddress';
+        }
+        String distance_string = 'DISTANCE('+address_key+', GEOLOCATION(' + lat + ', ' + lng + ' ), \'mi\')';
+        return distance_string;
+    }
+
+    /**
+     * This function is used to get Select statement string
+     *
+     * @param String object_type Object Type
+     *
+     * @return String sql_string Main SOQL query string.
+     */
+    public static String getMainSOQLString (String object_type) {
+        String sql_string = '';
+        if (object_type == 'account') {
+            sql_string = 'SELECT Id, Name, BillingAddress, AnnualRevenue FROM Account WHERE ';
+        } else if (object_type == 'lead') {
+            sql_string = 'SELECT Id, Name, Address, AnnualRevenue FROM Lead WHERE ';
+        }
+        return sql_string;
+    }
+
+    /**
+     * This function is used to get where condition for SOQL query
+     *
+     * @param String object_type Object Type
+     * @param String distance_val Distance calcuation string
+     * @param Map<String, String> filters Filter key and value (e.g. {'industry':'paper'})
+     *
+     * @return String soql_query Where condition string.
+     */
+    public static String getWhereForSOQL (String object_type, String distance_val, Map<String, String>filters) {
+        String soql_query = '';
+        if (object_type == 'account') {
+            soql_query += ' industry = \''+ String.valueOf(filters.get('industry')) +'\' ';
+            soql_query += 'AND '+ distance_val;
+            if (String.isNotEmpty(filters.get('distance')) && String.isNotBlank(filters.get('distance'))) {
+                soql_query += ' < '+filters.get('distance');
+            } else {
+                soql_query += '< 500';
+            }
+        } else if (object_type == 'lead') {
+
+        }
+
+        return soql_query;
+    }
+
+    /**
+     * This function is used to calculate the distance.
+     *
+     * @param Location from_loc From location details
+     * @param Location new_loc New location details
+     *
+     * @return String dist Distance value.
+     */
+    public static String getDistanceFromParentRecord (Location from_loc, Location new_loc) {
+        Double new_lat = new_loc.latitude;
+        Double new_lon = new_loc.longitude;
+        Location to_loc = Location.newInstance(new_lat, new_lon);
+
+        String dist = String.valueof(from_loc.getDistance(to_loc, 'mi'));
+        return dist;
+    }
+    //protected static upsert_records(Map<>) {
+    //
+    //}
 }
