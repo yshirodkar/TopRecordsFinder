@@ -23,13 +23,9 @@ global with sharing class topResultFinder {
         if (object_type.length() > 0
             && (object_type == 'lead' || object_type == 'account')) {
             if (filters.size() > 0) {
-                if (object_type == 'lead') {
-                    result = filterResultsLead(record_id, filters);
-                } else {
-                    //String record_id = '001f4000005YxYk';
+                    //String record_id = '001f4000005Y``xYk';
                     result = filterResultsAccount (record_id, filters);
                     top_list = result;
-                }
             }
         }
         //if (!top_list.isEmpty()) {
@@ -63,19 +59,27 @@ global with sharing class topResultFinder {
 
             //Getting address data
             List<SObject> account_address = getAddress(account_id);
-
+            
+            String object_type_check  = getObjectType((ID)account_id);
             //Getting geolocation values
-            Decimal lat         = (Decimal)account_address[0].get('BillingLatitude');
-            Decimal lng         = (Decimal)account_address[0].get('BillingLongitude');
+            Decimal lat, lng;
+            if (object_type_check == 'account') {
+                lat         = (Decimal)account_address[0].get('BillingLatitude');
+                lng         = (Decimal)account_address[0].get('BillingLongitude');   
+            } else if (object_type_check == 'lead') {
+                lat         = (Decimal)account_address[0].get('Latitude');
+                lng         = (Decimal)account_address[0].get('Longitude');   
+            }
             Location from_loc   = Location.newInstance(lat ,lng);
 
             // Formatting distance calculation
-            String object_type  = getObjectType((ID)account_id);
+            //String object_type  = getObjectType((ID)account_id);
+            String object_type  = 'account';
             String distance_val = getDistanceString(object_type, lat, lng);
             String soql_query   = getMainSOQLString(object_type);
 
             soql_query += getWhereForSOQL(object_type, distance_val, filters);
-            soql_query += ' AND Id NOT IN (\''+account_id+'\')';
+            //soql_query += ' AND Id NOT IN (\''+account_id+'\')';
             soql_query += ' ORDER BY '+distance_val+ ' ASC LIMIT 3';
             System.debug('query'+ soql_query);
             List<Account> account_results = database.query(soql_query);
