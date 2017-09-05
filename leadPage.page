@@ -1,4 +1,4 @@
-<apex:page standardController="Account" extensions="topResultFinder" showHeader="true" tabStyle="account" >
+<apex:page standardController="Lead" extensions="topResultFinder" showHeader="true" tabStyle="lead" >
     <apex:includeScript value="{!$Resource.JQuery}"/>
     <style>
         .activeTab {background-color: #236FBD; color:white; background-image:none}
@@ -46,12 +46,12 @@
         var fieldEdit       = '_ileinner';
         var iframeWidget    = '#066g0000000FqFq';
         // Fields
-        var industryId      = '#acc7j_id0_j_id3_j_id4_j_id5';
-        var addrId          = '#acc17j_id0_j_id3_j_id4_j_id5';
-        var revenueId       = '#acc8j_id0_j_id3_j_id4_j_id5';
-        var boxesId         = '#00N5000000ALllbj_id0_j_id3_j_id4_j_id5';
-        var productskuId    = '#00Ng0000002NOejj_id0_j_id3_j_id4_j_id5';
-        var sicId           = '#acc16j_id0_j_id3_j_id4_j_id5';
+        var industryId      = '#lea6j_id0_j_id3_j_id4_j_id5';
+        var addrId          = '#lea16j_id0_j_id3_j_id4_j_id5';
+        var revenueId       = '#00N50000002UAQpj_id0_j_id3_j_id4_j_id5';
+        var boxesId         = '#00N50000001f8IWj_id0_j_id3_j_id4_j_id5';
+        var productskuId    = '#00N50000009PZatj_id0_j_id3_j_id4_j_id5';
+        var sicId           = '#00N50000001w6I4j_id0_j_id3_j_id4_j_id5';
         // Adding all fields to global array
         fieldArray.push({'industry':industryId});
         fieldArray.push({'address':addrId});
@@ -106,13 +106,11 @@
         if(type === "single"){
             object.on("click",buttonBind);
         } else if (type === "double"){
-            console.log('dbl click event added!');
-            object.on("dblclick",fieldBind);
+			object.dblclick(function() {
+				console.log('dbl click event added!');
+				fieldBind(object);
+			});
         }
-    }
-        // This function is available for other single click usage not require at the moment
-    var buttonBind = function(){
-        console.log( "button bind" );
     }
     /*
         This function does the following:
@@ -122,28 +120,55 @@
             change event to actual industry editable field and store the
             value on the variable indDynamic.
     */
-    var fieldBind = function(){
+    var fieldBind = function(object){
         var b = setInterval(function(){
-            findEditIndustry();
+            findEditIndustry(object);
         }, 500);
         
-        var findEditIndustry = function(){
-            var industry = $(industryId);
-            if(industry !== null || industry !== undefined){
-                console.log("Edit Industry Found");
+        var findEditIndustry = function(data){
+			var fieldDynamic = data;
+            var fieldId = data[0].id;
+            if(fieldId !== null || fieldId !== undefined){
+                console.log("Edit Found");
                 clearInterval(b);
-                var industryValue = $(industryId).val();
-                console.log( "Current Industry field value: " + industryValue );
-                industry.change(function(){
-                    var indDynamic  = $(industryId).val();
-                    var filters      = {
-                        'industry' : indDynamic
-                    }
-                    var accountId   = document.getElementById('j_id0:j_id3:accountId').value;
+				var indvalue = fieldId.replace('_ileinner','');
+                var industryValue = $('#' + indvalue).val();
+				var fieldElement = $('#' + indvalue);
+                console.log( "Current field value: " + industryValue );
+                fieldElement.change(function(){
+                    var indDynamic  = industryValue;
+					var filters = {};
+					filters['industry'] = $('#lea6j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
+					filters['address'] = $('#lea16j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
+					filters['revenue'] = $('#00N50000002UAQpj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();   
+					filters['boxes'] = $('#00N50000001f8IWj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();   
+					filters['products'] = $('#00N50000009PZatj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();   
+					filters['sic'] = $('#00N50000001w6I4j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
+					filters['order_by'] = 'insdustry';
+					if(indvalue == 'lea6j_id0_j_id3_j_id4_j_id5'){
+						filters['industry'] = $('#' + indvalue).val();
+						filters['order_by'] = 'industry';
+					} else if (indvalue == 'lea16j_id0_j_id3_j_id4_j_id5'){
+						filters['address'] = $('#' + indvalue).val();
+						filters['order_by'] = 'address';
+					} else if (indvalue == '00N50000002UAQpj_id0_j_id3_j_id4_j_id5'){
+						filters['revenue'] = $('#' + indvalue).val();
+						filters['order_by'] = 'revenue';
+					}  else if (indvalue == '00N50000001f8IWj_id0_j_id3_j_id4_j_id5'){
+						filters['boxes'] = $('#' + indvalue).val();
+						filters['order_by'] = 'boxes';
+					}  else if (indvalue == '00N50000009PZatj_id0_j_id3_j_id4_j_id5'){
+						filters['products'] = $('#' + indvalue).val();
+						filters['order_by'] = 'products';
+					} else if (indvalue == '00N50000001w6I4j_id0_j_id3_j_id4_j_id5'){
+						filters['sic'] = $('#' + indvalue).val();
+						filters['order_by'] = 'sic';
+					}
+					
+                    var accountId   = document.getElementById('j_id0:j_id3:leadId').value;
                     console.log("Change to: " + indDynamic);
                     jsRemoting(accountId,filters);
                 });
-                
             }
         }
     }  
@@ -173,28 +198,14 @@
         )       
     }
     </script>
-    
     <apex:form >
-        <apex:inputHidden id="accountId" value="{!Account.Id}"/>
+        <apex:inputHidden id="leadId" value="{!Lead.Id}"/>
         <apex:pageBlock mode="inlineEdit">
             <apex:detail oncomplete="location.reload()" relatedList="false" title="true" inlineEdit="true" />
-            <iframe height="400px" id="theIframe" name="theIframe" title="Hierarchy" src="https://trachier.cs17.visual.force.com/apex/Hierarchy?id=001g000001jDtGE" width="100%"></iframe>          
+            <iframe height="400px" id="theIframe" name="theIframe" title="Hierarchy" src="https://hubspot-inc.cs17.visual.force.com/apex/HubSpotLeadIntel?id={!Lead.Id}" width="100%"></iframe>          
         </apex:pageBlock>
     </apex:form>
-    <apex:relatedList subject="{!account}" list="Customer_Satisfaction_Scores__r" />
-    <apex:relatedList subject="{!account}" list="contacts" />
-    <apex:relatedList subject="{!account}" list="Assets" />
-    <apex:relatedList subject="{!account}" list="Assets__r" />
-    <apex:relatedList subject="{!account}" list="opportunities" />
-    <apex:relatedList subject="{!account}" list="cases" />
-    <apex:relatedList subject="{!account}" list="Ops_Optimizations__r" />
-    <apex:relatedList subject="{!account}" list="OpenActivities" />
-    <apex:relatedList subject="{!account}" list="ActivityHistories" />
-    <apex:relatedList subject="{!account}" list="CombinedAttachments" />
-    <apex:relatedList subject="{!account}" list="Histories" />
-    <apex:relatedList subject="{!account}" list="Installation_Projects__r" />
-    <apex:relatedList subject="{!account}" list="Box_Size_Brackets__r" />
-    <apex:relatedList subject="{!account}" list="Hours__r" />
-    <apex:relatedList subject="{!account}" list="Print_Sleeves__r" />
-    <apex:relatedList subject="{!account}" list="Software_Maintenance_Windows__r" />
+    <apex:relatedList subject="{!lead}" list="OpenActivities" />
+    <apex:relatedList subject="{!lead}" list="ActivityHistories" />
+    <apex:relatedList subject="{!lead}" list="CombinedAttachments" />
 </apex:page>
