@@ -22,15 +22,15 @@
               <div class="card-block">
                 <div id="milesDataOne" class="table">
                     <span id = "milesNameOne">Account One</span>
-                    <span id = "milesIconOne">Icon One</span>
+                    <span id = "milesOne">Miles One</span>
                 </div>
                 <div id="milesDataTwo" class="table">
-                    <span id = "milesNameOne">Account Two</span>
-                    <span id = "milesIconOne">Icon Two</span>
+                    <span id = "milesNameTwo">Account Two</span>
+                    <span id = "milesTwo">Miles Two</span>
                 </div>
                 <div id="milesDataThree" class="table">
-                    <span id = "milesNameOne">Account Three</span>
-                    <span id = "milesIconOne">Icon Three</span>
+                    <span id = "milesNameThree">Account Three</span>
+                    <span id = "milesThree">Miles Three</span>
                 </div>
               </div>
             </div>
@@ -47,15 +47,15 @@
               <div class="card-block">
                 <div id="industryDataOne" class="table">
                     <span id = "industryNameOne">Account One</span>
-                    <span id = "industryIconOne">Icon One</span>
+                    <span id = "industryOne">Miles One</span>
                 </div>
                 <div id="industryDataTwo" class="table">
-                    <span id = "industryNameOne">Account Two</span>
-                    <span id = "industryIconOne">Icon Two</span>
+                    <span id = "industryNameTwo">Account Two</span>
+                    <span id = "industryTwo">Miles Two</span>
                 </div>
                 <div id="industryDataThree" class="table">
-                    <span id = "industryNameOne">Account Three</span>
-                    <span id = "industryIconOne">Icon Three</span>
+                    <span id = "industryNameThree">Account Three</span>
+                    <span id = "industryThree">Miles Three</span>
                 </div>
               </div>
             </div>
@@ -72,15 +72,15 @@
               <div class="card-block">
                 <div id="revenueDataOne" class="table">
                     <span id = "revenueNameOne">Account One</span>
-                    <span id = "revenueIconOne">Icon One</span>
+                    <span id = "revenueOne">Miles One</span>
                 </div>
                 <div id="revenueDataTwo" class="table">
-                    <span id = "revenueNameOne">Account Two</span>
-                    <span id = "revenueIconOne">Icon Two</span>
+                    <span id = "revenueNameTwo">Account Two</span>
+                    <span id = "revenueTwo">Miles Two</span>
                 </div>
                 <div id="revenueDataThree" class="table">
-                    <span id = "revenueNameOne">Account Three</span>
-                    <span id = "revenueIconOne">Icon Three</span>
+                    <span id = "revenueNameThree">Account Three</span>
+                    <span id = "revenueThree">Miles Three</span>
                 </div>
               </div>
             </div>

@@ -106,10 +106,10 @@
         if(type === "single"){
             object.on("click",buttonBind);
         } else if (type === "double"){
-			object.dblclick(function() {
-				console.log('dbl click event added!');
-				fieldBind(object);
-			});
+            object.dblclick(function() {
+                console.log('dbl click event added!');
+                fieldBind(object);
+            });
         }
     }
     /*
@@ -126,45 +126,45 @@
         }, 500);
         
         var findEditIndustry = function(data){
-			var fieldDynamic = data;
+            var fieldDynamic = data;
             var fieldId = data[0].id;
             if(fieldId !== null || fieldId !== undefined){
                 console.log("Edit Found");
                 clearInterval(b);
-				var indvalue = fieldId.replace('_ileinner','');
+                var indvalue = fieldId.replace('_ileinner','');
                 var industryValue = $('#' + indvalue).val();
-				var fieldElement = $('#' + indvalue);
+                var fieldElement = $('#' + indvalue);
                 console.log( "Current field value: " + industryValue );
                 fieldElement.change(function(){
                     var indDynamic  = industryValue;
-					var filters = {};
-					filters['industry'] = $('#lea6j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
-					filters['address'] = $('#lea16j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
-					filters['revenue'] = $('#00N50000002UAQpj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();   
-					filters['boxes'] = $('#00N50000001f8IWj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();   
-					filters['products'] = $('#00N50000009PZatj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();   
-					filters['sic'] = $('#00N50000001w6I4j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
-					filters['order_by'] = 'insdustry';
-					if(indvalue == 'lea6j_id0_j_id3_j_id4_j_id5'){
-						filters['industry'] = $('#' + indvalue).val();
-						filters['order_by'] = 'industry';
-					} else if (indvalue == 'lea16j_id0_j_id3_j_id4_j_id5'){
-						filters['address'] = $('#' + indvalue).val();
-						filters['order_by'] = 'address';
-					} else if (indvalue == '00N50000002UAQpj_id0_j_id3_j_id4_j_id5'){
-						filters['revenue'] = $('#' + indvalue).val();
-						filters['order_by'] = 'revenue';
-					}  else if (indvalue == '00N50000001f8IWj_id0_j_id3_j_id4_j_id5'){
-						filters['boxes'] = $('#' + indvalue).val();
-						filters['order_by'] = 'boxes';
-					}  else if (indvalue == '00N50000009PZatj_id0_j_id3_j_id4_j_id5'){
-						filters['products'] = $('#' + indvalue).val();
-						filters['order_by'] = 'products';
-					} else if (indvalue == '00N50000001w6I4j_id0_j_id3_j_id4_j_id5'){
-						filters['sic'] = $('#' + indvalue).val();
-						filters['order_by'] = 'sic';
-					}
-					
+                    var filters = {};
+                    filters['industry'] = $('#lea6j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
+                    filters['address'] = $('#lea16j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
+                    filters['revenue'] = $('#00N50000002UAQpj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();   
+                    filters['boxes'] = $('#00N50000001f8IWj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();   
+                    filters['products'] = $('#00N50000009PZatj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();   
+                    filters['sic'] = $('#00N50000001w6I4j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
+                    filters['order_by'] = 'insdustry';
+                    if(indvalue == 'lea6j_id0_j_id3_j_id4_j_id5'){
+                        filters['industry'] = $('#' + indvalue).val();
+                        filters['order_by'] = 'industry';
+                    } else if (indvalue == 'lea16j_id0_j_id3_j_id4_j_id5'){
+                        filters['address'] = $('#' + indvalue).val();
+                        filters['order_by'] = 'address';
+                    } else if (indvalue == '00N50000002UAQpj_id0_j_id3_j_id4_j_id5'){
+                        filters['revenue'] = $('#' + indvalue).val();
+                        filters['order_by'] = 'revenue';
+                    }  else if (indvalue == '00N50000001f8IWj_id0_j_id3_j_id4_j_id5'){
+                        filters['boxes'] = $('#' + indvalue).val();
+                        filters['order_by'] = 'boxes';
+                    }  else if (indvalue == '00N50000009PZatj_id0_j_id3_j_id4_j_id5'){
+                        filters['products'] = $('#' + indvalue).val();
+                        filters['order_by'] = 'products';
+                    } else if (indvalue == '00N50000001w6I4j_id0_j_id3_j_id4_j_id5'){
+                        filters['sic'] = $('#' + indvalue).val();
+                        filters['order_by'] = 'sic';
+                    }
+                    
                     var accountId   = document.getElementById('j_id0:j_id3:leadId').value;
                     console.log("Change to: " + indDynamic);
                     jsRemoting(accountId,filters);
@@ -172,6 +172,17 @@
             }
         }
     }  
+    /*
+        This function will handle lower case string and convert them into title case
+    */
+    var toTitleCase = function(str) {
+        return str.replace(/(?:^|\s)\w/g, function(match) {
+            return match.toUpperCase();
+        });
+    }
+    var decimalFix = function(number){
+        return number.toFixed(2);
+    }
     /*
         This is JS remoting that will allow us to communicate to the controller
         and submit the information changed on the layout and returning back its
@@ -189,7 +200,24 @@
                     if(jQuery.isEmptyObject(result) == true){
                         console.log('Empty JSON');
                     } else {
-                        $(iframeWidget).contents().find("#SectionOne").text(result[1].id + ' - ' + result[1].Name + ' - ' + result[1].revenue_diff);                                
+                        if (Object.keys(result)[0] === "1"){
+                            $(iframeWidget).contents().find("#milesNameOne").text(toTitleCase(result[1].Name));
+                            $(iframeWidget).contents().find("#milesOne").text(result[1].dist);
+                        } else {
+                            console.log('Unable to send data to widget. Error Code: 0001');
+                        }
+                        if (Object.keys(result)[1] === "2"){
+                            $(iframeWidget).contents().find("#milesNameTwo").text(toTitleCase(result[2].Name));
+                            $(iframeWidget).contents().find("#milesTwo").text(result[2].dist);
+                        } else {
+                            console.log('Unable to send data to widget. Error Code: 0002');
+                        }
+                        if (Object.keys(result)[2] === "3"){
+                            $(iframeWidget).contents().find("#milesNameThree").text(toTitleCase(result[3].Name));
+                            $(iframeWidget).contents().find("#milesThree").text(result[3].dist);
+                        } else {
+                            console.log('Unable to send data to widget. Error Code: 0003');
+                        }
                     }
                 } else {
                     console.log('Broken :' + result);
