@@ -1,0 +1,33 @@
+/* Widget Header */
+.h5, h5 {
+    font-size: 12px;
+}
+/* Body */
+body {
+    font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #292b2c;
+    background-color: #fff;
+}
+/* Header Image */
+img {
+    width:172px;
+    height: auto;
+	margin-bottom:7px;
+	margin-left:1px;
+}
+/* table */
+div.table {
+    display: table;
+    width: 100%;
+    table-layout: fixed;    /* For cells of equal size */
+}
+div.table span {
+    display: table-cell;
+    //text-align: center;
+}
+.table{
+	margin-bottom: auto;
+}
