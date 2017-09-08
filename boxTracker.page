@@ -82,12 +82,34 @@
             <div class="card-header" role="tab" id="headingOne">
               <h5 class="mb-0">
                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                  Miles
+                  Industry
                 </a>
               </h5>
             </div>
             <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
               <div class="card-block">
+                <div id="industryDataOne" class="table">
+                    <span id = "industryNameOne"></span>
+                </div>
+                <div id="industryDataTwo" class="table">
+                    <span id = "industryNameTwo"></span>
+                </div>
+                <div id="industryDataThree" class="table">
+                    <span id = "industryNameThree"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header" role="tab" id="headingTwo">
+              <h5 class="mb-0">
+                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  Miles
+                </a>
+              </h5>
+            </div>
+            <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
+			  <div class="card-block">
                 <div id="milesDataOne" class="table">
                     <span id = "milesNameOne"></span>
                     <span id = "milesOne" class="spanCss"></span>
@@ -99,28 +121,6 @@
                 <div id="milesDataThree" class="table">
                     <span id = "milesNameThree"></span>
                     <span id = "milesThree" class="spanCss"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header" role="tab" id="headingTwo">
-              <h5 class="mb-0">
-                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                  Industry
-                </a>
-              </h5>
-            </div>
-            <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
-              <div class="card-block">
-                <div id="industryDataOne" class="table">
-                    <span id = "industryNameOne"></span>
-                </div>
-                <div id="industryDataTwo" class="table">
-                    <span id = "industryNameTwo"></span>
-                </div>
-                <div id="industryDataThree" class="table">
-                    <span id = "industryNameThree"></span>
                 </div>
               </div>
             </div>
