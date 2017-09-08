@@ -24,6 +24,7 @@ global with sharing class topResultFinder {
         Map<String, Map<String, String>> top_list = new Map<String, Map<String, String>>(); 
         Map<string, string> test_filters = new Map<String, String>(); //for testing
         object_type.toLowerCase();
+        String cat = filters.get('order_by');
         if (object_type.length() > 0
             && (object_type == 'lead' || object_type == 'account')) {
             if (filters.size() > 0) {
@@ -34,9 +35,9 @@ global with sharing class topResultFinder {
                     top_list = result;
             }
         }
-        //if (!top_list.isEmpty()) {
-        //    upsert_records(top_list);
-        //}
+        if (!top_list.isEmpty()) {
+            upsert_records(top_list, record_id, cat);
+        }
         return top_list;
     }
 
@@ -60,11 +61,12 @@ global with sharing class topResultFinder {
         ) {
             // Getting revenue value
             Integer parent_revenue = 0;
-            if (filters.containsKey('revenue')) {
+            if (filters.containsKey('revenue') && (filters.get('revenue') != '' && filters.get('revenue') != null)) {
+                System.debug('hererer '+(filters.get('revenue')) + 'blah');
                 parent_revenue =  Integer.valueof(filters.get('revenue'));
             }
             Integer boxes_per_day = 0;
-            if (filters.containsKey('boxes')) {
+            if (filters.containsKey('boxes') && (filters.get('boxes') != '' && filters.get('boxes') != null)) {
                 boxes_per_day = Integer.valueof(filters.get('boxes'));
             }
 
@@ -91,7 +93,7 @@ global with sharing class topResultFinder {
 
             soql_query += getWhereForSOQL(object_type, distance_val, filters);
             //soql_query += ' AND Id NOT IN (\''+account_id+'\')';
-            if ((filters.containsKey('order_by') && filters.get('order_by') == 'distance') ||
+            if ((filters.containsKey('order_by') && (filters.get('order_by') == 'distance' || filters.get('order_by') == 'industry')) ||
                 !filters.containsKey('order_by')) {
                 soql_query += ' ORDER BY '+distance_val+ ' ASC LIMIT '+LIMIT_CONST;
             }
@@ -129,7 +131,7 @@ global with sharing class topResultFinder {
                 order++;
             }
 
-            if (filters.containsKey('order_by') && filters.get('order_by') != 'distance') {
+            if (filters.containsKey('order_by') && filters.get('order_by') != 'distance' && filters.get('order_by') != 'industry') {
                 sorted_results = getSortedRecords(result, filters.get('order_by'));
             } else {
                 sorted_results = result;
@@ -141,6 +143,8 @@ global with sharing class topResultFinder {
             result.put('Success', error);
         }
         System.debug('result '+ result);
+        System.debug('sorted results'+ sorted_results);
+        
         return sorted_results;
     }
 
@@ -267,31 +271,75 @@ global with sharing class topResultFinder {
     public static Map<String, Map<String, String>> getSortedRecords (Map<String, Map<String, String>> records, String order_by) {
         Map<String, Map<String, String>> result = new Map<String, Map<String, String>>();
         Map<String, String> order_by_map = new Map<String, String>();
-        List<String> field_value_list = new List<String>();
+        List<Integer> field_value_list = new List<Integer>();
+        //System.debug('Records '+ records);
         for(String current_order: records.keySet()) {
             Map<String, String> record = new Map<String, String>(records.get(current_order));
-            //System.debug('val '+ records.get(keys));
-            order_by_map.put(record.get(order_by), current_order);
-            field_value_list.add(record.get(order_by));
+            //System.debug('val '+ records.get(current_order));
+            order_by_map.put(current_order, record.get(order_by));
+            field_value_list.add(Integer.valueOf(record.get(order_by)));
         }
 
         field_value_list.sort();
         //field_value_list.addAll(Integer.valueOf(test_sorting_map.get('revenue_diff')));
         //System.debug('list looks '+ field_value_list);
+        ///System.debug('order byt = '+ order_by_map);
         Integer list_count = 1;
-        for (String value_key: field_value_list) {
+        for (Integer value_key: field_value_list) {
             if (list_count > LIMIT_CONST) {
                 break;
             }
-            System.debug(' sorted order '+order_by_map.get(value_key));
-            result.put(string.valueOf(list_count), records.get(order_by_map.get(value_key)));
-            //order_by_map.remove(value_key);
+            System.debug('order_by '+ order_by_map);
+            for (String order_by_key: order_by_map.keySet()) {
+                if (order_by_map.get(order_by_key) == String.valueOf(value_key)) {
+                    result.put(string.valueOf(list_count), records.get(order_by_key));
+                    order_by_map.remove(order_by_key);
+                    break;
+                }
+            }
+            
+            //System.debug('result '+ result);
             list_count++;
         }
         return result;
     }
 
-    //protected static upsert_records(Map<>) {
-    //
-    //}
+    
+    public static Boolean upsert_records(Map<String, Map<String, String>> records, String main_record_id, String cat) {
+        Boolean success = false;
+        Integer order = 1;
+        for(String record_key: records.keySet()){
+            System.debug('records val = '+ records.get(record_key));
+            Map<String, String> value_to_update = records.get(record_key);
+            String related_object_id = value_to_update.get('id');
+            String dist = value_to_update.get('dist');
+            String soql = 'SELECT Id FROM Top_Account_tracker__c WHERE Related_Lead__c = \''+main_record_id+
+                '\' AND Order__c = '+order+' LIMIT 1';
+            System.debug('soql query '+soql);
+            List<Top_Account_tracker__c> check_id = database.query(soql);
+            //Top_Account_Tracker__c check_id = [SELECT Id FROM Top_Account_Tracker__c WHERE Related_Lead__c =:main_record_id AND Order__c =:order LIMIT 1];
+            Top_Account_Tracker__c top_record;
+            if (!check_id.isEmpty()) {
+                  Id existed_id = check_id[0].Id;
+                top_record = new Top_Account_Tracker__c(Id = existed_id);
+            } else {
+                top_record = new Top_Account_Tracker__c();
+            }
+            //System.debug('round '+ Math.round(Integer.valueof(dist)));
+            top_record.Relates_To__c = related_object_id;
+            top_record.Miles__c = Decimal.valueOf(dist);
+            top_record.Related_Lead__c  = main_record_id;
+            top_record.Order__c = order;
+            top_record.Category__c = cat;
+            System.debug('object '+top_record);
+            if (!check_id.isEmpty()) {
+                upsert top_record; 
+            } else {
+                insert top_record;   
+            }
+            order++;
+        }
+       
+        return success;
+   }
 }
