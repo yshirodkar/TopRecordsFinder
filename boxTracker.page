@@ -1,10 +1,78 @@
-<apex:page showHeader="false" tabStyle="account" >
+<apex:page showHeader="false" standardController="Lead" extensions="getDataFromTracker"  tabStyle="account" >
     <apex:includeScript value="{!$Resource.JQuery}" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous"></link>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{!$Resource.customcss}"></link>
     <script>
+    $( window ).load(function() {
+        var leadId = document.getElementById('j_id0:j_id3:leadRecordId').value;
+        jsRemoting(leadId);
+    });
+
+    var jsRemoting = function(leadId){
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.getDataFromTracker.tracker_Controller}',       // Accessing Class through remote action
+            leadId,                                              // Industry field value
+            function(result,event){
+                if(event.status){
+                    for (var key in result) {
+                        // skip loop if the property is from prototype
+                        if (!result.hasOwnProperty(key)) continue;
+
+                        var obj = result[key];
+                        for (var prop in obj) {
+                            // skip loop if the property is from prototype
+                            if(!obj.hasOwnProperty(prop)) continue;
+
+                            // cat = revenue - Key = Value
+                            console.log(prop + " = " + obj[prop]);
+                            if(obj['cat'] === "revenue"){
+                                if(obj['rank'] === "1"){
+                                    $('#revenueNameOne').text(result[0].Name);
+                                    $('#revenueOne').text('$'+result[0].Revenue)
+                                } else if (obj['rank'] === "2"){
+                                    $('#revenueNameTwo').text(result[1].Name);
+                                    $('#revenueTwo').text('$'+result[1].Revenue)
+                                }  else if (obj['rank'] === "3"){
+                                    $('#revenueNameThree').text(result[2].Name);
+                                    $('#revenueThree').text('$'+result[2].Revenue)
+                                }
+                            } else if (obj['cat'] === "industry"){
+                                if(obj['rank'] === "1"){
+                                    $('#industryNameOne').text(result[0].Name);
+                                } else if (obj['rank'] === "2"){
+                                    $('#industryNameTwo').text(result[1].Name);
+                                }  else if (obj['rank'] === "3"){
+                                    $('#industryNameThree').text(result[2].Name);
+                                }
+                            }           
+                        }
+                    }
+                } else {
+                    console.log('Broken :' + result);
+                }
+            }
+        )       
+    }
+    
+    /*
+        This function will handle lower case string and convert them into title case
+    */
+    var toTitleCase = function(str) {
+        return str.replace(/(?:^|\s)\w/g, function(match) {
+            return match.toUpperCase();
+        });
+    }
+    
+    var decimalFix = function(number){
+        var a = parseFloat(number);
+        return a.toFixed(2);
+    }
+    
     </script>
+    <apex:form>
+        <apex:inputHidden id="leadRecordId" value="{!Lead.Id}"/>
+    </apex:form>
     <apex:outputPanel id="BoxTracker" layout="block">
         <div id="widgetHeader" class="image">
             <img src="http://www.packsize.com/wp-content/themes/packsize/images/packsize-logo-medium.png"></img>
@@ -21,16 +89,16 @@
             <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
               <div class="card-block">
                 <div id="milesDataOne" class="table">
-                    <span id = "milesNameOne">Account One</span>
-                    <span id = "milesOne">Miles One</span>
+                    <span id = "milesNameOne"></span>
+                    <span id = "milesOne" class="spanCss"></span>
                 </div>
                 <div id="milesDataTwo" class="table">
-                    <span id = "milesNameTwo">Account Two</span>
-                    <span id = "milesTwo">Miles Two</span>
+                    <span id = "milesNameTwo"></span>
+                    <span id = "milesTwo" class="spanCss"></span>
                 </div>
                 <div id="milesDataThree" class="table">
-                    <span id = "milesNameThree">Account Three</span>
-                    <span id = "milesThree">Miles Three</span>
+                    <span id = "milesNameThree"></span>
+                    <span id = "milesThree" class="spanCss"></span>
                 </div>
               </div>
             </div>
@@ -46,16 +114,13 @@
             <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
               <div class="card-block">
                 <div id="industryDataOne" class="table">
-                    <span id = "industryNameOne">Account One</span>
-                    <span id = "industryOne">Miles One</span>
+                    <span id = "industryNameOne"></span>
                 </div>
                 <div id="industryDataTwo" class="table">
-                    <span id = "industryNameTwo">Account Two</span>
-                    <span id = "industryTwo">Miles Two</span>
+                    <span id = "industryNameTwo"></span>
                 </div>
                 <div id="industryDataThree" class="table">
-                    <span id = "industryNameThree">Account Three</span>
-                    <span id = "industryThree">Miles Three</span>
+                    <span id = "industryNameThree"></span>
                 </div>
               </div>
             </div>
@@ -71,16 +136,16 @@
             <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree">
               <div class="card-block">
                 <div id="revenueDataOne" class="table">
-                    <span id = "revenueNameOne">Account One</span>
-                    <span id = "revenueOne">Miles One</span>
+                    <span id = "revenueNameOne"></span>
+                    <span id = "revenueOne" class="spanCss"></span>
                 </div>
                 <div id="revenueDataTwo" class="table">
-                    <span id = "revenueNameTwo">Account Two</span>
-                    <span id = "revenueTwo">Miles Two</span>
+                    <span id = "revenueNameTwo"></span>
+                    <span id = "revenueTwo" class="spanCss"></span>
                 </div>
                 <div id="revenueDataThree" class="table">
-                    <span id = "revenueNameThree">Account Three</span>
-                    <span id = "revenueThree">Miles Three</span>
+                    <span id = "revenueNameThree"></span>
+                    <span id = "revenueThree" class="spanCss"></span>
                 </div>
               </div>
             </div>
