@@ -53,7 +53,7 @@ global with sharing class topResultFinder {
      *
      * @return Map<String, Map<String,String>> sorted_results
      */
-    public static Map<String, Map<String,String>> filterResultsAccount (String account_id, Map<string,string>filters) {
+    private static Map<String, Map<String,String>> filterResultsAccount (String account_id, Map<string,string>filters) {
         
         Map<String, Map<String, String>> result = new Map<String, Map<String, String>>();
         Map<String, Map<String, String>> sorted_results = new Map<String, Map<String, String>>();
@@ -161,7 +161,7 @@ global with sharing class topResultFinder {
      *
      * @return List<SObject> address_lat_lng Address Latitude and Longitude values.
      */
-    public static List<SObject> getAddress (String record_id) {
+    private static List<SObject> getAddress (String record_id) {
         String object_type = getObjectType((ID)record_id);
         String soql_query = '';
         if (object_type == 'account') {
@@ -183,7 +183,7 @@ global with sharing class topResultFinder {
      *
      * @return String object_type Object Type.
      */
-    public static String getObjectType (Id record_id) {
+    private static String getObjectType (Id record_id) {
         String object_type = String.valueOf(record_id.getsobjecttype()).toLowerCase();
         return object_type;
     }
@@ -197,7 +197,7 @@ global with sharing class topResultFinder {
      *
      * @return String distance_string Distance calculation string.
      */
-    public static String getDistanceString (String object_type, Decimal lat, Decimal lng) {
+    private static String getDistanceString (String object_type, Decimal lat, Decimal lng) {
         String address_key = 'Address';
         if (object_type == 'account') {
             address_key = 'BillingAddress';
@@ -213,7 +213,7 @@ global with sharing class topResultFinder {
      *
      * @return String sql_string Main SOQL query string.
      */
-    public static String getMainSOQLString (String object_type) {
+    private static String getMainSOQLString (String object_type) {
         String sql_string = '';
         if (object_type == 'account') {
             sql_string = 'SELECT Id, Name, BillingAddress, AnnualRevenue, Boxes_Per_Day__c FROM Account WHERE ';
@@ -232,7 +232,7 @@ global with sharing class topResultFinder {
      *
      * @return String soql_query Where condition string.
      */
-    public static String getWhereForSOQL (String object_type, String distance_val, Map<String, String>filters) {
+    private static String getWhereForSOQL (String object_type, String distance_val, Map<String, String>filters) {
         String soql_query = '';
         if (object_type == 'account') {
             soql_query += ' industry = \''+ String.valueOf(filters.get('industry')) +'\' ';
@@ -257,7 +257,7 @@ global with sharing class topResultFinder {
      *
      * @return String dist Distance value.
      */
-    public static String getDistanceFromParentRecord (Location from_loc, Location new_loc) {
+    private static String getDistanceFromParentRecord (Location from_loc, Location new_loc) {
         Double new_lat = new_loc.latitude;
         Double new_lon = new_loc.longitude;
         Location to_loc = Location.newInstance(new_lat, new_lon);
@@ -274,7 +274,7 @@ global with sharing class topResultFinder {
      *
      * @return Map<String, Map<String, String>> result Sorted result.
      */    
-    public static Map<String, Map<String, String>> getSortedRecords (Map<String, Map<String, String>> records,
+    private static Map<String, Map<String, String>> getSortedRecords (Map<String, Map<String, String>> records,
         String order_by
     ) {
         Map<String, Map<String, String>> result = new Map<String, Map<String, String>>();
@@ -317,7 +317,7 @@ global with sharing class topResultFinder {
      *
      * @return Boolean success
      */ 
-    public static Boolean upsert_records(Map<String, Map<String, String>> records,
+    private static Boolean upsert_records(Map<String, Map<String, String>> records,
         String main_record_id,
         String cat
     ) {
