@@ -70,7 +70,7 @@
     }
     
     </script>
-    <apex:form>
+    <apex:form >
         <apex:inputHidden id="leadRecordId" value="{!Lead.Id}"/>
     </apex:form>
     <apex:outputPanel id="BoxTracker" layout="block">
@@ -109,7 +109,7 @@
               </h5>
             </div>
             <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
-			  <div class="card-block">
+              <div class="card-block">
                 <div id="milesDataOne" class="table">
                     <span id = "milesNameOne"></span>
                     <span id = "milesOne" class="spanCss"></span>

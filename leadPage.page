@@ -29,7 +29,8 @@
     var production      = url.search(production);
     var fieldArray      = [];
     var inLineArray     = [];
-    var indvalue        = '';
+    var outLineArray    = [];
+    var fieldValue      = '';
     
     // SANDBOX
     /*
@@ -45,6 +46,7 @@
     */
     if (sandbox >= 0){
         var fieldEdit       = '_ileinner';
+        var fieldOutEdit    = '_ilecell';
         var iframeWidget    = '#066g0000000FqFq';
         // Fields
         var industryId      = '#lea6j_id0_j_id3_j_id4_j_id5';
@@ -72,7 +74,7 @@
             console.log( "document loaded" );
             $( window ).load(function() {
                 console.log( "window loaded" );
-                console.log( "<------- READY ----->" );
+                console.log( "<------- READY ------->" );
                 // Inline Fields
                 var industryInLine  =   $(industryId + fieldEdit);
                 var addrInLine      =   $(addrId + fieldEdit);
@@ -87,10 +89,26 @@
                 inLineArray.push(boxesInLine);
                 inLineArray.push(productInLine);
                 inLineArray.push(sicInLine);
+                
+                // Inline Fields
+                var industryInLineOut  =   $(industryId + fieldOutEdit);
+                var addrInLineOut      =   $(addrId + fieldOutEdit);
+                var revenueInLineOut   =   $(revenueId + fieldOutEdit);
+                var boxesInLineOut     =   $(boxesId + fieldOutEdit);
+                var productInLineOut   =   $(productskuId + fieldOutEdit);
+                var sicInLineOut       =   $(sicId + fieldOutEdit);
+                // Building array of inline fields to bind
+                outLineArray.push(industryInLineOut);
+                outLineArray.push(addrInLineOut);
+                outLineArray.push(revenueInLineOut);
+                outLineArray.push(boxesInLineOut);
+                outLineArray.push(productInLineOut);
+                outLineArray.push(sicInLineOut);                
+                
                 if (industryInLine != null){
                     for (var i = 0; i < inLineArray.length; i++){
-                        //console.log(inLineArray[i]);
-                        objectBind(inLineArray[i], 'double');
+                        console.log(inLineArray[i]);
+                        objectBind(inLineArray[i],outLineArray[i]);
                     }
                 } else {
                     console.log('Keep looking');
@@ -103,15 +121,11 @@
     /*
         This function bind fields based on single or double clicks
     */
-    var objectBind = function(object, type){
-        if(type === "single"){
-            object.on("click",buttonBind);
-        } else if (type === "double"){
-            object.dblclick(function() {
-                console.log('dbl click event added!');
-                fieldBind(object);
-            });
-        }
+    var objectBind = function(object, subObject){
+        subObject.dblclick(function() {
+            console.log('dbl click event added!');
+            fieldBind(object);
+        });
     }
     /*
         This function does the following:
@@ -132,15 +146,18 @@
             if(fieldId !== null || fieldId !== undefined){
                 console.log("Edit Found");
                 clearInterval(b);
-                indvalue = fieldId.replace('_ileinner','');
-                var industryValue = $('#' + indvalue).val();
-                var fieldElement = $('#' + indvalue);
+                fieldValue = fieldId.replace('_ileinner','');
+                var industryValue = $('#' + fieldValue).val();
+                var fieldElement = $('#' + fieldValue);
                 console.log( "Current field value: " + industryValue );
                 fieldElement.change(function(){
                     var indDynamic  = industryValue;
                     var filters = {};
                     var revenue = "";
                     var boxes = "";
+                    /* 
+                        This if block is to prevent inline field to send spaces as values
+                    */
                     if($('#00N50000002UAQpj_id0_j_id3_j_id4_j_id5' + fieldEdit).text() === " "){
                         revenue = "";
                     } else {
@@ -151,6 +168,13 @@
                     } else {
                         boxes = $('#00N50000001f8IWj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
                     }
+                    /* 
+                        This if block is to prevent inline field to send spaces as values
+                    */
+                    
+                    /*
+                        Building array with all filter and their existing inline value
+                    */
                     filters['industry'] = $('#lea6j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
                     filters['address'] = $('#lea16j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
                     filters['revenue'] = revenue;   
@@ -158,33 +182,33 @@
                     filters['products'] = $('#00N50000009PZatj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();   
                     filters['sic'] = $('#00N50000001w6I4j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
                     filters['order_by'] = 'insdustry';
-                    if(indvalue == 'lea6j_id0_j_id3_j_id4_j_id5'){
-                        filters['industry'] = $('#' + indvalue).val();
+                    if(fieldValue == 'lea6j_id0_j_id3_j_id4_j_id5'){
+                        filters['industry'] = $('#' + fieldValue).val();
                         filters['order_by'] = 'industry';
-                    } else if (indvalue == 'lea16j_id0_j_id3_j_id4_j_id5'){
-                        filters['address'] = $('#' + indvalue).val();
+                    } else if (fieldValue == 'lea16j_id0_j_id3_j_id4_j_id5'){
+                        filters['address'] = $('#' + fieldValue).val();
                         filters['order_by'] = 'address';
-                    } else if (indvalue == '00N50000002UAQpj_id0_j_id3_j_id4_j_id5'){
-                        filters['revenue'] = $('#' + indvalue).val();
+                    } else if (fieldValue == '00N50000002UAQpj_id0_j_id3_j_id4_j_id5'){
+                        filters['revenue'] = $('#' + fieldValue).val();
                         filters['order_by'] = 'revenue';
-                    }  else if (indvalue == '00N50000001f8IWj_id0_j_id3_j_id4_j_id5'){
+                    }  else if (fieldValue == '00N50000001f8IWj_id0_j_id3_j_id4_j_id5'){
                         if($('#00N50000001f8IWj_id0_j_id3_j_id4_j_id5' + fieldEdit).text() === " "){
                             filters['boxes'] = "";
                         } else {
-                            filters['boxes'] = $('#' + indvalue).val();
+                            filters['boxes'] = $('#' + fieldValue).val();
                         }                        
                         filters['order_by'] = 'boxes';
-                    }  else if (indvalue == '00N50000009PZatj_id0_j_id3_j_id4_j_id5'){
-                        filters['products'] = $('#' + indvalue).val();
+                    }  else if (fieldValue == '00N50000009PZatj_id0_j_id3_j_id4_j_id5'){
+                        filters['products'] = $('#' + fieldValue).val();
                         filters['order_by'] = 'products';
-                    } else if (indvalue == '00N50000001w6I4j_id0_j_id3_j_id4_j_id5'){
-                        filters['sic'] = $('#' + indvalue).val();
+                    } else if (fieldValue == '00N50000001w6I4j_id0_j_id3_j_id4_j_id5'){
+                        filters['sic'] = $('#' + fieldValue).val();
                         filters['order_by'] = 'sic';
                     }
                     
                     var accountId   = document.getElementById('j_id0:j_id3:leadId').value;
                     console.log("Change to: " + indDynamic);
-                    jsRemoting(accountId,filters,indvalue);
+                    jsRemoting(accountId,filters,fieldValue);
                 });
             }
         }
@@ -218,7 +242,7 @@
                     if(jQuery.isEmptyObject(result) == true){
                         console.log('Empty JSON');
                     } else {
-                        if(indvalue === "lea16j_id0_j_id3_j_id4_j_id5"){    // Address
+                        if(fieldValue === "lea16j_id0_j_id3_j_id4_j_id5"){    // Address
                             if (Object.keys(result)[0] === "1"){
                                 $(iframeWidget).contents().find("#milesNameOne").text(toTitleCase(result[1].Name));
                                 $(iframeWidget).contents().find("#milesOne").text(decimalFix(result[1].dist));
@@ -237,7 +261,7 @@
                             } else {
                                 console.log('Unable to send data to widget. Error Code: 0003');
                             }
-                        } else if (indvalue === "lea6j_id0_j_id3_j_id4_j_id5"){     // Industry
+                        } else if (fieldValue === "lea6j_id0_j_id3_j_id4_j_id5"){     // Industry
                             if (Object.keys(result)[0] === "1"){
                                 $(iframeWidget).contents().find("#industryNameOne").text(toTitleCase(result[1].Name));
                                 
@@ -265,7 +289,7 @@
                             } else {
                                 console.log('Unable to send data to widget. Error Code: 0003');
                             }
-                        } else if (indvalue === "00N50000002UAQpj_id0_j_id3_j_id4_j_id5"){      // Revenue
+                        } else if (fieldValue === "00N50000002UAQpj_id0_j_id3_j_id4_j_id5"){      // Revenue
                             if (Object.keys(result)[0] === "1"){
                                 $(iframeWidget).contents().find("#revenueNameOne").text(toTitleCase(result[1].Name));
                                 $(iframeWidget).contents().find("#revenueOne").text('$'+decimalFix(result[1].revenue));

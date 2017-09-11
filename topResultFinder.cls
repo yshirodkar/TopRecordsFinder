@@ -3,52 +3,57 @@
 */
 global with sharing class topResultFinder {
 
-     static final Integer LIMIT_CONST = 3;
+    static final Integer LIMIT_CONST = 3;
+
+    public topResultFinder(ApexPages.StandardController stdController) {}
 
     /**
      * This function is used to get the top results of records which are pretty close to the current displayed record
      *
-     * @param String object_type What object type results are expected (Right now we just support Lead & Account)
-     * @param String industry_type This value decide what industry type we are looking for
-     * @param Map<String, Map<String,String>> filters What filters we are going to use and what is it's priority and value
-     *                                        e.g. ('Revenue'=> ('Priority' => '1', 'Value' => '200'))
+     * @param String object_type Object type.
+     * @param String record_id Record id
+     * @param Map<String, String> filters Filters key and value
+     *        e.g. ('revenue' : '200', 'industry' : 'paper')
      *
-     * 
      * @return Map<String, String> result Top results and their orders.
      */
-    public topResultFinder(ApexPages.StandardController stdController) {}
-
     @RemoteAction
-    global static Map<String, Map<String, String>> getTopResults(String object_type, String record_id, Map<string,string>filters) {
+    global static Map<String, Map<String, String>> getTopResults(String object_type,
+        String record_id,
+        Map<string,string>filters
+    ) {
         Map<String, Map<String, String>> result = new Map<String, Map<String, String>>();
         Map<String, Map<String, String>> top_list = new Map<String, Map<String, String>>(); 
-        Map<string, string> test_filters = new Map<String, String>(); //for testing
-        object_type.toLowerCase();
         String cat = filters.get('order_by');
+        Boolean upsert_success;
+        object_type.toLowerCase();
         if (object_type.length() > 0
             && (object_type == 'lead' || object_type == 'account')) {
             if (filters.size() > 0) {
-                    //record_id = '001f4000005YxYk';
-                    test_filters.putAll(filters); //for testing
-                    //test_filters.put('order_by', 'revenue');
-                    result = filterResultsAccount (record_id, test_filters);
+                    result = filterResultsAccount (record_id, filters);
                     top_list = result;
             }
         }
+        // Upserting the top records.
         if (!top_list.isEmpty()) {
-            upsert_records(top_list, record_id, cat);
+            upsert_success = upsert_records(top_list, record_id, cat);
+            if (upsert_success) {
+                System.debug('Upsert the records successfuly.');
+            }
         }
         return top_list;
     }
 
-    public static Map<String, Map<String,String>> filterResultsLead (String lead_id, Map<string,string>filters) {
-
-        Map<String, Map<String, String>> result = new Map<String, Map<String, String>>();
-
-        return result;
-    }
-
-    public static Map<String, Map<String,String>> filterResultsAccount (String account_id, Map<string,string>filters) {
+    /**
+     * This function is used to filter the Account
+     *
+     * @param String account_id Account Id.
+     * @param Map<String, String> filters Filters key and value
+     *        e.g. ('revenue' : '200', 'industry' : 'paper')
+     *
+     * @return Map<String, Map<String,String>> sorted_results
+     */
+    private static Map<String, Map<String,String>> filterResultsAccount (String account_id, Map<string,string>filters) {
         
         Map<String, Map<String, String>> result = new Map<String, Map<String, String>>();
         Map<String, Map<String, String>> sorted_results = new Map<String, Map<String, String>>();
@@ -62,7 +67,6 @@ global with sharing class topResultFinder {
             // Getting revenue value
             Integer parent_revenue = 0;
             if (filters.containsKey('revenue') && (filters.get('revenue') != '' && filters.get('revenue') != null)) {
-                System.debug('hererer '+(filters.get('revenue')) + 'blah');
                 parent_revenue =  Integer.valueof(filters.get('revenue'));
             }
             Integer boxes_per_day = 0;
@@ -86,15 +90,15 @@ global with sharing class topResultFinder {
             Location from_loc   = Location.newInstance(lat ,lng);
 
             // Formatting distance calculation
-            //String object_type  = getObjectType((ID)account_id);
             String object_type  = 'account';
             String distance_val = getDistanceString(object_type, lat, lng);
             String soql_query   = getMainSOQLString(object_type);
 
             soql_query += getWhereForSOQL(object_type, distance_val, filters);
-            //soql_query += ' AND Id NOT IN (\''+account_id+'\')';
-            if ((filters.containsKey('order_by') && (filters.get('order_by') == 'distance' || filters.get('order_by') == 'industry')) ||
-                !filters.containsKey('order_by')) {
+            if ((filters.containsKey('order_by') &&
+                (filters.get('order_by') == 'distance' || filters.get('order_by') == 'industry')) ||
+                !filters.containsKey('order_by')
+            ) {
                 soql_query += ' ORDER BY '+distance_val+ ' ASC LIMIT '+LIMIT_CONST;
             }
 
@@ -131,12 +135,14 @@ global with sharing class topResultFinder {
                 order++;
             }
 
-            if (filters.containsKey('order_by') && filters.get('order_by') != 'distance' && filters.get('order_by') != 'industry') {
+            if (filters.containsKey('order_by') &&
+                filters.get('order_by') != 'distance' &&
+                filters.get('order_by') != 'industry'
+            ) {
                 sorted_results = getSortedRecords(result, filters.get('order_by'));
             } else {
                 sorted_results = result;
             }
-            //System.debug('sorter_ '+sorted_results);// for testing
         } else {
             error.put('success', '0');
             error.put('message', 'Industry not selected.');
@@ -155,7 +161,7 @@ global with sharing class topResultFinder {
      *
      * @return List<SObject> address_lat_lng Address Latitude and Longitude values.
      */
-    public static List<SObject> getAddress (String record_id) {
+    private static List<SObject> getAddress (String record_id) {
         String object_type = getObjectType((ID)record_id);
         String soql_query = '';
         if (object_type == 'account') {
@@ -177,7 +183,7 @@ global with sharing class topResultFinder {
      *
      * @return String object_type Object Type.
      */
-    public static String getObjectType (Id record_id) {
+    private static String getObjectType (Id record_id) {
         String object_type = String.valueOf(record_id.getsobjecttype()).toLowerCase();
         return object_type;
     }
@@ -191,7 +197,7 @@ global with sharing class topResultFinder {
      *
      * @return String distance_string Distance calculation string.
      */
-    public static String getDistanceString (String object_type, Decimal lat, Decimal lng) {
+    private static String getDistanceString (String object_type, Decimal lat, Decimal lng) {
         String address_key = 'Address';
         if (object_type == 'account') {
             address_key = 'BillingAddress';
@@ -207,7 +213,7 @@ global with sharing class topResultFinder {
      *
      * @return String sql_string Main SOQL query string.
      */
-    public static String getMainSOQLString (String object_type) {
+    private static String getMainSOQLString (String object_type) {
         String sql_string = '';
         if (object_type == 'account') {
             sql_string = 'SELECT Id, Name, BillingAddress, AnnualRevenue, Boxes_Per_Day__c FROM Account WHERE ';
@@ -226,7 +232,7 @@ global with sharing class topResultFinder {
      *
      * @return String soql_query Where condition string.
      */
-    public static String getWhereForSOQL (String object_type, String distance_val, Map<String, String>filters) {
+    private static String getWhereForSOQL (String object_type, String distance_val, Map<String, String>filters) {
         String soql_query = '';
         if (object_type == 'account') {
             soql_query += ' industry = \''+ String.valueOf(filters.get('industry')) +'\' ';
@@ -251,7 +257,7 @@ global with sharing class topResultFinder {
      *
      * @return String dist Distance value.
      */
-    public static String getDistanceFromParentRecord (Location from_loc, Location new_loc) {
+    private static String getDistanceFromParentRecord (Location from_loc, Location new_loc) {
         Double new_lat = new_loc.latitude;
         Double new_lon = new_loc.longitude;
         Location to_loc = Location.newInstance(new_lat, new_lon);
@@ -268,22 +274,21 @@ global with sharing class topResultFinder {
      *
      * @return Map<String, Map<String, String>> result Sorted result.
      */    
-    public static Map<String, Map<String, String>> getSortedRecords (Map<String, Map<String, String>> records, String order_by) {
+    private static Map<String, Map<String, String>> getSortedRecords (Map<String, Map<String, String>> records,
+        String order_by
+    ) {
         Map<String, Map<String, String>> result = new Map<String, Map<String, String>>();
         Map<String, String> order_by_map = new Map<String, String>();
         List<Integer> field_value_list = new List<Integer>();
-        //System.debug('Records '+ records);
+
         for(String current_order: records.keySet()) {
             Map<String, String> record = new Map<String, String>(records.get(current_order));
-            //System.debug('val '+ records.get(current_order));
             order_by_map.put(current_order, record.get(order_by));
             field_value_list.add(Integer.valueOf(record.get(order_by)));
         }
 
         field_value_list.sort();
-        //field_value_list.addAll(Integer.valueOf(test_sorting_map.get('revenue_diff')));
-        //System.debug('list looks '+ field_value_list);
-        ///System.debug('order byt = '+ order_by_map);
+
         Integer list_count = 1;
         for (Integer value_key: field_value_list) {
             if (list_count > LIMIT_CONST) {
@@ -297,19 +302,28 @@ global with sharing class topResultFinder {
                     break;
                 }
             }
-            
-            //System.debug('result '+ result);
+
             list_count++;
         }
         return result;
     }
 
-    
-    public static Boolean upsert_records(Map<String, Map<String, String>> records, String main_record_id, String cat) {
+    /**
+     * This function is used to upsert the records to object.
+     *
+     * @param Map<String, Map<String, String>> records Records which needs to upsert
+     * @param String main_record_id Record id
+     * @param String cat Category name
+     *
+     * @return Boolean success
+     */ 
+    private static Boolean upsert_records(Map<String, Map<String, String>> records,
+        String main_record_id,
+        String cat
+    ) {
         Boolean success = false;
         Integer order = 1;
         for(String record_key: records.keySet()){
-            System.debug('records val = '+ records.get(record_key));
             Map<String, String> value_to_update = records.get(record_key);
             String related_object_id = value_to_update.get('id');
             String dist = value_to_update.get('dist');
@@ -317,7 +331,6 @@ global with sharing class topResultFinder {
                 '\' AND Order__c = '+order+' LIMIT 1';
             System.debug('soql query '+soql);
             List<Top_Account_tracker__c> check_id = database.query(soql);
-            //Top_Account_Tracker__c check_id = [SELECT Id FROM Top_Account_Tracker__c WHERE Related_Lead__c =:main_record_id AND Order__c =:order LIMIT 1];
             Top_Account_Tracker__c top_record;
             if (!check_id.isEmpty()) {
                   Id existed_id = check_id[0].Id;
@@ -325,7 +338,7 @@ global with sharing class topResultFinder {
             } else {
                 top_record = new Top_Account_Tracker__c();
             }
-            //System.debug('round '+ Math.round(Integer.valueof(dist)));
+
             top_record.Relates_To__c = related_object_id;
             top_record.Miles__c = Decimal.valueOf(dist);
             top_record.Related_Lead__c  = main_record_id;
@@ -333,7 +346,7 @@ global with sharing class topResultFinder {
             top_record.Category__c = cat;
             System.debug('object '+top_record);
             if (!check_id.isEmpty()) {
-                upsert top_record; 
+                update top_record; 
             } else {
                 insert top_record;   
             }
