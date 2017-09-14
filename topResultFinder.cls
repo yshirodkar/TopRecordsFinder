@@ -323,6 +323,9 @@ global with sharing class topResultFinder {
     ) {
         Boolean success = false;
         Integer order = 1;
+        Lead main_lead = [SELECT Name FROM Lead WHERE Id =:main_record_id LIMIT 1];
+        main_lead.LastTopResultCategory__c = cat;
+        update main_lead;
         for(String record_key: records.keySet()){
             Map<String, String> value_to_update = records.get(record_key);
             String related_object_id = value_to_update.get('id');

@@ -12,13 +12,15 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 For geolocation Account and Lead need to activate data validation rule to make sure address is right
-Instructions are here https://help.salesforce.com/articleView?id=data_dot_com_clean_add_geocode_information_to_all_records.htm&type=0
+Instructions are here 
+https://help.salesforce.com/articleView?id=data_dot_com_clean_add_geocode_information_to_all_records.htm&type=0
 
 Also to see the top record you need to go accountPage visualforce page(in case of account).
 
-```
 https://c.na59.visual.force.com/apex/accountPage?Id=001f4000005YxYk
-```
+
+There should be lead field which keep track of last top results category.
+Field name: LastTopResultCategory__c
 
 ### Installing
 
