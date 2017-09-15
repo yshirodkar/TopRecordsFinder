@@ -26,19 +26,21 @@
 							$('#actualRevenueCommitmentOne').text('Revenue: $' + result[0].Revenue);
 							$('#boxesPerDayOne').text('Boxes per Day: ' + result[0].Industry);
 							$('#ofProductSkusOne').text('Product SKU\'s: ' + result[0].Industry);
-							$('#sicOne').text('Industry: ' + result[0].Industry);							
+							$('#sicOne').text('SIC Code: ' + result[0].Industry);							
 						} else if (obj['rank'] === "2"){
 							$('#accountTwo').text(result[1].Name);
 							$('#industryTwo').text('Industry: ' + result[1].Industry);
 							$('#actualRevenueCommitmentTwo').text('Revenue: $' + result[1].Revenue);
 							$('#boxesPerDayTwo').text('Boxes per Day: ' + result[1].Industry);
 							$('#ofProductSkusTwo').text('Product SKU\'s: ' + result[1].Industry);
+							$('#sicTwo').text('SIC Code: ' + result[1].Industry);
 						}  else if (obj['rank'] === "3"){
 							$('#accountThree').text(result[2].Name);
 							$('#industryThree').text('Industry: ' + result[2].Industry);
 							$('#actualRevenueCommitmentThree').text('Revenue: $' + result[2].Revenue);
 							$('#boxesPerDayThree').text('Boxes per Day: ' + result[2].Industry);
 							$('#ofProductSkusThree').text('Product SKU\'s: ' + result[2].Industry);
+							$('#sicThree').text('SIC Code: ' + result[2].Industry);
 
 						}
                     }
