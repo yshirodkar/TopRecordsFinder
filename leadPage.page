@@ -247,6 +247,7 @@
                                 $(iframeWidget).contents().find("#boxesPerDayOne").text('Boxes: ' + toTitleCase(result[key].boxes_actual));
                                 $(iframeWidget).contents().find("#ofProductSkusOne").text('Product: ' + toTitleCase(result[key].product_actual));
                                 $(iframeWidget).contents().find("#sicOne").text(toTitleCase('SIC Code: ' + result[key].sic_actual));
+                                $(iframeWidget).contents().find('input[name=accountOne]').val(result[key].id);
                             } else if(key === '2'){
                                 console.log('box2');
                                 $(iframeWidget).contents().find("#accountTwo").text(toTitleCase(result[key].name));
@@ -255,6 +256,7 @@
                                 $(iframeWidget).contents().find("#boxesPerDayTwo").text('Boxes: ' + toTitleCase(result[key].boxes_actual));
                                 $(iframeWidget).contents().find("#ofProductSkusTwo").text('Product: ' + toTitleCase(result[key].product_actual));
                                 $(iframeWidget).contents().find("#sicTwo").text(toTitleCase('SIC Code: ' + result[key].sic_actual));
+                                $(iframeWidget).contents().find('input[name=accountTwo]').val(result[key].id);
                             } else if (key === '3'){
                                 console.log('box3');
                                 $(iframeWidget).contents().find("#accountThree").text(toTitleCase(result[key].name));
@@ -263,6 +265,7 @@
                                 $(iframeWidget).contents().find("#boxesPerDayThree").text('Boxes: ' + toTitleCase(result[key].boxes_actual));
                                 $(iframeWidget).contents().find("#ofProductSkusThree").text('Product: ' + toTitleCase(result[key].product_actual));
                                 $(iframeWidget).contents().find("#sicThree").text('SIC Code: ' + toTitleCase(result[key].sic_actual));
+                                $(iframeWidget).contents().find('input[name=accountThree]').val(result[key].id);
                             }
                         }
                     }
