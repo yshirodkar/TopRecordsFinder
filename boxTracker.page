@@ -12,41 +12,35 @@
     var jsRemoting = function(leadId){
         Visualforce.remoting.Manager.invokeAction(
             '{!$RemoteAction.getDataFromTracker.tracker_Controller}',       // Accessing Class through remote action
-            leadId,                                              // Industry field value
+            leadId,                                              			// Industry field value
             function(result,event){
                 if(event.status){
                     for (var key in result) {
                         // skip loop if the property is from prototype
                         if (!result.hasOwnProperty(key)) continue;
-
                         var obj = result[key];
-                        for (var prop in obj) {
-                            // skip loop if the property is from prototype
-                            if(!obj.hasOwnProperty(prop)) continue;
+						console.log(obj);
+						if(obj['rank'] === "1"){
+							$('#accountOne').text(result[0].Name);
+							$('#industryOne').text('Industry: ' + result[0].Industry);
+							$('#actualRevenueCommitmentOne').text('Revenue: $' + result[0].Revenue);
+							$('#boxesPerDayOne').text('Boxes per Day: ' + result[0].Industry);
+							$('#ofProductSkusOne').text('Product SKU\'s: ' + result[0].Industry);
+							$('#sicOne').text('Industry: ' + result[0].Industry);							
+						} else if (obj['rank'] === "2"){
+							$('#accountTwo').text(result[1].Name);
+							$('#industryTwo').text('Industry: ' + result[1].Industry);
+							$('#actualRevenueCommitmentTwo').text('Revenue: $' + result[1].Revenue);
+							$('#boxesPerDayTwo').text('Boxes per Day: ' + result[1].Industry);
+							$('#ofProductSkusTwo').text('Product SKU\'s: ' + result[1].Industry);
+						}  else if (obj['rank'] === "3"){
+							$('#accountThree').text(result[2].Name);
+							$('#industryThree').text('Industry: ' + result[2].Industry);
+							$('#actualRevenueCommitmentThree').text('Revenue: $' + result[2].Revenue);
+							$('#boxesPerDayThree').text('Boxes per Day: ' + result[2].Industry);
+							$('#ofProductSkusThree').text('Product SKU\'s: ' + result[2].Industry);
 
-                            // cat = revenue - Key = Value
-                            console.log(prop + " = " + obj[prop]);
-                            if(obj['cat'] === "revenue"){
-                                if(obj['rank'] === "1"){
-                                    $('#revenueNameOne').text(result[0].Name);
-                                    $('#revenueOne').text('$'+result[0].Revenue)
-                                } else if (obj['rank'] === "2"){
-                                    $('#revenueNameTwo').text(result[1].Name);
-                                    $('#revenueTwo').text('$'+result[1].Revenue)
-                                }  else if (obj['rank'] === "3"){
-                                    $('#revenueNameThree').text(result[2].Name);
-                                    $('#revenueThree').text('$'+result[2].Revenue)
-                                }
-                            } else if (obj['cat'] === "industry"){
-                                if(obj['rank'] === "1"){
-                                    $('#industryNameOne').text(result[0].Name);
-                                } else if (obj['rank'] === "2"){
-                                    $('#industryNameTwo').text(result[1].Name);
-                                }  else if (obj['rank'] === "3"){
-                                    $('#industryNameThree').text(result[2].Name);
-                                }
-                            }           
-                        }
+						}
                     }
                 } else {
                     console.log('Broken :' + result);
@@ -81,21 +75,27 @@
           <div class="card">
             <div class="card-header" role="tab" id="headingOne">
               <h5 class="mb-0">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                  Industry
+                <a id="accountOne" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                  Account One
                 </a>
               </h5>
             </div>
             <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
               <div class="card-block">
-                <div id="industryDataOne" class="table">
-                    <span id = "industryNameOne"></span>
+                <div id="industryDivOne" class="table">
+                    <span id="industryOne"></span>
                 </div>
-                <div id="industryDataTwo" class="table">
-                    <span id = "industryNameTwo"></span>
+                <div id="annualCorrugateSpendDivOne" class="table">
+                    <span id="actualRevenueCommitmentOne"></span>
                 </div>
-                <div id="industryDataThree" class="table">
-                    <span id = "industryNameThree"></span>
+                <div id="boxesPerDayDivOne" class="table">
+                    <span id="boxesPerDayOne"></span>
+                </div>
+				<div id="numberProductSkusDivOne" class="table">
+                    <span id="ofProductSkusOne"></span>
+                </div>
+				<div id="sicCodeDivOne" class="table">
+                    <span id="sicOne"></span>
                 </div>
               </div>
             </div>
@@ -103,24 +103,27 @@
           <div class="card">
             <div class="card-header" role="tab" id="headingTwo">
               <h5 class="mb-0">
-                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                  Miles
+                <a id="accountTwo" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  Account Two
                 </a>
               </h5>
             </div>
             <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
               <div class="card-block">
-                <div id="milesDataOne" class="table">
-                    <span id = "milesNameOne"></span>
-                    <span id = "milesOne" class="spanCss"></span>
+                <div id="industryDivTwo" class="table">
+                    <span id="industryTwo"></span>
                 </div>
-                <div id="milesDataTwo" class="table">
-                    <span id = "milesNameTwo"></span>
-                    <span id = "milesTwo" class="spanCss"></span>
+                <div id="annualCorrugateSpendDivTwo" class="table">
+                    <span id="actualRevenueCommitmentTwo"></span>
                 </div>
-                <div id="milesDataThree" class="table">
-                    <span id = "milesNameThree"></span>
-                    <span id = "milesThree" class="spanCss"></span>
+                <div id="boxesPerDayDivTwo" class="table">
+                    <span id="boxesPerDayTwo"></span>
+                </div>
+				<div id="numberProductSkusDivTwo" class="table">
+                    <span id="ofProductSkusTwo"></span>
+                </div>
+				<div id="sicCodeDivTwo" class="table">
+                    <span id="sicTwo"></span>
                 </div>
               </div>
             </div>
@@ -128,24 +131,27 @@
           <div class="card">
             <div class="card-header" role="tab" id="headingThree">
               <h5 class="mb-0">
-                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                  Revenue
+                <a id="accountThree" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                  Account Three
                 </a>
               </h5>
             </div>
             <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree">
               <div class="card-block">
-                <div id="revenueDataOne" class="table">
-                    <span id = "revenueNameOne"></span>
-                    <span id = "revenueOne" class="spanCss"></span>
+                <div id="industryDivThree" class="table">
+                    <span id="industryThree"></span>
                 </div>
-                <div id="revenueDataTwo" class="table">
-                    <span id = "revenueNameTwo"></span>
-                    <span id = "revenueTwo" class="spanCss"></span>
+                <div id="annualCorrugateSpendDivThree" class="table">
+                    <span id="actualRevenueCommitmentThree"></span>
                 </div>
-                <div id="revenueDataThree" class="table">
-                    <span id = "revenueNameThree"></span>
-                    <span id = "revenueThree" class="spanCss"></span>
+                <div id="boxesPerDayDivThree" class="table">
+                    <span id="boxesPerDayThree"></span>
+                </div>
+				<div id="numberProductSkusDivThree" class="table">
+                    <span id="ofProductSkusThree"></span>
+                </div>
+				<div id="sicCodeDivThree" class="table">
+                    <span id="sicThree"></span>
                 </div>
               </div>
             </div>
