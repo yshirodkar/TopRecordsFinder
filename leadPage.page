@@ -54,11 +54,12 @@
         var boxesId         = '#00N50000001f8IWj_id0_j_id3_j_id4_j_id5';
         var productskuId    = '#00N50000009PZatj_id0_j_id3_j_id4_j_id5';
         var sicId           = '#00N50000001w6I4j_id0_j_id3_j_id4_j_id5';
-        console.log('SANDBOX!! - Total Fields in Array');
+        console.log('SANDBOX!!');
     } 
     // SANDBOX
     if (production >= 0) {
         // When all fields in sandbox are working copy them here.
+        console.log('PRODUCTION!!');
     }
     // Is window LOADED and READY!
     var ready = function(){
@@ -167,10 +168,10 @@
                     filters['address'] = $(addrId + fieldEdit).text();
                     filters['revenue'] = revenue;   
                     filters['boxes'] = boxes;   
-                    filters['products'] = $(productskuId + fieldEdit).text();   
+                    filters['products'] = $(productskuId + fieldEdit).text().replace(/,/g, "");   
                     filters['sic'] = $(sicId + fieldEdit).text();
                     filters['order_by'] = 'industry';
-					
+                    
                     if(fieldValue == industryId.replace('#','')){
                         filters['industry'] = $('#' + fieldValue).val();
                         filters['order_by'] = 'industry';
@@ -206,19 +207,19 @@
         This function will handle lower case string and convert them into title case
     */
     var toTitleCase = function(str) {
-		if(str !== undefined){
-			return str.replace(/(?:^|\s)\w/g, function(match) {
-				return match.toUpperCase();
-			});
-		}
+        if(str !== undefined){
+            return str.replace(/(?:^|\s)\w/g, function(match) {
+                return match.toUpperCase();
+            });
+        }
     }
-	/*
-		This function will format the currency values
-	*/
+    /*
+        This function will format the currency values
+    */
     var decimalFix = function(number){
-		if(number !== undefined){
-			return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
-		}
+        if(number !== undefined){
+            return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+        }
     }
     /*
         This is JS remoting that will allow us to communicate to the controller
@@ -237,34 +238,34 @@
                     if(jQuery.isEmptyObject(result) == true){
                         console.log('Empty JSON');
                     } else {
-						for (var key in result){
-							if(key === '1'){
-								console.log('box1');
-								$(iframeWidget).contents().find("#accountOne").text(toTitleCase(result[key].Name));
-								$(iframeWidget).contents().find("#industryOne").text('Industry: ' + toTitleCase(result[key].Industry));
-								$(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('Revenue: $' + decimalFix(result[key].revenue));
-								$(iframeWidget).contents().find("#boxesPerDayOne").text('Boxes: ' + toTitleCase(result[key].boxes));
-								$(iframeWidget).contents().find("#ofProductSkusOne").text('Product: ' + toTitleCase(result[key].products));
-								$(iframeWidget).contents().find("#sicOne").text(toTitleCase('SIC Code: ' + result[key].sic));
-							} else if(key === '2'){
-								console.log('box2');
-								$(iframeWidget).contents().find("#accountTwo").text(toTitleCase(result[key].Name));
-								$(iframeWidget).contents().find("#industryTwo").text('Industry: ' + toTitleCase(result[key].Industry));
-								$(iframeWidget).contents().find("#actualRevenueCommitmentTwo").text('Revenue: $' + decimalFix(result[key].revenue));
-								$(iframeWidget).contents().find("#boxesPerDayTwo").text('Boxes: ' + toTitleCase(result[key].boxes));
-								$(iframeWidget).contents().find("#ofProductSkusTwo").text('Product: ' + toTitleCase(result[key].products));
-								$(iframeWidget).contents().find("#sicTwo").text(toTitleCase('SIC Code: ' + result[key].sic));
-							} else if (key === '3'){
-								console.log('box3');
-								$(iframeWidget).contents().find("#accountThree").text(toTitleCase(result[key].Name));
-								$(iframeWidget).contents().find("#industryThree").text('Industry: ' + toTitleCase(result[key].Industry));
-								$(iframeWidget).contents().find("#actualRevenueCommitmentThree").text('Revenue: $' + decimalFix(result[key].revenue));
-								$(iframeWidget).contents().find("#boxesPerDayThree").text('Boxes: ' + toTitleCase(result[key].boxes));
-								$(iframeWidget).contents().find("#ofProductSkusThree").text('Product: ' + toTitleCase(result[key].products));
-								$(iframeWidget).contents().find("#sicThree").text('SIC Code: ' + toTitleCase(result[key].sic));
-							}
-						}
-					}
+                        for (var key in result){
+                            if(key === '1'){
+                                console.log('box1');
+                                $(iframeWidget).contents().find("#accountOne").text(toTitleCase(result[key].name));
+                                $(iframeWidget).contents().find("#industryOne").text('Industry: ' + toTitleCase(result[key].industry));
+                                $(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('Revenue: $' + decimalFix(result[key].revenue_actual));
+                                $(iframeWidget).contents().find("#boxesPerDayOne").text('Boxes: ' + toTitleCase(result[key].boxes_actual));
+                                $(iframeWidget).contents().find("#ofProductSkusOne").text('Product: ' + toTitleCase(result[key].product_actual));
+                                $(iframeWidget).contents().find("#sicOne").text(toTitleCase('SIC Code: ' + result[key].sic_actual));
+                            } else if(key === '2'){
+                                console.log('box2');
+                                $(iframeWidget).contents().find("#accountTwo").text(toTitleCase(result[key].name));
+                                $(iframeWidget).contents().find("#industryTwo").text('Industry: ' + toTitleCase(result[key].industry));
+                                $(iframeWidget).contents().find("#actualRevenueCommitmentTwo").text('Revenue: $' + decimalFix(result[key].revenue_actual));
+                                $(iframeWidget).contents().find("#boxesPerDayTwo").text('Boxes: ' + toTitleCase(result[key].boxes_actual));
+                                $(iframeWidget).contents().find("#ofProductSkusTwo").text('Product: ' + toTitleCase(result[key].product_actual));
+                                $(iframeWidget).contents().find("#sicTwo").text(toTitleCase('SIC Code: ' + result[key].sic_actual));
+                            } else if (key === '3'){
+                                console.log('box3');
+                                $(iframeWidget).contents().find("#accountThree").text(toTitleCase(result[key].name));
+                                $(iframeWidget).contents().find("#industryThree").text('Industry: ' + toTitleCase(result[key].industry));
+                                $(iframeWidget).contents().find("#actualRevenueCommitmentThree").text('Revenue: $' + decimalFix(result[key].revenue_actual));
+                                $(iframeWidget).contents().find("#boxesPerDayThree").text('Boxes: ' + toTitleCase(result[key].boxes_actual));
+                                $(iframeWidget).contents().find("#ofProductSkusThree").text('Product: ' + toTitleCase(result[key].product_actual));
+                                $(iframeWidget).contents().find("#sicThree").text('SIC Code: ' + toTitleCase(result[key].sic_actual));
+                            }
+                        }
+                    }
                 } else {
                     console.log('Broken :' + result);
                 }

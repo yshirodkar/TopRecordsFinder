@@ -12,37 +12,36 @@
     var jsRemoting = function(leadId){
         Visualforce.remoting.Manager.invokeAction(
             '{!$RemoteAction.getDataFromTracker.tracker_Controller}',       // Accessing Class through remote action
-            leadId,                                              			// Industry field value
+            leadId,                                                         // Industry field value
             function(result,event){
                 if(event.status){
                     for (var key in result) {
                         // skip loop if the property is from prototype
                         if (!result.hasOwnProperty(key)) continue;
                         var obj = result[key];
-						console.log(obj);
-						if(obj['rank'] === "1"){
-							$('#accountOne').text(result[0].Name);
-							$('#industryOne').text('Industry: ' + result[0].Industry);
-							$('#actualRevenueCommitmentOne').text('Revenue: $' + decimalFix(result[0].Revenue));
-							$('#boxesPerDayOne').text('Boxes per Day: ' + result[0].Industry);
-							$('#ofProductSkusOne').text('Product SKU\'s: ' + result[0].Industry);
-							$('#sicOne').text('SIC Code: ' + result[0].Industry);							
-						} else if (obj['rank'] === "2"){
-							$('#accountTwo').text(result[1].Name);
-							$('#industryTwo').text('Industry: ' + result[1].Industry);
-							$('#actualRevenueCommitmentTwo').text('Revenue: $' + decimalFix(result[1].Revenue));
-							$('#boxesPerDayTwo').text('Boxes per Day: ' + result[1].Industry);
-							$('#ofProductSkusTwo').text('Product SKU\'s: ' + result[1].Industry);
-							$('#sicTwo').text('SIC Code: ' + result[1].Industry);
-						}  else if (obj['rank'] === "3"){
-							$('#accountThree').text(result[2].Name);
-							$('#industryThree').text('Industry: ' + result[2].Industry);
-							$('#actualRevenueCommitmentThree').text('Revenue: $' + decimalFix(result[2].Revenue));
-							$('#boxesPerDayThree').text('Boxes per Day: ' + result[2].Industry);
-							$('#ofProductSkusThree').text('Product SKU\'s: ' + result[2].Industry);
-							$('#sicThree').text('SIC Code: ' + result[2].Industry);
-
-						}
+                        console.log(obj);
+                        if(obj['rank'] === "1"){
+                            $('#accountOne').text(result[0].name);
+                            $('#industryOne').text('Industry: ' + result[0].industry);
+                            $('#actualRevenueCommitmentOne').text('Revenue: $' + decimalFix(result[0].revenue_actual));
+                            $('#boxesPerDayOne').text('Boxes per Day: ' + result[0].boxes_actual);
+                            $('#ofProductSkusOne').text('Product SKU\'s: ' + result[0].product_actual);
+                            $('#sicOne').text('SIC Code: ' + result[0].sic_actual);                           
+                        } else if (obj['rank'] === "2"){
+                            $('#accountTwo').text(result[1].name);
+                            $('#industryTwo').text('Industry: ' + result[1].industry);
+                            $('#actualRevenueCommitmentTwo').text('Revenue: $' + decimalFix(result[1].revenue_actual));
+                            $('#boxesPerDayTwo').text('Boxes per Day: ' + result[1].boxes_actual);
+                            $('#ofProductSkusTwo').text('Product SKU\'s: ' + result[1].product_actual);
+                            $('#sicTwo').text('SIC Code: ' + result[1].sic_actual);
+                        }  else if (obj['rank'] === "3"){
+                            $('#accountThree').text(result[2].name);
+                            $('#industryThree').text('Industry: ' + result[2].industry);
+                            $('#actualRevenueCommitmentThree').text('Revenue: $' + decimalFix(result[2].revenue_actual));
+                            $('#boxesPerDayThree').text('Boxes per Day: ' + result[2].boxes_actual);
+                            $('#ofProductSkusThree').text('Product SKU\'s: ' + result[2].product_actual);
+                            $('#sicThree').text('SIC Code: ' + result[2].sic_actual);
+                        }
                     }
                 } else {
                     console.log('Broken :' + result);
@@ -60,12 +59,12 @@
         });
     }
     /*
-		This function will format the currency values
-	*/
+        This function will format the currency values
+    */
     var decimalFix = function(number){
-		if(number !== undefined){
-			return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
-		}
+        if(number !== undefined){
+            return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+        }
     }
     
     </script>
@@ -80,7 +79,7 @@
           <div class="card">
             <div class="card-header" role="tab" id="headingOne">
               <h5 class="mb-0">
-                <a id="accountOne" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <a id="accountOne" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" value="">
                   Account One
                 </a>
               </h5>
@@ -96,10 +95,10 @@
                 <div id="boxesPerDayDivOne" class="table">
                     <span id="boxesPerDayOne"></span>
                 </div>
-				<div id="numberProductSkusDivOne" class="table">
+                <div id="numberProductSkusDivOne" class="table">
                     <span id="ofProductSkusOne"></span>
                 </div>
-				<div id="sicCodeDivOne" class="table">
+                <div id="sicCodeDivOne" class="table">
                     <span id="sicOne"></span>
                 </div>
               </div>
@@ -124,10 +123,10 @@
                 <div id="boxesPerDayDivTwo" class="table">
                     <span id="boxesPerDayTwo"></span>
                 </div>
-				<div id="numberProductSkusDivTwo" class="table">
+                <div id="numberProductSkusDivTwo" class="table">
                     <span id="ofProductSkusTwo"></span>
                 </div>
-				<div id="sicCodeDivTwo" class="table">
+                <div id="sicCodeDivTwo" class="table">
                     <span id="sicTwo"></span>
                 </div>
               </div>
@@ -152,10 +151,10 @@
                 <div id="boxesPerDayDivThree" class="table">
                     <span id="boxesPerDayThree"></span>
                 </div>
-				<div id="numberProductSkusDivThree" class="table">
+                <div id="numberProductSkusDivThree" class="table">
                     <span id="ofProductSkusThree"></span>
                 </div>
-				<div id="sicCodeDivThree" class="table">
+                <div id="sicCodeDivThree" class="table">
                     <span id="sicThree"></span>
                 </div>
               </div>
