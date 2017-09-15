@@ -27,7 +27,6 @@
     var url             = $(location).attr('href');
     var sandbox         = url.search(sandbox);
     var production      = url.search(production);
-    var fieldArray      = [];
     var inLineArray     = [];
     var outLineArray    = [];
     var fieldValue      = '';
@@ -55,14 +54,7 @@
         var boxesId         = '#00N50000001f8IWj_id0_j_id3_j_id4_j_id5';
         var productskuId    = '#00N50000009PZatj_id0_j_id3_j_id4_j_id5';
         var sicId           = '#00N50000001w6I4j_id0_j_id3_j_id4_j_id5';
-        // Adding all fields to global array
-        fieldArray.push({'industry':industryId});
-        fieldArray.push({'address':addrId});
-        fieldArray.push({'revenue':revenueId});
-        fieldArray.push({'boxes':boxesId});
-        fieldArray.push({'products':productskuId});
-        fieldArray.push({'sic':sicId});
-        console.log('SANDBOX!! - Total Fields in Array: ' + fieldArray.length);
+        console.log('SANDBOX!! - Total Fields in Array');
     } 
     // SANDBOX
     if (production >= 0) {
@@ -151,64 +143,61 @@
                 var fieldElement = $('#' + fieldValue);
                 console.log( "Current field value: " + industryValue );
                 fieldElement.change(function(){
-                    var indDynamic  = industryValue;
                     var filters = {};
                     var revenue = "";
                     var boxes = "";
                     /* 
                         This if block is to prevent inline field to send spaces as values
                     */
-                    if($('#00N50000002UAQpj_id0_j_id3_j_id4_j_id5' + fieldEdit).text() === " "){
+                    if($(revenueId + fieldEdit).text() === " "){
                         revenue = "";
                     } else {
-                        revenue = $('#00N50000002UAQpj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
+                        revenue = $(revenueId + fieldEdit).text();
                     }
-                    if($('#00N50000001f8IWj_id0_j_id3_j_id4_j_id5' + fieldEdit).text() === " "){
+                    if($(boxesId + fieldEdit).text() === " "){
                         boxes = "";
                     } else {
-                        boxes = $('#00N50000001f8IWj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
+                        boxes = $(boxesId + fieldEdit).text();
                     }
-                    /* 
-                        This if block is to prevent inline field to send spaces as values
-                    */
                     
                     /*
                         Building array with all filter and their existing inline value
                     */
-                    filters['industry'] = $('#lea6j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
-                    filters['address'] = $('#lea16j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
+                    filters['industry'] = $(industryId + fieldEdit).text();
+                    filters['address'] = $(addrId + fieldEdit).text();
                     filters['revenue'] = revenue;   
                     filters['boxes'] = boxes;   
-                    filters['products'] = $('#00N50000009PZatj_id0_j_id3_j_id4_j_id5' + fieldEdit).text();   
-                    filters['sic'] = $('#00N50000001w6I4j_id0_j_id3_j_id4_j_id5' + fieldEdit).text();
-                    filters['order_by'] = 'insdustry';
-                    if(fieldValue == 'lea6j_id0_j_id3_j_id4_j_id5'){
+                    filters['products'] = $(productskuId + fieldEdit).text();   
+                    filters['sic'] = $(sicId + fieldEdit).text();
+                    filters['order_by'] = 'industry';
+					
+                    if(fieldValue == industryId.replace('#','')){
                         filters['industry'] = $('#' + fieldValue).val();
                         filters['order_by'] = 'industry';
-                    } else if (fieldValue == 'lea16j_id0_j_id3_j_id4_j_id5'){
+                    } else if (fieldValue == addrId.replace('#','')){
                         filters['address'] = $('#' + fieldValue).val();
                         filters['order_by'] = 'address';
-                    } else if (fieldValue == '00N50000002UAQpj_id0_j_id3_j_id4_j_id5'){
+                    } else if (fieldValue == revenueId.replace('#','')){
                         filters['revenue'] = $('#' + fieldValue).val();
                         filters['order_by'] = 'revenue';
-                    }  else if (fieldValue == '00N50000001f8IWj_id0_j_id3_j_id4_j_id5'){
-                        if($('#00N50000001f8IWj_id0_j_id3_j_id4_j_id5' + fieldEdit).text() === " "){
+                    }  else if (fieldValue == boxesId.replace('#','')){
+                        if($(boxesId + fieldEdit).text() === " "){
                             filters['boxes'] = "";
                         } else {
                             filters['boxes'] = $('#' + fieldValue).val();
                         }                        
                         filters['order_by'] = 'boxes';
-                    }  else if (fieldValue == '00N50000009PZatj_id0_j_id3_j_id4_j_id5'){
+                    }  else if (fieldValue == productskuId.replace('#','')){
                         filters['products'] = $('#' + fieldValue).val();
                         filters['order_by'] = 'products';
-                    } else if (fieldValue == '00N50000001w6I4j_id0_j_id3_j_id4_j_id5'){
+                    } else if (fieldValue == sicId.replace('#','')){
                         filters['sic'] = $('#' + fieldValue).val();
                         filters['order_by'] = 'sic';
                     }
                     
-                    var accountId   = document.getElementById('j_id0:j_id3:leadId').value;
-                    console.log("Change to: " + indDynamic);
-                    jsRemoting(accountId,filters,fieldValue);
+                    var leadId   = document.getElementById('j_id0:j_id3:leadId').value;
+                    console.log("Change to: " + $('#' + fieldValue).val());
+                    jsRemoting(leadId,filters,fieldValue);
                 });
             }
         }
@@ -217,108 +206,65 @@
         This function will handle lower case string and convert them into title case
     */
     var toTitleCase = function(str) {
-        return str.replace(/(?:^|\s)\w/g, function(match) {
-            return match.toUpperCase();
-        });
+		if(str !== undefined){
+			return str.replace(/(?:^|\s)\w/g, function(match) {
+				return match.toUpperCase();
+			});
+		}
     }
+	/*
+		This function will format the currency values
+	*/
     var decimalFix = function(number){
-        var a = parseFloat(number);
-        return a.toFixed(2);
+		if(number !== undefined){
+			return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+		}
     }
     /*
         This is JS remoting that will allow us to communicate to the controller
         and submit the information changed on the layout and returning back its
         result as well as passing it to the sidebar widget for visualization
     */
-    var jsRemoting = function(accountId,filters,fieldId){
+    var jsRemoting = function(Id,filters,fieldId){
         Visualforce.remoting.Manager.invokeAction(
             '{!$RemoteAction.topResultFinder.getTopResults}',       // Accessing Class through remote action
             'Account',
-            accountId,                                              // Industry field value
-            filters,                                                 // var filter_json = {'industry':''+indDynamic+'', 'AnnualRevenue':'350000000'};
+            Id,                                              // Industry field value
+            filters,                                                // var filter_json = {'industry':''+indDynamic+'', 'AnnualRevenue':'350000000'};
             function(result,event){
                 if(event.status){
                     console.log('Works: ' + JSON.stringify(result));                                
                     if(jQuery.isEmptyObject(result) == true){
                         console.log('Empty JSON');
                     } else {
-                        if(fieldValue === "lea16j_id0_j_id3_j_id4_j_id5"){    // Address
-                            if (Object.keys(result)[0] === "1"){
-                                $(iframeWidget).contents().find("#milesNameOne").text(toTitleCase(result[1].Name));
-                                $(iframeWidget).contents().find("#milesOne").text(decimalFix(result[1].dist));
-                            } else {
-                                console.log('Unable to send data to widget. Error Code: 0001');
-                            }
-                            if (Object.keys(result)[1] === "2"){
-                                $(iframeWidget).contents().find("#milesNameTwo").text(toTitleCase(result[2].Name));
-                                $(iframeWidget).contents().find("#milesTwo").text(decimalFix(result[2].dist));
-                            } else {
-                                console.log('Unable to send data to widget. Error Code: 0002');
-                            }
-                            if (Object.keys(result)[2] === "3"){
-                                $(iframeWidget).contents().find("#milesNameThree").text(toTitleCase(result[3].Name));
-                                $(iframeWidget).contents().find("#milesThree").text(decimalFix(result[3].dist));
-                            } else {
-                                console.log('Unable to send data to widget. Error Code: 0003');
-                            }
-                        } else if (fieldValue === "lea6j_id0_j_id3_j_id4_j_id5"){     // Industry
-                            if (Object.keys(result)[0] === "1"){
-                                $(iframeWidget).contents().find("#industryNameOne").text(toTitleCase(result[1].Name));
-                                
-                                
-                                $(iframeWidget).contents().find("#milesNameOne").text(toTitleCase(result[1].Name));
-                                $(iframeWidget).contents().find("#milesOne").text(decimalFix(result[1].dist));
-                            } else {
-                                console.log('Unable to send data to widget. Error Code: 0001');
-                            }
-                            if (Object.keys(result)[1] === "2"){
-                                $(iframeWidget).contents().find("#industryNameTwo").text(toTitleCase(result[2].Name));
-                                
-                                
-                                $(iframeWidget).contents().find("#milesNameTwo").text(toTitleCase(result[2].Name));
-                                $(iframeWidget).contents().find("#milesTwo").text(decimalFix(result[2].dist));
-                            } else {
-                                console.log('Unable to send data to widget. Error Code: 0002');
-                            }
-                            if (Object.keys(result)[2] === "3"){
-                                $(iframeWidget).contents().find("#industryNameThree").text(toTitleCase(result[3].Name));
-                                
-                                
-                                $(iframeWidget).contents().find("#milesNameThree").text(toTitleCase(result[3].Name));
-                                $(iframeWidget).contents().find("#milesThree").text(decimalFix(result[3].dist));
-                            } else {
-                                console.log('Unable to send data to widget. Error Code: 0003');
-                            }
-                        } else if (fieldValue === "00N50000002UAQpj_id0_j_id3_j_id4_j_id5"){      // Revenue
-                            if (Object.keys(result)[0] === "1"){
-                                $(iframeWidget).contents().find("#revenueNameOne").text(toTitleCase(result[1].Name));
-                                $(iframeWidget).contents().find("#revenueOne").text('$'+decimalFix(result[1].revenue));
-                                
-                                $(iframeWidget).contents().find("#milesNameOne").text(toTitleCase(result[1].Name));
-                                $(iframeWidget).contents().find("#milesOne").text(decimalFix(result[1].dist));
-                            } else {
-                                console.log('Unable to send data to widget. Error Code: 0001');
-                            }
-                            if (Object.keys(result)[1] === "2"){
-                                $(iframeWidget).contents().find("#revenueNameTwo").text(toTitleCase(result[2].Name));
-                                $(iframeWidget).contents().find("#revenueTwo").text('$'+decimalFix(result[2].revenue));
-                                
-                                $(iframeWidget).contents().find("#milesNameTwo").text(toTitleCase(result[2].Name));
-                                $(iframeWidget).contents().find("#milesTwo").text(decimalFix(result[2].dist));
-                            } else {
-                                console.log('Unable to send data to widget. Error Code: 0002');
-                            }
-                            if (Object.keys(result)[2] === "3"){
-                                $(iframeWidget).contents().find("#revenueNameThree").text(toTitleCase(result[3].Name));
-                                $(iframeWidget).contents().find("#revenueThree").text('$'+decimalFix(result[3].revenue));
-                                
-                                $(iframeWidget).contents().find("#milesNameTwo").text(toTitleCase(result[3].Name));
-                                $(iframeWidget).contents().find("#milesTwo").text(decimalFix(result[3].dist));
-                            } else {
-                                console.log('Unable to send data to widget. Error Code: 0003');
-                            }
-                        }                       
-                    }
+						for (var key in result){
+							if(key === '1'){
+								console.log('box1');
+								$(iframeWidget).contents().find("#accountOne").text(toTitleCase(result[key].Name));
+								$(iframeWidget).contents().find("#industryOne").text('Industry: ' + toTitleCase(result[key].Industry));
+								$(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('Revenue: $' + decimalFix(result[key].revenue));
+								$(iframeWidget).contents().find("#boxesPerDayOne").text('Boxes: ' + toTitleCase(result[key].boxes));
+								$(iframeWidget).contents().find("#ofProductSkusOne").text('Product: ' + toTitleCase(result[key].products));
+								$(iframeWidget).contents().find("#sicOne").text(toTitleCase('SIC Code: ' + result[key].sic));
+							} else if(key === '2'){
+								console.log('box2');
+								$(iframeWidget).contents().find("#accountTwo").text(toTitleCase(result[key].Name));
+								$(iframeWidget).contents().find("#industryTwo").text('Industry: ' + toTitleCase(result[key].Industry));
+								$(iframeWidget).contents().find("#actualRevenueCommitmentTwo").text('Revenue: $' + decimalFix(result[key].revenue));
+								$(iframeWidget).contents().find("#boxesPerDayTwo").text('Boxes: ' + toTitleCase(result[key].boxes));
+								$(iframeWidget).contents().find("#ofProductSkusTwo").text('Product: ' + toTitleCase(result[key].products));
+								$(iframeWidget).contents().find("#sicTwo").text(toTitleCase('SIC Code: ' + result[key].sic));
+							} else if (key === '3'){
+								console.log('box3');
+								$(iframeWidget).contents().find("#accountThree").text(toTitleCase(result[key].Name));
+								$(iframeWidget).contents().find("#industryThree").text('Industry: ' + toTitleCase(result[key].Industry));
+								$(iframeWidget).contents().find("#actualRevenueCommitmentThree").text('Revenue: $' + decimalFix(result[key].revenue));
+								$(iframeWidget).contents().find("#boxesPerDayThree").text('Boxes: ' + toTitleCase(result[key].boxes));
+								$(iframeWidget).contents().find("#ofProductSkusThree").text('Product: ' + toTitleCase(result[key].products));
+								$(iframeWidget).contents().find("#sicThree").text('SIC Code: ' + toTitleCase(result[key].sic));
+							}
+						}
+					}
                 } else {
                     console.log('Broken :' + result);
                 }
