@@ -74,6 +74,15 @@ global with sharing class topResultFinder {
                 boxes_per_day = Integer.valueof(filters.get('boxes'));
             }
 
+            Integer sic_code = 0;
+            if (filters.containsKey('sic') && (filters.get('sic') != '' && filters.get('sic') != null)) {
+                sic_code = Integer.valueof(filters.get('sic'));
+            }
+
+            Integer products = 0;
+            if (filters.containsKey('products') && (filters.get('products') != '' && filters.get('products') != null)) {
+                products = Integer.valueof(filters.get('products'));
+            }
             //Getting address data
             List<SObject> account_address = getAddress(account_id);
             
@@ -105,6 +114,7 @@ global with sharing class topResultFinder {
             System.debug('query'+ soql_query);
             List<Account> account_results = database.query(soql_query);
 
+            String industry_name = filters.get('industry');
             // Result calculation
             Integer order = 1;
             for (Account record: account_results) {
@@ -123,12 +133,26 @@ global with sharing class topResultFinder {
                 if (record.Boxes_Per_Day__c > 0) {
                     boxes_per_day_diff = String.valueof(Math.abs(record.Boxes_Per_Day__c - boxes_per_day));   
                 }
-
+                String sic_diff = String.valueof(sic_code);
+                if (record.sic != '' && record.sic != null) {
+                    sic_diff = String.valueof(Math.abs(Integer.valueof(record.sic) - boxes_per_day));
+                }
+                String product_num_diff = String.valueof(products);
+                if (record.Of_Product_SKUs__c >0) {
+                    product_num_diff = String.valueof(Math.abs(record.Of_Product_SKUs__c - products));
+                }
                 record_to_send.put('id', record.id);
-                record_to_send.put('Name', record.name);
+                record_to_send.put('name', record.name);
+                record_to_send.put('industry', industry_name);
                 record_to_send.put('dist', dist);
                 record_to_send.put('revenue', revenue_diff);
+                record_to_send.put('revenue_actual', String.valueof(record.AnnualRevenue));
                 record_to_send.put('boxes', boxes_per_day_diff);
+                record_to_send.put('boxes_actual', String.valueof(record.Boxes_Per_Day__c));
+                record_to_send.put('sic', sic_diff);
+                record_to_send.put('sic_actual', String.valueof(record.sic));
+                record_to_send.put('product', product_num_diff);
+                record_to_send.put('product_actual', String.valueof(record.Of_Product_SKUs__c));
 
                 //put the calculated values to result
                 result.put(String.valueof(order), record_to_send);
@@ -216,9 +240,9 @@ global with sharing class topResultFinder {
     private static String getMainSOQLString (String object_type) {
         String sql_string = '';
         if (object_type == 'account') {
-            sql_string = 'SELECT Id, Name, BillingAddress, AnnualRevenue, Boxes_Per_Day__c FROM Account WHERE ';
+            sql_string = 'SELECT Id, Name, BillingAddress, AnnualRevenue, Sic, Boxes_Per_Day__c, Of_Product_SKUs__c FROM Account WHERE ';
         } else if (object_type == 'lead') {
-            sql_string = 'SELECT Id, Name, Address, AnnualRevenue FROM Lead WHERE ';
+            sql_string = 'SELECT Id, Name, Address, AnnualRevenue, SIC_Code__c FROM Lead WHERE ';
         }
         return sql_string;
     }

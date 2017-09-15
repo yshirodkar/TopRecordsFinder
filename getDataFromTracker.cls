@@ -26,14 +26,18 @@ global with sharing class getDataFromTracker {
             String cat = results.Category__c;
             accGetDetails.put('cat', results.Category__c);
             accGetDetails.put('rank', String.valueOf(results.Order__c));
-            String accDetails = 'SELECT Name, Industry, AnnualRevenue FROM Account WHERE id = \''+ids+'\'';
+            String accDetails = 'SELECT Id, Name, Industry, AnnualRevenue, Sic, Boxes_Per_Day__c, Of_Product_SKUs__c FROM Account WHERE id = \''+ids+'\'';
             System.debug('accDetails: ' + accDetails);
             List<account> queryResultAccount = database.query(accDetails);
             system.debug('queryResultAccount: ' + queryResultAccount);
             for(account ResultsAcc: queryResultAccount) {
-                accGetDetails.put('Name',ResultsAcc.Name);
-                accGetDetails.put('Industry',ResultsAcc.Industry);
-                accGetDetails.put('Revenue',string.valueof(ResultsAcc.AnnualRevenue));
+                accGetDetails.put('id', ResultsAcc.Id);
+                accGetDetails.put('name', ResultsAcc.Name);
+                accGetDetails.put('industry', ResultsAcc.Industry);
+                accGetDetails.put('revenue_actual', String.valueof(ResultsAcc.AnnualRevenue));
+                accGetDetails.put('sic_actual', ResultsAcc.Sic);
+                accGetDetails.put('boxes_actual', String.valueof(ResultsAcc.Boxes_Per_Day__c));
+                accGetDetails.put('product_actual', String.valueof(ResultsAcc.Of_Product_SKUs__c));
             }
             accResults.put(string.valueof(countOrder), accGetDetails);
             System.debug('acc res'+accResults);
