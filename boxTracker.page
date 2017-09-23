@@ -104,7 +104,7 @@
                 <div id="sicCodeDivOne" class="table">
                     <span id="sicOne"></span>
                 </div>
-                <div onclick="window.open('https://cs17.salesforce.com/' + $('input[name=accountOne]')[0].value);">Open Account</div>
+                <div class="linkAccount" onclick="window.open('https://cs17.salesforce.com/' + $('input[name=accountOne]')[0].value);">Open Account</div>
                 <input type="hidden" name="accountOne" value=""></input>
               </div>
             </div>
@@ -134,7 +134,7 @@
                 <div id="sicCodeDivTwo" class="table">
                     <span id="sicTwo"></span>
                 </div>
-                <div onclick="window.open('https://cs17.salesforce.com/' + $('input[name=accountTwo]')[0].value);">Open Account</div>
+                <div class="linkAccount" onclick="window.open('https://cs17.salesforce.com/' + $('input[name=accountTwo]')[0].value);">Open Account</div>
                 <input type="hidden" name="accountTwo" value=""></input>
               </div>
             </div>
@@ -164,7 +164,7 @@
                 <div id="sicCodeDivThree" class="table">
                     <span id="sicThree"></span>
                 </div>
-                <div onclick="window.open('https://cs17.salesforce.com/' + $('input[name=accountThree]')[0].value);">Open Account</div>
+                <div class="linkAccount" onclick="window.open('https://cs17.salesforce.com/' + $('input[name=accountThree]')[0].value);">Open Account</div>
                 <input type="hidden" name="accountThree" value=""></input>
               </div>
             </div>
