@@ -15,23 +15,23 @@ body {
 img {
     width:172px;
     height: auto;
-	margin-bottom:7px;
-	margin-left:1px;
+    margin-bottom:7px;
+    margin-left:1px;
 }
 /* table */
 div.table {
-	margin-left:-1px;
+    margin-left:-1px;
     display: table;
     width: 100%;
     table-layout: fixed;    /* For cells of equal size */
 }
 div.table span {
     display: table-cell;
-	width: 90px;
+    width: 90px;
     //text-align: center;
 }
 .table{
-	margin-bottom: auto;
+    margin-bottom: auto;
 }
 .card-block {
     -webkit-box-flex: 1;
@@ -39,5 +39,5 @@ div.table span {
     padding: 10px;
 }
 .spanCss {
-	padding-left: 45px;
+    padding-left: 45px;
 }

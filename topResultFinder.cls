@@ -5,8 +5,12 @@ global with sharing class topResultFinder {
 
     static final Integer LIMIT_CONST = 3;
 
-    public topResultFinder(ApexPages.StandardController stdController) {}
+    global String currentRecordId {get;set;}
+    public topResultFinder(ApexPages.StandardController stdController) {
+        currentRecordId = ApexPages.CurrentPage().getparameters().get('id');
+    }
 
+    public topResultFinder() {}
     /**
      * This function is used to get the top results of records which are pretty close to the current displayed record
      *
