@@ -1,0 +1,289 @@
+<apex:page standardController="Lead" extensions="topResultFinder" showHeader="true" tabStyle="lead" >
+    <apex:includeScript value="{!$Resource.JQuery}"/>
+    <style>
+        .activeTab {background-color: #236FBD; color:white; background-image:none}
+        .inactiveTab { background-color: lightgrey; color:black; background-image:none}
+    </style>
+    <script>
+    /*
+        Issues Found:
+        1.  Unable to properly detect onload through VF page causing the code to break
+            seens the require elements where not accessible - Done
+        2.  Any layout field on inline mode do not reflect the actual editable field block
+            causing the code to break. - Done
+        3.  Standard save button not allowing to trigger JS do to request time causing the
+            code to break. - Done
+        4.  Embedded VF page "TracHier__Hierarchy" not showing when using apex:detail inline
+            mode on - SF known bug and the only workaround is to add it through apex:iframe
+            but we will have to remove them from the main layout.
+    */
+    
+    /*
+        Global variables per instance
+        Find instance type
+    */
+    var sandboxId       = 'cs17';
+    var production      = 'cs20';                       // NEEDS TO BE CHANGED - This instance is not the correct one
+    var url             = $(location).attr('href');
+    var sandbox         = url.search(sandbox);
+    var production      = url.search(production);
+    var inLineArray     = [];
+    var outLineArray    = [];
+    var fieldValue      = '';
+    
+    // SANDBOX
+    /*
+        IMPORTANT: Only add field ids NOT '_ileinner' the code programatically will add this as require.
+        
+        Fields:
+        1. Industry
+        2. Billing Address
+        3. Annual Revenue
+        4. Boxes Per Day
+        5. # Of Product SKUs
+        6. SIC Code
+    */
+    if (sandbox >= 0){
+        var fieldEdit       = '_ileinner';
+        var fieldOutEdit    = '_ilecell';
+        var iframeWidget    = '#066g0000000FqFq';
+        // Fields
+        var industryId      = '#lea6j_id0_j_id3_j_id4_j_id5';
+        var addrId          = '#lea16j_id0_j_id3_j_id4_j_id5';
+        var revenueId       = '#00N50000002UAQpj_id0_j_id3_j_id4_j_id5';
+        var boxesId         = '#00N50000001f8IWj_id0_j_id3_j_id4_j_id5';
+        var productskuId    = '#00N50000009PZatj_id0_j_id3_j_id4_j_id5';
+        var sicId           = '#00N50000001w6I4j_id0_j_id3_j_id4_j_id5';
+        console.log('SANDBOX!!');
+    } 
+    // SANDBOX
+    if (production >= 0) {
+        // When all fields in sandbox are working copy them here.
+        console.log('PRODUCTION!!');
+    }
+    // Is window LOADED and READY!
+    var ready = function(){
+        $( document ).ready(function() {
+            console.log( "document loaded" );
+            $( window ).load(function() {
+                console.log( "window loaded" );
+                console.log( "<------- READY ------->" );
+                // Inline Fields
+                var industryInLine  =   $(industryId + fieldEdit);
+                var addrInLine      =   $(addrId + fieldEdit);
+                var revenueInLine   =   $(revenueId + fieldEdit);
+                var boxesInLine     =   $(boxesId + fieldEdit);
+                var productInLine   =   $(productskuId + fieldEdit);
+                var sicInLine       =   $(sicId + fieldEdit);
+                // Building array of inline fields to bind
+                inLineArray.push(industryInLine);
+                inLineArray.push(addrInLine);
+                inLineArray.push(revenueInLine);
+                inLineArray.push(boxesInLine);
+                inLineArray.push(productInLine);
+                inLineArray.push(sicInLine);
+                
+                // Inline Fields
+                var industryInLineOut  =   $(industryId + fieldOutEdit);
+                var addrInLineOut      =   $(addrId + fieldOutEdit);
+                var revenueInLineOut   =   $(revenueId + fieldOutEdit);
+                var boxesInLineOut     =   $(boxesId + fieldOutEdit);
+                var productInLineOut   =   $(productskuId + fieldOutEdit);
+                var sicInLineOut       =   $(sicId + fieldOutEdit);
+                // Building array of inline fields to bind
+                outLineArray.push(industryInLineOut);
+                outLineArray.push(addrInLineOut);
+                outLineArray.push(revenueInLineOut);
+                outLineArray.push(boxesInLineOut);
+                outLineArray.push(productInLineOut);
+                outLineArray.push(sicInLineOut);                
+                
+                if (industryInLine != null){
+                    for (var i = 0; i < inLineArray.length; i++){
+                        console.log(inLineArray[i]);
+                        objectBind(inLineArray[i],outLineArray[i]);
+                    }
+                } else {
+                    console.log('Keep looking');
+                }
+            });
+        });
+    }
+    // Initializing JS
+    ready();
+    /*
+        This function bind fields based on single or double clicks
+    */
+    var objectBind = function(object, subObject){
+        subObject.dblclick(function() {
+            console.log('dbl click event added!');
+            fieldBind(object);
+        });
+    }
+    /*
+        This function does the following:
+        1.  Finds the industry field on layout (Problematic seens SF do not 
+            show the select until you double click the field)
+        2.  After element is found then it will clear interval and tie a on
+            change event to actual industry editable field and store the
+            value on the variable indDynamic.
+    */
+    var fieldBind = function(object){
+        var b = setInterval(function(){
+            findEditIndustry(object);
+        }, 500);
+        
+        var findEditIndustry = function(data){
+            var fieldDynamic = data;
+            var fieldId = data[0].id;
+            if(fieldId !== null || fieldId !== undefined){
+                console.log("Edit Found");
+                clearInterval(b);
+                fieldValue = fieldId.replace('_ileinner','');
+                var industryValue = $('#' + fieldValue).val();
+                var fieldElement = $('#' + fieldValue);
+                console.log( "Current field value: " + industryValue );
+                fieldElement.change(function(){
+                    var filters = {};
+                    var revenue = "";
+                    var boxes = "";
+                    /* 
+                        This if block is to prevent inline field to send spaces as values
+                    */
+                    if($(revenueId + fieldEdit).text() === " "){
+                        revenue = "";
+                    } else {
+                        revenue = $(revenueId + fieldEdit).text();
+                    }
+                    if($(boxesId + fieldEdit).text() === " "){
+                        boxes = "";
+                    } else {
+                        boxes = $(boxesId + fieldEdit).text();
+                    }
+                    
+                    /*
+                        Building array with all filter and their existing inline value
+                    */
+                    filters['industry'] = $(industryId + fieldEdit).text();
+                    filters['address'] = $(addrId + fieldEdit).text();
+                    filters['revenue'] = revenue;   
+                    filters['boxes'] = boxes;   
+                    filters['products'] = $(productskuId + fieldEdit).text().replace(/,/g, "");   
+                    filters['sic'] = $(sicId + fieldEdit).text();
+                    filters['order_by'] = 'industry';
+                    
+                    if(fieldValue == industryId.replace('#','')){
+                        filters['industry'] = $('#' + fieldValue).val();
+                        filters['order_by'] = 'industry';
+                    } else if (fieldValue == addrId.replace('#','')){
+                        filters['address'] = $('#' + fieldValue).val();
+                        filters['order_by'] = 'address';
+                    } else if (fieldValue == revenueId.replace('#','')){
+                        filters['revenue'] = $('#' + fieldValue).val();
+                        filters['order_by'] = 'revenue';
+                    }  else if (fieldValue == boxesId.replace('#','')){
+                        if($(boxesId + fieldEdit).text() === " "){
+                            filters['boxes'] = "";
+                        } else {
+                            filters['boxes'] = $('#' + fieldValue).val();
+                        }                        
+                        filters['order_by'] = 'boxes';
+                    }  else if (fieldValue == productskuId.replace('#','')){
+                        filters['products'] = $('#' + fieldValue).val();
+                        filters['order_by'] = 'products';
+                    } else if (fieldValue == sicId.replace('#','')){
+                        filters['sic'] = $('#' + fieldValue).val();
+                        filters['order_by'] = 'sic';
+                    }
+                    
+                    var leadId   = document.getElementById('j_id0:j_id3:leadId').value;
+                    console.log("Change to: " + $('#' + fieldValue).val());
+                    jsRemoting(leadId,filters,fieldValue);
+                });
+            }
+        }
+    }  
+    /*
+        This function will handle lower case string and convert them into title case
+    */
+    var toTitleCase = function(str) {
+        if(str !== undefined){
+            return str.replace(/(?:^|\s)\w/g, function(match) {
+                return match.toUpperCase();
+            });
+        }
+    }
+    /*
+        This function will format the currency values
+    */
+    var decimalFix = function(number){
+        if(number !== undefined){
+            return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+        }
+    }
+    /*
+        This is JS remoting that will allow us to communicate to the controller
+        and submit the information changed on the layout and returning back its
+        result as well as passing it to the sidebar widget for visualization
+    */
+    var jsRemoting = function(Id,filters,fieldId){
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.topResultFinder.getTopResults}',       // Accessing Class through remote action
+            'Account',
+            Id,                                              // Industry field value
+            filters,                                                // var filter_json = {'industry':''+indDynamic+'', 'AnnualRevenue':'350000000'};
+            function(result,event){
+                if(event.status){
+                    console.log('Works: ' + JSON.stringify(result));                                
+                    if(jQuery.isEmptyObject(result) == true){
+                        console.log('Empty JSON');
+                    } else {
+                        for (var key in result){
+                            if(key === '1'){
+                                console.log('box1');
+                                $(iframeWidget).contents().find("#accountOne").text(toTitleCase(result[key].name));
+                                $(iframeWidget).contents().find("#industryOne").text('Industry: ' + toTitleCase(result[key].industry));
+                                $(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('Revenue: $' + decimalFix(result[key].revenue_actual));
+                                $(iframeWidget).contents().find("#boxesPerDayOne").text('Boxes: ' + toTitleCase(result[key].boxes_actual));
+                                $(iframeWidget).contents().find("#ofProductSkusOne").text('Product: ' + toTitleCase(result[key].product_actual));
+                                $(iframeWidget).contents().find("#sicOne").text(toTitleCase('SIC Code: ' + result[key].sic_actual));
+                                $(iframeWidget).contents().find('input[name=accountOne]').val(result[key].id);
+                            } else if(key === '2'){
+                                console.log('box2');
+                                $(iframeWidget).contents().find("#accountTwo").text(toTitleCase(result[key].name));
+                                $(iframeWidget).contents().find("#industryTwo").text('Industry: ' + toTitleCase(result[key].industry));
+                                $(iframeWidget).contents().find("#actualRevenueCommitmentTwo").text('Revenue: $' + decimalFix(result[key].revenue_actual));
+                                $(iframeWidget).contents().find("#boxesPerDayTwo").text('Boxes: ' + toTitleCase(result[key].boxes_actual));
+                                $(iframeWidget).contents().find("#ofProductSkusTwo").text('Product: ' + toTitleCase(result[key].product_actual));
+                                $(iframeWidget).contents().find("#sicTwo").text(toTitleCase('SIC Code: ' + result[key].sic_actual));
+                                $(iframeWidget).contents().find('input[name=accountTwo]').val(result[key].id);
+                            } else if (key === '3'){
+                                console.log('box3');
+                                $(iframeWidget).contents().find("#accountThree").text(toTitleCase(result[key].name));
+                                $(iframeWidget).contents().find("#industryThree").text('Industry: ' + toTitleCase(result[key].industry));
+                                $(iframeWidget).contents().find("#actualRevenueCommitmentThree").text('Revenue: $' + decimalFix(result[key].revenue_actual));
+                                $(iframeWidget).contents().find("#boxesPerDayThree").text('Boxes: ' + toTitleCase(result[key].boxes_actual));
+                                $(iframeWidget).contents().find("#ofProductSkusThree").text('Product: ' + toTitleCase(result[key].product_actual));
+                                $(iframeWidget).contents().find("#sicThree").text('SIC Code: ' + toTitleCase(result[key].sic_actual));
+                                $(iframeWidget).contents().find('input[name=accountThree]').val(result[key].id);
+                            }
+                        }
+                    }
+                } else {
+                    console.log('Broken :' + result);
+                }
+            }
+        )       
+    }
+    </script>
+    <apex:form >
+        <apex:inputHidden id="leadId" value="{!Lead.Id}"/>
+        <apex:pageBlock mode="inlineEdit">
+            <apex:detail oncomplete="location.reload()" relatedList="false" title="true" inlineEdit="true" />
+            <iframe height="400px" id="theIframe" name="theIframe" title="Hierarchy" src="https://hubspot-inc.cs17.visual.force.com/apex/HubSpotLeadIntel?id={!Lead.Id}" width="100%"></iframe>          
+        </apex:pageBlock>
+    </apex:form>
+    <apex:relatedList subject="{!lead}" list="OpenActivities" />
+    <apex:relatedList subject="{!lead}" list="ActivityHistories" />
+    <apex:relatedList subject="{!lead}" list="CombinedAttachments" />
+</apex:page>
