@@ -266,6 +266,7 @@
                         for (var key in result){
                             if(key === '1'){
                                 console.log('box1');
+								// TODO - Change the .find for .append so it can create the divs dinamically
                                 $(iframeWidget).contents().find("#accountOne").text(truncateString(toTitleCase(result[key].name),'header'));
                                 $(iframeWidget).contents().find("#industryOne").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
                                 $(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('• Revenue: $' + decimalFix(result[key].revenue_actual));
