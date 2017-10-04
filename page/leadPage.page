@@ -54,6 +54,17 @@
         var boxesId         = '#00N50000001f8IWj_id0_j_id3_j_id4_j_id5';
         var productskuId    = '#00N50000009PZatj_id0_j_id3_j_id4_j_id5';
         var sicId           = '#00N50000001w6I4j_id0_j_id3_j_id4_j_id5';
+        var leadLayoutSections = [
+            'head_01Bg0000003FF2c_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B50000004zr6n_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B5000000AdcaE_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B50000006JHv1_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B50000002AQJ0_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B5000000AdhwG_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B50000009jBNJ_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B50000009mwoi_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B50000002AQJ2_ep_j_id0_j_id3_j_id4_j_id5'
+        ]
         console.log('SANDBOX!!');
     } 
     // SANDBOX
@@ -68,6 +79,22 @@
             $( window ).load(function() {
                 console.log( "window loaded" );
                 console.log( "<------- READY ------->" );
+                
+                /*
+                    Find all H3 and add the font color of black.
+                */
+                var sectionHeaders = $("h3");
+                sectionHeaders.css('color','black');
+                /*
+                    Adding borders on all sections
+                */
+                for(i = 0; i < leadLayoutSections.length; i++){
+                    $('#' + leadLayoutSections[i]).css('border-top','2px');
+                    $('#' + leadLayoutSections[i]).css('border-style','solid');
+                    $('#' + leadLayoutSections[i]).css('border-color','#ebaf59');
+                    $('#' + leadLayoutSections[i]).css('border-top-left-radius','3px');
+                    $('#' + leadLayoutSections[i]).css('border-top-right-radius','3px');
+                }
                 
                 // Inline Fields
                 var industryInLine  =   $(industryId + fieldEdit);
@@ -208,23 +235,23 @@
         This function will truncate long strings
     */
     var truncateString = function(data, type){
-		headerLength = 25;
-		textLength = 17;
+        headerLength = 25;
+        textLength = 17;
         if(data){
-			if(type === "header"){
-				if(data.length <= headerLength){
-					newString = data.substring(0,headerLength)
-				} else {
-					newString = data.substring(0,headerLength) + '...';
-				}
-								
-			} else if (type === "text"){
-				if(data.length <= textLength){
-					newString = data.substring(0,textLength)
-				} else {
-					newString = data.substring(0,textLength) + '...';
-				}
-			}
+            if(type === "header"){
+                if(data.length <= headerLength){
+                    newString = data.substring(0,headerLength)
+                } else {
+                    newString = data.substring(0,headerLength) + '...';
+                }
+                                
+            } else if (type === "text"){
+                if(data.length <= textLength){
+                    newString = data.substring(0,textLength)
+                } else {
+                    newString = data.substring(0,textLength) + '...';
+                }
+            }
         }
         return newString;
     }
@@ -266,7 +293,7 @@
                         for (var key in result){
                             if(key === '1'){
                                 console.log('box1');
-								// TODO - Change the .find for .append so it can create the divs dinamically
+                                // TODO - Change the .find for .append so it can create the divs dinamically
                                 $(iframeWidget).contents().find("#accountOne").text(truncateString(toTitleCase(result[key].name),'header'));
                                 $(iframeWidget).contents().find("#industryOne").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
                                 $(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('• Revenue: $' + decimalFix(result[key].revenue_actual));
@@ -305,11 +332,14 @@
     <apex:form >
         <apex:inputHidden id="leadId" value="{!Lead.Id}"/>
         <apex:pageBlock mode="inlineEdit">
-            <apex:detail oncomplete="location.reload()" relatedList="false" title="true" inlineEdit="true" />
-            <iframe height="400px" id="theIframe" name="theIframe" title="Hierarchy" src="https://hubspot-inc.cs17.visual.force.com/apex/HubSpotLeadIntel?id={!Lead.Id}" width="100%"></iframe>          
+            <apex:detail oncomplete="refresh()" relatedList="false" title="true" inlineEdit="true" />
+            <iframe frameborder="false" height="400px" id="theIframe" name="theIframe" title="Hubspot Information" src="https://hubspot-inc.cs17.visual.force.com/apex/HubSpotLeadIntel?id={!Lead.Id}&isdtp=vw" width="100%"></iframe>
         </apex:pageBlock>
     </apex:form>
+    <apex:relatedList subject="{!lead}" list="CampaignMembers" />
     <apex:relatedList subject="{!lead}" list="OpenActivities" />
     <apex:relatedList subject="{!lead}" list="ActivityHistories" />
     <apex:relatedList subject="{!lead}" list="CombinedAttachments" />
+    <apex:relatedList subject="{!lead}" list="EmailStatuses" />
+    <apex:relatedList subject="{!lead}" list="Histories" />
 </apex:page>

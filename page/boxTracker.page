@@ -65,23 +65,23 @@
         This function will truncate long strings
     */
     var truncateString = function(data, type){
-		headerLength = 25;
-		textLength = 17;
+        headerLength = 25;
+        textLength = 17;
         if(data){
-			if(type === "header"){
-				if(data.length <= headerLength){
-					newString = data.substring(0,headerLength)
-				} else {
-					newString = data.substring(0,headerLength) + '...';
-				}
-								
-			} else if (type === "text"){
-				if(data.length <= textLength){
-					newString = data.substring(0,textLength)
-				} else {
-					newString = data.substring(0,textLength) + '...';
-				}
-			}
+            if(type === "header"){
+                if(data.length <= headerLength){
+                    newString = data.substring(0,headerLength)
+                } else {
+                    newString = data.substring(0,headerLength) + '...';
+                }
+                                
+            } else if (type === "text"){
+                if(data.length <= textLength){
+                    newString = data.substring(0,textLength)
+                } else {
+                    newString = data.substring(0,textLength) + '...';
+                }
+            }
         }
         return newString;
     }
