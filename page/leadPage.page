@@ -68,6 +68,7 @@
             $( window ).load(function() {
                 console.log( "window loaded" );
                 console.log( "<------- READY ------->" );
+                
                 // Inline Fields
                 var industryInLine  =   $(industryId + fieldEdit);
                 var addrInLine      =   $(addrId + fieldEdit);
@@ -167,9 +168,9 @@
                     filters['industry'] = $(industryId + fieldEdit).text();
                     filters['address'] = $(addrId + fieldEdit).text();
                     filters['revenue'] = revenue;   
-                    filters['boxes'] = boxes;   
+                    filters['boxes'] = $(boxesId + fieldEdit).text().replace(/,/g, "");   
                     filters['products'] = $(productskuId + fieldEdit).text().replace(/,/g, "");   
-                    filters['sic'] = $(sicId + fieldEdit).text();
+                    filters['sic'] = $(sicId + fieldEdit).text().replace(/,/g, "");
                     filters['order_by'] = 'industry';
                     
                     if(fieldValue == industryId.replace('#','')){
@@ -202,7 +203,20 @@
                 });
             }
         }
-    }  
+    }
+    /*
+        This function will truncate long strings
+    */
+    var truncateString = function(data){
+        if(data){
+            if(data.length <= 17){
+                newString = data.substring(0,17)
+            } else {
+                newString = data.substring(0,17) + '...';
+            }
+        }
+        return newString;
+    }
     /*
         This function will handle lower case string and convert them into title case
     */
@@ -242,29 +256,29 @@
                             if(key === '1'){
                                 console.log('box1');
                                 $(iframeWidget).contents().find("#accountOne").text(toTitleCase(result[key].name));
-                                $(iframeWidget).contents().find("#industryOne").text('Industry: ' + toTitleCase(result[key].industry));
-                                $(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('Revenue: $' + decimalFix(result[key].revenue_actual));
-                                $(iframeWidget).contents().find("#boxesPerDayOne").text('Boxes: ' + toTitleCase(result[key].boxes_actual));
-                                $(iframeWidget).contents().find("#ofProductSkusOne").text('Product: ' + toTitleCase(result[key].product_actual));
-                                $(iframeWidget).contents().find("#sicOne").text(toTitleCase('SIC Code: ' + result[key].sic_actual));
+                                $(iframeWidget).contents().find("#industryOne").text('• Industry: ' + truncateString(toTitleCase(result[key].industry)));
+                                $(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('• Revenue: $' + decimalFix(result[key].revenue_actual));
+                                $(iframeWidget).contents().find("#boxesPerDayOne").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
+                                $(iframeWidget).contents().find("#ofProductSkusOne").text('• Product: ' + toTitleCase(result[key].product_actual));
+                                $(iframeWidget).contents().find("#sicOne").text(toTitleCase('• SIC Code: ' + result[key].sic_actual));
                                 $(iframeWidget).contents().find('input[name=accountOne]').val(result[key].id);
                             } else if(key === '2'){
                                 console.log('box2');
                                 $(iframeWidget).contents().find("#accountTwo").text(toTitleCase(result[key].name));
-                                $(iframeWidget).contents().find("#industryTwo").text('Industry: ' + toTitleCase(result[key].industry));
-                                $(iframeWidget).contents().find("#actualRevenueCommitmentTwo").text('Revenue: $' + decimalFix(result[key].revenue_actual));
-                                $(iframeWidget).contents().find("#boxesPerDayTwo").text('Boxes: ' + toTitleCase(result[key].boxes_actual));
-                                $(iframeWidget).contents().find("#ofProductSkusTwo").text('Product: ' + toTitleCase(result[key].product_actual));
-                                $(iframeWidget).contents().find("#sicTwo").text(toTitleCase('SIC Code: ' + result[key].sic_actual));
+                                $(iframeWidget).contents().find("#industryTwo").text('• Industry: ' + truncateString(toTitleCase(result[key].industry)));
+                                $(iframeWidget).contents().find("#actualRevenueCommitmentTwo").text('• Revenue: $' + decimalFix(result[key].revenue_actual));
+                                $(iframeWidget).contents().find("#boxesPerDayTwo").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
+                                $(iframeWidget).contents().find("#ofProductSkusTwo").text('• Product: ' + toTitleCase(result[key].product_actual));
+                                $(iframeWidget).contents().find("#sicTwo").text(toTitleCase('• SIC Code: ' + result[key].sic_actual));
                                 $(iframeWidget).contents().find('input[name=accountTwo]').val(result[key].id);
                             } else if (key === '3'){
                                 console.log('box3');
                                 $(iframeWidget).contents().find("#accountThree").text(toTitleCase(result[key].name));
-                                $(iframeWidget).contents().find("#industryThree").text('Industry: ' + toTitleCase(result[key].industry));
-                                $(iframeWidget).contents().find("#actualRevenueCommitmentThree").text('Revenue: $' + decimalFix(result[key].revenue_actual));
-                                $(iframeWidget).contents().find("#boxesPerDayThree").text('Boxes: ' + toTitleCase(result[key].boxes_actual));
-                                $(iframeWidget).contents().find("#ofProductSkusThree").text('Product: ' + toTitleCase(result[key].product_actual));
-                                $(iframeWidget).contents().find("#sicThree").text('SIC Code: ' + toTitleCase(result[key].sic_actual));
+                                $(iframeWidget).contents().find("#industryThree").text('• Industry: ' + truncateString(toTitleCase(result[key].industry)));
+                                $(iframeWidget).contents().find("#actualRevenueCommitmentThree").text('• Revenue: $' + decimalFix(result[key].revenue_actual));
+                                $(iframeWidget).contents().find("#boxesPerDayThree").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
+                                $(iframeWidget).contents().find("#ofProductSkusThree").text('• Product: ' + toTitleCase(result[key].product_actual));
+                                $(iframeWidget).contents().find("#sicThree").text('• SIC Code: ' + toTitleCase(result[key].sic_actual));
                                 $(iframeWidget).contents().find('input[name=accountThree]').val(result[key].id);
                             }
                         }

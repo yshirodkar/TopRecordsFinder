@@ -5,7 +5,7 @@
 /* Body */
 body {
     font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 400;
     line-height: 1.5;
     color: #292b2c;
@@ -15,18 +15,20 @@ body {
 img {
     width:172px;
     height: auto;
-    margin-bottom:7px;
+    margin-bottom:11px;
     margin-left:1px;
+	margin-top:7px;
 }
 /* table */
 div.table {
-    margin-left:-1px;
+    margin-left:-9px;
     display: table;
-    width: 100%;
+    // width: 100%;
+	width: 150px;
     table-layout: fixed;    /* For cells of equal size */
 }
 div.table span {
-    display: list-item;
+    // display: list-item;
     // width: 90px;
     // text-align: center;
 }
@@ -36,8 +38,8 @@ div.table span {
 .card-block {
     -webkit-box-flex: 1;
     flex: 1 1 auto;
-    padding: 10px;
-    margin-left: 23px;
+    padding: 4px;
+    margin-left: 20px;
 }
 .card-header {
     padding: 0.75rem 8px;
@@ -52,4 +54,13 @@ div.table span {
     cursor: pointer;
     margin-top: 12px;
     text-decoration: underline;
+}
+.contBackground{
+	background-color: lightgrey;
+	border-radius: 5px;
+	height:	305px;
+	width: 199px;
+	padding-left: 7px;
+	margin-left: -9.5px;
+	
 }
