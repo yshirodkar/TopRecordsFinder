@@ -17,10 +17,12 @@ https://help.salesforce.com/articleView?id=data_dot_com_clean_add_geocode_inform
 
 Also to see the top record you need to go accountPage visualforce page(in case of account).
 
-https://c.na59.visual.force.com/apex/accountPage?Id=001f4000005YxYk
+https://c.na59.visual.force.com/apex/leadPage?id=00Q...
 
 There should be lead field which keep track of last top results category.
 Field name: LastTopResultCategory__c
+
+There is custom setting in salesforce ```topResultSettings```. This will allow to change the limit.
 
 ### Installing
 

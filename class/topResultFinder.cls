@@ -3,14 +3,43 @@
 */
 global with sharing class topResultFinder {
 
-    static final Integer LIMIT_CONST = 3;
+    /**
+     * Static integer value
+     **/
+    static Integer LIMIT_CONST = 3;
 
+    /**
+     * Getter Setter
+     **/
     global String currentRecordId {get;set;}
+
+
+    /**
+     * Constructor
+     **/
+    public topResultFinder() {}
+    /**
+     * Constructor
+     **/
     public topResultFinder(ApexPages.StandardController stdController) {
         currentRecordId = ApexPages.CurrentPage().getparameters().get('id');
+        setLimitConst();
     }
 
-    public topResultFinder() {}
+    /**
+     * This function set the custom setting for record limit.
+     **/
+    private static void setLimitConst () {
+        topResultSettings__c trs = topResultSettings__c.getValues(userinfo.getProfileId());
+        try {
+            Integer limit_size = (Integer)trs.record_display_limit__c;
+            LIMIT_CONST = limit_size;
+        } catch (Exception e) {
+            System.debug('No value set for custom setting. Default goes to LIMIT = 3.');
+            LIMIT_CONST = 3;
+        }
+    }
+
     /**
      * This function is used to get the top results of records which are pretty close to the current displayed record
      *
@@ -30,6 +59,7 @@ global with sharing class topResultFinder {
         Map<String, Map<String, String>> top_list = new Map<String, Map<String, String>>(); 
         String cat = filters.get('order_by');
         Boolean upsert_success;
+        setLimitConst();
         object_type.toLowerCase();
         if (object_type.length() > 0
             && (object_type == 'lead' || object_type == 'account')) {
