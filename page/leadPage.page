@@ -207,13 +207,24 @@
     /*
         This function will truncate long strings
     */
-    var truncateString = function(data){
+    var truncateString = function(data, type){
+		headerLength = 25;
+		textLength = 17;
         if(data){
-            if(data.length <= 17){
-                newString = data.substring(0,17)
-            } else {
-                newString = data.substring(0,17) + '...';
-            }
+			if(type === "header"){
+				if(data.length <= headerLength){
+					newString = data.substring(0,headerLength)
+				} else {
+					newString = data.substring(0,headerLength) + '...';
+				}
+								
+			} else if (type === "text"){
+				if(data.length <= textLength){
+					newString = data.substring(0,textLength)
+				} else {
+					newString = data.substring(0,textLength) + '...';
+				}
+			}
         }
         return newString;
     }
@@ -255,8 +266,8 @@
                         for (var key in result){
                             if(key === '1'){
                                 console.log('box1');
-                                $(iframeWidget).contents().find("#accountOne").text(toTitleCase(result[key].name));
-                                $(iframeWidget).contents().find("#industryOne").text('• Industry: ' + truncateString(toTitleCase(result[key].industry)));
+                                $(iframeWidget).contents().find("#accountOne").text(truncateString(toTitleCase(result[key].name),'header'));
+                                $(iframeWidget).contents().find("#industryOne").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
                                 $(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('• Revenue: $' + decimalFix(result[key].revenue_actual));
                                 $(iframeWidget).contents().find("#boxesPerDayOne").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
                                 $(iframeWidget).contents().find("#ofProductSkusOne").text('• Product: ' + toTitleCase(result[key].product_actual));
@@ -264,8 +275,8 @@
                                 $(iframeWidget).contents().find('input[name=accountOne]').val(result[key].id);
                             } else if(key === '2'){
                                 console.log('box2');
-                                $(iframeWidget).contents().find("#accountTwo").text(toTitleCase(result[key].name));
-                                $(iframeWidget).contents().find("#industryTwo").text('• Industry: ' + truncateString(toTitleCase(result[key].industry)));
+                                $(iframeWidget).contents().find("#accountTwo").text(truncateString(toTitleCase(result[key].name),'header'));
+                                $(iframeWidget).contents().find("#industryTwo").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
                                 $(iframeWidget).contents().find("#actualRevenueCommitmentTwo").text('• Revenue: $' + decimalFix(result[key].revenue_actual));
                                 $(iframeWidget).contents().find("#boxesPerDayTwo").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
                                 $(iframeWidget).contents().find("#ofProductSkusTwo").text('• Product: ' + toTitleCase(result[key].product_actual));
@@ -273,8 +284,8 @@
                                 $(iframeWidget).contents().find('input[name=accountTwo]').val(result[key].id);
                             } else if (key === '3'){
                                 console.log('box3');
-                                $(iframeWidget).contents().find("#accountThree").text(toTitleCase(result[key].name));
-                                $(iframeWidget).contents().find("#industryThree").text('• Industry: ' + truncateString(toTitleCase(result[key].industry)));
+                                $(iframeWidget).contents().find("#accountThree").text(truncateString(toTitleCase(result[key].name),'header'));
+                                $(iframeWidget).contents().find("#industryThree").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
                                 $(iframeWidget).contents().find("#actualRevenueCommitmentThree").text('• Revenue: $' + decimalFix(result[key].revenue_actual));
                                 $(iframeWidget).contents().find("#boxesPerDayThree").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
                                 $(iframeWidget).contents().find("#ofProductSkusThree").text('• Product: ' + toTitleCase(result[key].product_actual));

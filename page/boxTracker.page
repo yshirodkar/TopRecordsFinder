@@ -30,24 +30,24 @@
                         var obj = result[key];
                         console.log(obj);
                         if(obj['rank'] === "1"){
-                            $('#accountOne').text(result[0].name);
-                            $('#industryOne').text('• Industry: ' + truncateString(result[0].industry));
+                            $('#accountOne').text(truncateString(result[0].name,'header'));
+                            $('#industryOne').text('• Industry: ' + truncateString(result[0].industry,'text'));
                             $('#actualRevenueCommitmentOne').text('• Revenue: $' + decimalFix(result[0].revenue_actual));
                             $('#boxesPerDayOne').text('• Boxes per Day: ' + result[0].boxes_actual);
                             $('#ofProductSkusOne').text('• Product SKU\'s: ' + result[0].product_actual);
                             $('#sicOne').text('• SIC Code: ' + result[0].sic_actual);
                             $('input[name=accountOne]').val(result[0].id);
                         } else if (obj['rank'] === "2"){
-                            $('#accountTwo').text(result[1].name);
-                            $('#industryTwo').text('• Industry: ' + truncateString(result[1].industry));
+                            $('#accountTwo').text(truncateString(result[1].name,'header'));
+                            $('#industryTwo').text('• Industry: ' + truncateString(result[1].industry,'text'));
                             $('#actualRevenueCommitmentTwo').text('• Revenue: $' + decimalFix(result[1].revenue_actual));
                             $('#boxesPerDayTwo').text('• Boxes per Day: ' + result[1].boxes_actual);
                             $('#ofProductSkusTwo').text('• Product SKU\'s: ' + result[1].product_actual);
                             $('#sicTwo').text('• SIC Code: ' + result[1].sic_actual);
                             $('input[name=accountTwo]').val(result[1].id);
                         }  else if (obj['rank'] === "3"){
-                            $('#accountThree').text(result[2].name);
-                            $('#industryThree').text('• Industry: ' + truncateString(result[2].industry));
+                            $('#accountThree').text(truncateString(result[2].name,'header'));
+                            $('#industryThree').text('• Industry: ' + truncateString(result[2].industry,'text'));
                             $('#actualRevenueCommitmentThree').text('• Revenue: $' + decimalFix(result[2].revenue_actual));
                             $('#boxesPerDayThree').text('• Boxes per Day: ' + result[2].boxes_actual);
                             $('#ofProductSkusThree').text('• Product SKU\'s: ' + result[2].product_actual);
@@ -64,13 +64,24 @@
     /*
         This function will truncate long strings
     */
-    var truncateString = function(data){
+    var truncateString = function(data, type){
+		headerLength = 25;
+		textLength = 17;
         if(data){
-            if(data.length <= 17){
-                newString = data.substring(0,17)
-            } else {
-                newString = data.substring(0,17) + '...';
-            }
+			if(type === "header"){
+				if(data.length <= headerLength){
+					newString = data.substring(0,headerLength)
+				} else {
+					newString = data.substring(0,headerLength) + '...';
+				}
+								
+			} else if (type === "text"){
+				if(data.length <= textLength){
+					newString = data.substring(0,textLength)
+				} else {
+					newString = data.substring(0,textLength) + '...';
+				}
+			}
         }
         return newString;
     }
