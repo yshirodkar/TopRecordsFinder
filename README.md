@@ -23,6 +23,14 @@ There should be lead field which keep track of last top results category.
 Field name: LastTopResultCategory__c
 
 There is custom setting in salesforce ```topResultSettings```. This will allow to change the limit.
+This custom setting have different fields which you can set according to `profile`.
+```boxRange__c``` for box range. (Default value = 15)
+```distanceRange__c``` for distance range. (Default value = 1)
+```revenueRange__c``` for revenue range. (Default value = 1000)
+```	sicRange__c``` for sic code range. (Default value = 1)
+```skuRange__c ``` for product sku range. (Default value = 1)
+
+```record_display_limit__c``` for displaying record limit. (Default value = 3)
 
 ### Installing
 
@@ -30,34 +38,3 @@ You need to add all the .cls files, .page files and also need to add jquery lib.
 1. topResultFinder.cls should go in apex classes.
 2. accountPage.page, boxTracker.page should go in apex page
 3. jquery lib file should go in static resource file
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-
-## License
-
-This project is licensed under the xxxx
-
-## Acknowledgments
-
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc
