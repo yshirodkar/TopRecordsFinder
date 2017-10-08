@@ -5,55 +5,144 @@ global with sharing class recordScore {
 
     public recordScore() {}
 
-    private static Map<String, String> distance_score_map {get; set;}
-
     /**
      * This function is used to get the score for record.
      * @param Map<String, Map<String, String>> record Record information for score calculation
      * @return Map<String, String> Record Id and it's score.
      */
     public static Map<String, String> getRecordScore (Map<String, Map<String, String>>record) {
-
         Map<String, String> score_result = new Map<String, String>();
         Set<String> record_ids = record.keySet();
+        topResultSettings__c trs = topResultSettings__c.getValues(userinfo.getProfileId());
+        Integer revenue_range = (Integer)trs.revenueRange__c;
+        Integer distance_range = (Integer)trs.distanceRange__c;
+        Integer box_range = (Integer)trs.boxRange__c;
+        Integer sic_range = (Integer)trs.sicRange__c;
+        Integer sku_range = (Integer)trs.skuRange__c;
         for (String record_id : record_ids) {
             Map<String, String> record_vals = new Map<String, String>(record.get(record_id));
-            String difference_val = record_vals.get('dist');
-            Integer distance_score = getDistanceScore(difference_val);
-            //Integer revenue_score = getRevenueScore();
-            //Integer box_per_day_score = getBoxPerDayScore();
-            //Integer sic_score = getSicScore();
-            //Integer product_sku_score = getProductSKUScore();
-            //Integer total_score = distance_score + revenue_score +
-            //  box_per_day_score + sic_score + product_sku_score;
-            //score_result.put(record_id, String.valueOf(total_score));
-            //
+            String score_para_val = record_vals.get('dist');
+            Integer distance_score = getDistanceScore(score_para_val, distance_range);
+            score_para_val = record_vals.get('revenue');
+            Integer revenue_score = getRevenueScore(score_para_val, revenue_range);
+            score_para_val = record_vals.get('boxes');
+            Integer box_score = getBoxScore(score_para_val, box_range);
+            score_para_val = record_vals.get('sic');
+            Integer sic_score = getSicScore(score_para_val, sic_range);
+            score_para_val = record_vals.get('product');
+            Integer product_sku_score = getProductSKUScore(score_para_val, sku_range);
+            Integer total_score = distance_score + revenue_score + box_score + sic_score + product_sku_score;
+            score_result.put(record_id, String.valueOf(total_score));
          }
         return score_result;
     }
 
     /**
     * This function is used to get the score for Distance.
-    * @param String distance Distance value
+    * @param String distance Distance difference value
+    * @param Integer distance_range Distance range value.
     * @return Integer Score value.
     */
-    private static Integer getDistanceScore(String distance) {
+    private static Integer getDistanceScore(String distance, Integer distance_range) {
         Integer score = 0;
-        if (String.isNotEmpty(distance)) {
-            // This section will get the score from mapped variable (distance_score_map).
+        Integer dist = Integer.valueOf(distance);
+        if (distance_range > 0) {
+            score = getScoreMap(distance_range, dist);
+        } else {
+            score = getScoreMap(1, dist);
         }
         return score;
     }
 
     /**
-    * This function is used to set the Distance and it's score mapping
-    * @return Map<String, String> Distance Score mapping
+    * This function is used to get the score for Revenue.
+    * @param String revenue Revenue difference value
+    * @param Integer revenue_range Revenue range value
+    * @return Integer Score value.
     */
-    private static void setDistanceScoreMap() {
-        Set<String> dist_keySets = distance_score_map.keySet();
-        if (dist_keySets.size() > 0) {
-            // If the values for score mapping is not set. This section should set the value.
-            // Value will be stored in 'distance_score_map'. 
+    private static Integer getRevenueScore(String revenue, Integer revenue_range) {
+        Integer score = 0;
+        Integer rev = Integer.valueOf(revenue);
+        if (revenue_range > 0) {
+            score = getScoreMap(revenue_range, rev);
+        } else {
+            score = getScoreMap(1000, rev);
         }
+        return score;
+    }
+
+    /**
+    * This function is used to get the score for Boxes per day.
+    * @param String boxes Boxes per day difference value
+    * @param Integer box_range Boxes per day range value
+    * @return Integer Score value.
+    */
+    private static Integer getBoxScore(String boxes, Integer box_range) {
+        Integer score = 0;
+        Integer box = Integer.valueOf(boxes);
+        if (box_range > 0) {
+            score = getScoreMap(box_range, box);
+        } else {
+            score = getScoreMap(15, box);
+        }
+        return score;
+    }
+
+    /**
+    * This function is used to get the score for SIC code.
+    * @param String sic Sic difference value
+    * @param Integer sic_range Sic range value
+    * @return Integer Score value.
+    */
+    private static Integer getSicScore(String sic, Integer sic_range) {
+        Integer score = 0;
+        Integer sic_int = Integer.valueOf(sic);
+        if (sic_range > 0) {
+            score = getScoreMap(sic_range, sic_int);
+        } else {
+            score = getScoreMap(1, sic_int);
+        }
+        return score;
+    }
+
+    /**
+    * This function is used to get the score for Product SKU code.
+    * @param String sku Product SKU difference value
+    * @param Integer sku_range SKU range value
+    * @return Integer Score value.
+    */
+    private static Integer getProductSKUScore(String sku, Integer sku_range) {
+        Integer score = 0;
+        Integer sku_int = Integer.valueOf(sku);
+        if (sku_range > 0) {
+            score = getScoreMap(sku_range, sku_int);
+        } else {
+            score = getScoreMap(1, sku_int);
+        }
+        return score;
+    }
+
+    /**
+    * This function is used to get the score.
+    * @param Integer start_diff Range map difference calculator value. This value decide the
+    *                           exponential range starting point.
+    * @param Integer param_val Parameter value for which we are calculating the score.
+    * @return Integer Score value.
+    */
+    private static Integer getScoreMap(Integer start_diff, Integer param_val) {
+        Integer high_end = start_diff;
+        Integer low_end = 0;
+        Integer score = 0;
+        if (start_diff > 0) {
+            for (score = 10; score>=0 ; score--) {
+                if (param_val > low_end && param_val < high_end) {
+                    return score;
+                }
+                low_end = high_end;
+                start_diff = start_diff*2;
+                high_end = low_end + start_diff;
+            }
+        }
+        return score;
     }
 }
