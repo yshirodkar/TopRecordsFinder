@@ -3,6 +3,7 @@ global with sharing class getDataFromTracker {
 
     public getDataFromTracker(ApexPages.StandardController stdController) {}
 
+    public getDataFromTracker() {}
     /**
      * This function is used to get the last Top results
      *
@@ -74,7 +75,7 @@ global with sharing class getDataFromTracker {
      *
      * @return String asset count and its code. (e.g 2-1018, 1-611)
      */
-    private static String getAssetDetails(String account_id) {
+    public static String getAssetDetails(String account_id) {
         String return_val = '';
         if (String.isNotEmpty(account_id)) {
             String soql = 'SELECT Id, Name, product2.productcode FROM asset WHERE AccountId =  \''+account_id+'\'';
@@ -101,8 +102,9 @@ global with sharing class getDataFromTracker {
             }
             for (String asset_key : productcode_and_count.keySet()) {
                 Map<String, String> temp_count_n_name = new Map<String, String> (productcode_and_count.get(asset_key));
-                return_val += temp_count_n_name.get('count') + '-' + temp_count_n_name.get('productcode') + ', ';
+                return_val += ' Name: ' + temp_count_n_name.get('productcode') + ', Quantity: ' + temp_count_n_name.get('count') + ';';
             }
+            return_val = return_val.removeEnd(';');
         }
         return return_val;
     }
