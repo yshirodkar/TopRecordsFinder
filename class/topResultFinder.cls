@@ -426,42 +426,4 @@ global with sharing class topResultFinder {
         return success;
    }
 
-    /**
-     * This function is used to get the asset related to account
-     *
-     * @param String account_id Account id
-     * @return String asset count and its code. (e.g 2-1018, 1-611)
-     */
-    private static String getAssetDetails(String account_id) {
-        String return_val = '';
-        if (String.isNotEmpty(account_id)) {
-            String soql = 'SELECT Id, Name, product2.productcode FROM asset WHERE AccountId =  \''+account_id+'\'';
-            List<Asset> asset_list = database.query(soql);
-            Map<String, Map<String, String>> productcode_and_count = new Map<String, Map<String, String>>();
-            for (Asset asset_val : asset_list) {
-                System.debug('Asset val '+ asset_val);
-                if (productcode_and_count.containsKey(asset_val.Product2Id)) {
-                    Map<String, String> temp_val_replace = productcode_and_count.get(asset_val.Product2Id);
-                    String asset_count = String.valueOf(Integer.valueof(temp_val_replace.get('count')) + 1);
-                    temp_val_replace.put('count', asset_count);
-                    productcode_and_count.put(asset_val.Product2Id, temp_val_replace);
-                } else {
-                    soql = 'SELECT ProductCode FROM Product2 WHERE Id = \''+asset_val.Product2Id+'\' LIMIT 1';
-                    List<Product2> product_code = database.query(soql);
-                    Product2 tmp_prod = product_code[0];
-                    String product_code_val = tmp_prod.ProductCode;
-                    System.debug('product val '+ product_code_val);
-                    Map<String, String> temp_count_n_name = new Map<String, String>{
-                        'productcode' => product_code_val,
-                        'count' => '1'};
-                    productcode_and_count.put(asset_val.Product2Id, temp_count_n_name);
-                }
-            }
-            for (String asset_key : productcode_and_count.keySet()) {
-                Map<String, String> temp_count_n_name = new Map<String, String> (productcode_and_count.get(asset_key));
-                return_val += temp_count_n_name.get('count') + '-' + temp_count_n_name.get('productcode') + ', ';
-            }
-        }
-        return return_val;
-    }
 }
