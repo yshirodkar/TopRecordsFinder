@@ -47,7 +47,6 @@ global with sharing class topResultFinder {
      * @param String record_id Record id
      * @param Map<String, String> filters Filters key and value
      *        e.g. ('revenue' : '200', 'industry' : 'paper')
-     *
      * @return Map<String, String> result Top results and their orders.
      */
     @RemoteAction
@@ -84,7 +83,6 @@ global with sharing class topResultFinder {
      * @param String account_id Account Id.
      * @param Map<String, String> filters Filters key and value
      *        e.g. ('revenue' : '200', 'industry' : 'paper')
-     *
      * @return Map<String, Map<String,String>> sorted_results
      */
     private static Map<String, Map<String,String>> filterResultsAccount (String account_id, Map<string,string>filters) {
@@ -217,7 +215,6 @@ global with sharing class topResultFinder {
      * This function is to get asset details
      *
      * @param Map<String, Map<String, String>> sorted_results Sorted results value.
-     *
      * @return Map<String, Map<String, String>> return_val Return result map with asset value.
      */
     private static Map<String, Map<String, String>> addAssets (Map<String, Map<String, String>>sorted_results) {
@@ -236,7 +233,6 @@ global with sharing class topResultFinder {
      * This function is used to get Address Latitude and Longitude
      *
      * @param String record_id Record Id
-     *
      * @return List<SObject> address_lat_lng Address Latitude and Longitude values.
      */
     private static List<SObject> getAddress (String record_id) {
@@ -258,7 +254,6 @@ global with sharing class topResultFinder {
      * This function is used to get Object Type
      *
      * @param Id record_id Record Id
-     *
      * @return String object_type Object Type.
      */
     private static String getObjectType (Id record_id) {
@@ -272,7 +267,6 @@ global with sharing class topResultFinder {
      * @param String object_type Object Type
      * @param Decimal Lat Latitude
      * @param Decimal Lng Longitude
-     *
      * @return String distance_string Distance calculation string.
      */
     private static String getDistanceString (String object_type, Decimal lat, Decimal lng) {
@@ -288,7 +282,6 @@ global with sharing class topResultFinder {
      * This function is used to get Select statement string
      *
      * @param String object_type Object Type
-     *
      * @return String sql_string Main SOQL query string.
      */
     private static String getMainSOQLString (String object_type) {
@@ -307,7 +300,6 @@ global with sharing class topResultFinder {
      * @param String object_type Object Type
      * @param String distance_val Distance calcuation string
      * @param Map<String, String> filters Filter key and value (e.g. {'industry':'paper'})
-     *
      * @return String soql_query Where condition string.
      */
     private static String getWhereForSOQL (String object_type, String distance_val, Map<String, String>filters) {
@@ -332,7 +324,6 @@ global with sharing class topResultFinder {
      *
      * @param Location from_loc From location details
      * @param Location new_loc New location details
-     *
      * @return String dist Distance value.
      */
     private static String getDistanceFromParentRecord (Location from_loc, Location new_loc) {
@@ -349,7 +340,6 @@ global with sharing class topResultFinder {
      *
      * @param Map<String, Map<String, String>> records Records which needs to sort
      * @param String order_by Sorting key
-     *
      * @return Map<String, Map<String, String>> result Sorted result.
      */    
     private static Map<String, Map<String, String>> getSortedRecords (Map<String, Map<String, String>> records,
@@ -440,7 +430,6 @@ global with sharing class topResultFinder {
      * This function is used to get the asset related to account
      *
      * @param String account_id Account id
-     *
      * @return String asset count and its code. (e.g 2-1018, 1-611)
      */
     private static String getAssetDetails(String account_id) {

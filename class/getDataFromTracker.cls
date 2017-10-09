@@ -8,7 +8,6 @@ global with sharing class getDataFromTracker {
      * This function is used to get the last Top results
      *
      * @param String record_id Record id
-     *
      * @return Map<String, Map<String, String>> accResults Top results and their orders.
      */
     @RemoteAction
@@ -72,7 +71,6 @@ global with sharing class getDataFromTracker {
      * This function is used to get the asset related to account
      *
      * @param String account_id Account id
-     *
      * @return String asset count and its code. (e.g 2-1018, 1-611)
      */
     public static String getAssetDetails(String account_id) {
