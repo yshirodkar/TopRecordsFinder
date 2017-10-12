@@ -38,7 +38,7 @@
                             $('#ofProductSkusOne').text('• Product SKU\'s: ' + result[0].product_actual);
                             $('#sicOne').text('• SIC Code: ' + result[0].sic_actual);
                             if(result[0].asset){
-                                var cleanString = removeSpaces(result[1].asset);
+                                var cleanString = removeSpaces(result[0].asset);
                                 var assetArray = cleanString.split(';');
                                 $('#assetsOne').show();
                                 var countDiv = 1;
@@ -78,7 +78,7 @@
                             $('#ofProductSkusThree').text('• Product SKU\'s: ' + result[2].product_actual);
                             $('#sicThree').text('• SIC Code: ' + result[2].sic_actual);
                             if(result[2].assets){
-                                var cleanString = removeSpaces(result[1].assets);
+                                var cleanString = removeSpaces(result[2].assets);
                                 var assetArray = cleanString.split(';');
                                 $('#assetsThree').show();
                                 var countDiv = 1;
@@ -182,7 +182,7 @@
                         <span id="sicOne"></span>
                     </div>
                     <div id="assetsOne" class="assets" style="display:none">
-                        <span id="assetHeader">Assets</span>
+                        <span id="assetHeader">Solution:</span>
                     </div>
                     <div class="linkAccount" onclick="window.open('https://cs17.salesforce.com/' + $('input[name=accountOne]')[0].value);">Open Account</div>
                     <input type="hidden" name="accountOne" value=""></input>
@@ -215,7 +215,7 @@
                         <span id="sicTwo"></span>
                     </div>
                     <div id="assetsTwo" class="assets" style="display:none">
-                        <span id="assetHeader">Assets</span>
+                        <span id="assetHeader">Solution:</span>
                     </div>
                     <div class="linkAccount" onclick="window.open('https://cs17.salesforce.com/' + $('input[name=accountTwo]')[0].value);">Open Account</div>
                     <input type="hidden" name="accountTwo" value=""></input>
@@ -248,7 +248,7 @@
                         <span id="sicThree"></span>
                     </div>
                     <div id="assetsThree" class="assets" style="display:none">
-                        <span id="assetHeader">Assets</span>
+                        <span id="assetHeader">Solution:</span>
                     </div>
                     <div class="linkAccount" onclick="window.open('https://cs17.salesforce.com/' + $('input[name=accountThree]')[0].value);">Open Account</div>
                     <input type="hidden" name="accountThree" value=""></input>

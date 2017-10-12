@@ -274,6 +274,13 @@
         }
     }
     /*
+        Remove all spaces
+    */
+    var removeSpaces = function(data){
+        var cleanString = data.replace(/ /g,'');
+        return cleanString;
+    }   
+    /*
         This is JS remoting that will allow us to communicate to the controller
         and submit the information changed on the layout and returning back its
         result as well as passing it to the sidebar widget for visualization
@@ -301,6 +308,22 @@
                                 $(iframeWidget).contents().find("#ofProductSkusOne").text('• Product: ' + toTitleCase(result[key].product_actual));
                                 $(iframeWidget).contents().find("#sicOne").text(toTitleCase('• SIC Code: ' + result[key].sic_actual));
                                 $(iframeWidget).contents().find('input[name=accountOne]').val(result[key].id);
+                                
+                                if(result[key].asset){
+                                    $(iframeWidget).contents().find('#assetsOne').empty();
+                                    var cleanString = removeSpaces(result[key].asset);
+                                    var assetArray = cleanString.split(';');
+                                    $(iframeWidget).contents().find('#assetsOne').show();
+                                    var countDiv = 1;
+                                    $(iframeWidget).contents().find('#assetsOne').append('<span id="assetHeader">Solution:</span>');
+                                    for(i=0;i<assetArray.length;i++){
+                                        $(iframeWidget).contents().find('#assetsOne').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
+                                        countDiv++;
+                                    }
+                                } else {
+                                    $(iframeWidget).contents().find('#assetsOne').hide();
+                                }
+                                
                             } else if(key === '2'){
                                 console.log('box2');
                                 $(iframeWidget).contents().find("#accountTwo").text(truncateString(toTitleCase(result[key].name),'header'));
@@ -310,6 +333,46 @@
                                 $(iframeWidget).contents().find("#ofProductSkusTwo").text('• Product: ' + toTitleCase(result[key].product_actual));
                                 $(iframeWidget).contents().find("#sicTwo").text(toTitleCase('• SIC Code: ' + result[key].sic_actual));
                                 $(iframeWidget).contents().find('input[name=accountTwo]').val(result[key].id);
+                                
+                                if(result[key].asset){
+                                    $(iframeWidget).contents().find('#assetsTwo').empty();
+                                    var cleanString = removeSpaces(result[key].asset);
+                                    var assetArray = cleanString.split(';');
+                                    $(iframeWidget).contents().find('#assetsTwo').show();
+                                    var countDiv = 1;
+                                    $(iframeWidget).contents().find('#assetsTwo').append('<span id="assetHeader">Solution:</span>');
+                                    for(i=0;i<assetArray.length;i++){
+                                        $(iframeWidget).contents().find('#assetsTwo').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
+                                        countDiv++;
+                                    }
+                                } else {
+                                    $(iframeWidget).contents().find('#assetsTwo').hide();
+                                }
+                                
+                                /*
+                                // NEW IMPLEMENTATION OF DYNAMYC GENERATION OF DIVS
+                                // Setting up card header
+                                $(iframeWidget).contents().find('#accordion').empty();
+                                $(iframeWidget).contents().find('#accordion').append('<div id="card' + key + '" class="card"></div>');
+                                $(iframeWidget).contents().find('#card' + key).append('<div id="card-header' + key + '" class="card-header" role="tab" id="heading' + key + '"></div>');
+                                $(iframeWidget).contents().find('#card-header' + key).append('<h5 id="mb-0' + key + '" class="mb-0"></h5>');
+                                $(iframeWidget).contents().find('#mb-0' + key).append('<a id="account' + key + '" data-toggle="collapse" data-parent="#accordion" href="#collapse' + key + '" aria-expanded="true" aria-controls="collapseOne" value="">' + truncateString(toTitleCase(result[key].name),'header') + '</a>');
+                                // Setting up card body
+                                $(iframeWidget).contents().find('#card' + key).append('<div id="collapse' + key + '" class="collapse show" role="tabpanel" aria-labelledby="heading' + key + '"></div>');
+                                $(iframeWidget).contents().find('#collapse' + key).append('<div id="card-block' + key + '" class="card-block"></div>');
+                                $(iframeWidget).contents().find('#card-block' + key).append('<div id="industryDiv' + key + '" class="table"></div>');
+                                $(iframeWidget).contents().find('#industryDiv' + key).append('<span id="industry' + key + '">' + '• Industry: ' + truncateString(toTitleCase(result[key].industry),'text') + '</span>');
+                                $(iframeWidget).contents().find('#card-block' + key).append('<div id="annualCorrugateSpendDiv' + key + '" class="table"></div>');
+                                $(iframeWidget).contents().find('#annualCorrugateSpendDiv' + key).append('<span id="actualRevenueCommitment' + key + '">' + '• Revenue: $' + decimalFix(result[key].revenue_actual) + '</span>');
+                                $(iframeWidget).contents().find('#card-block' + key).append('<div id="boxesPerDayDiv' + key + '" class="table"></div>');
+                                $(iframeWidget).contents().find('#boxesPerDayDiv' + key).append('<span id="boxesPerDay' + key + '">' + '• Boxes: ' + toTitleCase(result[key].boxes_actual) + '</span>');
+                                $(iframeWidget).contents().find('#card-block' + key).append('<div id="numberProductSkusDiv' + key + '" class="table"></div>');
+                                $(iframeWidget).contents().find('#numberProductSkusDiv' + key).append('<span id="ofProductSkus' + key + '">' + '• Product: ' + toTitleCase(result[key].product_actual) + '</span>');
+                                $(iframeWidget).contents().find('#card-block' + key).append('<div id="sicCodeDiv' + key + '" class="table"></div>');
+                                $(iframeWidget).contents().find('#sicCodeDiv' + key).append('<span id="sic' + key + '">' + toTitleCase('• SIC Code: ' + result[key].sic_actual) + '</span>');
+                                $(iframeWidget).contents().find('#card-block' + key).append('<div id="assets' + key + '" class="assets" style="display:none"></div>');
+                                $(iframeWidget).contents().find('#assets' + key).append('<span id="assetHeader">Solution:</span>'); 
+                                */
                             } else if (key === '3'){
                                 console.log('box3');
                                 $(iframeWidget).contents().find("#accountThree").text(truncateString(toTitleCase(result[key].name),'header'));
@@ -319,6 +382,22 @@
                                 $(iframeWidget).contents().find("#ofProductSkusThree").text('• Product: ' + toTitleCase(result[key].product_actual));
                                 $(iframeWidget).contents().find("#sicThree").text('• SIC Code: ' + toTitleCase(result[key].sic_actual));
                                 $(iframeWidget).contents().find('input[name=accountThree]').val(result[key].id);
+                                
+                                if(result[key].asset){
+                                    $(iframeWidget).contents().find('#assetsThree').empty();
+                                    var cleanString = removeSpaces(result[key].asset);
+                                    var assetArray = cleanString.split(';');
+                                    $(iframeWidget).contents().find('#assetsThree').show();
+                                    var countDiv = 1;
+                                    $(iframeWidget).contents().find('#assetsThree').append('<span id="assetHeader">Solution:</span>');
+                                    for(i=0;i<assetArray.length;i++){
+                                        $(iframeWidget).contents().find('#assetsThree').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
+                                        countDiv++;
+                                    }
+                                } else {
+                                    $(iframeWidget).contents().find('#assetsThree').hide();
+                                }
+                                
                             }
                         }
                     }
@@ -332,7 +411,7 @@
     <apex:form >
         <apex:inputHidden id="leadId" value="{!Lead.Id}"/>
         <apex:pageBlock mode="inlineEdit">
-            <apex:detail oncomplete="refresh()" relatedList="false" title="true" inlineEdit="true" />
+            <apex:detail oncomplete="location.reload()" relatedList="false" title="true" inlineEdit="true" />
             <iframe frameborder="false" height="400px" id="theIframe" name="theIframe" title="Hubspot Information" src="https://hubspot-inc.cs17.visual.force.com/apex/HubSpotLeadIntel?id={!Lead.Id}&isdtp=vw" width="100%"></iframe>
         </apex:pageBlock>
     </apex:form>
