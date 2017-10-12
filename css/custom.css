@@ -77,6 +77,15 @@ div.table span {
 	width:164px;
 	margin-top: 3px;
 }
+.message {
+	display: none;
+	margin-top: 107px;
+    font-size: 15px;
+    border-radius: 2px;
+    background: lightgrey;
+    border-color: darkgray;
+    text-align: center;
+}
 #assetHeader {
 	font-weight: bold;
 	text-decoration: underline;

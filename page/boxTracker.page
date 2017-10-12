@@ -9,6 +9,9 @@
             var leadId = document.getElementById('j_id0:j_id3:leadRecordId').value;
             
             if(!leadId){
+                // Only Display when Lead is present
+                $('#accordion').hide();
+                $('#message').show();
                 $('#accountOne').attr("aria-expanded",false);
                 $('#accountOne').attr("class","collapsed");
                 $('#collapseOne').attr("class","collapse");
@@ -31,7 +34,7 @@
                         var obj = result[key];
                         console.log(obj);
                         if(obj['rank'] === "1"){
-                            $('#accountOne').text(truncateString(result[0].name,'header'));
+                            $('#accountOne').text(obj['rank'] + '. ' + truncateString(result[0].name,'header'));
                             $('#industryOne').text('• Industry: ' + truncateString(result[0].industry,'text'));
                             $('#actualRevenueCommitmentOne').text('• Revenue: $' + decimalFix(result[0].revenue_actual));
                             $('#boxesPerDayOne').text('• Boxes per Day: ' + result[0].boxes_actual);
@@ -51,7 +54,7 @@
                             }
                             $('input[name=accountOne]').val(result[0].id);
                         } else if (obj['rank'] === "2"){
-                            $('#accountTwo').text(truncateString(result[1].name,'header'));
+                            $('#accountTwo').text(obj['rank'] + '. ' + truncateString(result[1].name,'header'));
                             $('#industryTwo').text('• Industry: ' + truncateString(result[1].industry,'text'));
                             $('#actualRevenueCommitmentTwo').text('• Revenue: $' + decimalFix(result[1].revenue_actual));
                             $('#boxesPerDayTwo').text('• Boxes per Day: ' + result[1].boxes_actual);
@@ -71,7 +74,7 @@
                             }
                             $('input[name=accountTwo]').val(result[1].id);
                         }  else if (obj['rank'] === "3"){
-                            $('#accountThree').text(truncateString(result[2].name,'header'));
+                            $('#accountThree').text(obj['rank'] + '. ' + truncateString(result[2].name,'header'));
                             $('#industryThree').text('• Industry: ' + truncateString(result[2].industry,'text'));
                             $('#actualRevenueCommitmentThree').text('• Revenue: $' + decimalFix(result[2].revenue_actual));
                             $('#boxesPerDayThree').text('• Boxes per Day: ' + result[2].boxes_actual);
@@ -154,7 +157,8 @@
     <apex:outputPanel id="BoxTracker" layout="block" style="width:185px">
             <div id="widgetHeader" class="image">
                 <img src="http://www.packsize.com/wp-content/themes/packsize/images/packsize-logo-medium.png"></img>
-            </div>        
+            </div>
+            <div id="message" class="message">Please open a lead record to use this feature.</div>
             <div id="accordion" role="tablist" aria-multiselectable="true">
               <div class="card">
                 <div class="card-header" role="tab" id="headingOne">
