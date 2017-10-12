@@ -10,8 +10,8 @@ global with sharing class recordScore {
      * @param Map<String, Map<String, String>> record Record information for score calculation
      * @return Map<String, String> Record Id and it's score.
      */
-    public static Map<String, String> getRecordScore (Map<String, Map<String, String>>record) {
-        Map<String, String> score_result = new Map<String, String>();
+    public static Map<String, Map<String, String>> getRecordScore (Map<String, Map<String, String>>record) {
+        Map<String, Map<String, String>> score_result = new Map<String, Map<String, String>>();
         Set<String> record_ids = record.keySet();
         topResultSettings__c trs = topResultSettings__c.getValues(userinfo.getProfileId());
         Integer revenue_range = (Integer)trs.revenueRange__c;
@@ -19,20 +19,31 @@ global with sharing class recordScore {
         Integer box_range = (Integer)trs.boxRange__c;
         Integer sic_range = (Integer)trs.sicRange__c;
         Integer sku_range = (Integer)trs.skuRange__c;
+        Integer score_rank = 0;
         for (String record_id : record_ids) {
             Map<String, String> record_vals = new Map<String, String>(record.get(record_id));
+            String record_sf_id = record_vals.get('id');
             String score_para_val = record_vals.get('dist');
             Integer distance_score = getDistanceScore(score_para_val, distance_range);
+            record_vals.put('dist_score', String.valueOf(distance_score));
             score_para_val = record_vals.get('revenue');
             Integer revenue_score = getRevenueScore(score_para_val, revenue_range);
+            record_vals.put('revenue_score', String.valueOf(revenue_score));
             score_para_val = record_vals.get('boxes');
             Integer box_score = getBoxScore(score_para_val, box_range);
-            score_para_val = record_vals.get('sic');
+            record_vals.put('box_score', String.valueOf(box_score));
+            score_para_val = (record_vals.get('sic')).length() > 0 ?  record_vals.get('sic'): '0';
             Integer sic_score = getSicScore(score_para_val, sic_range);
+            record_vals.put('sic_score', String.valueOf(sic_score));
             score_para_val = record_vals.get('product');
             Integer product_sku_score = getProductSKUScore(score_para_val, sku_range);
+            record_vals.put('sku_score', String.valueOf(product_sku_score));
             Integer total_score = distance_score + revenue_score + box_score + sic_score + product_sku_score;
-            score_result.put(record_id, String.valueOf(total_score));
+            Map<String, String> tmp_record_score = new Map<String, String>();
+            tmp_record_score.put('id', record_sf_id);
+            record_vals.put('score', String.valueOf(total_score));
+            score_result.put(String.valueOf(score_rank), record_vals);
+            score_rank++;
          }
         return score_result;
     }
@@ -142,6 +153,9 @@ global with sharing class recordScore {
                 start_diff = start_diff*2;
                 high_end = low_end + start_diff;
             }
+        }
+        if (score < 0) {
+            score = 0;
         }
         return score;
     }

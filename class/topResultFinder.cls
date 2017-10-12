@@ -195,7 +195,8 @@ global with sharing class topResultFinder {
                 filters.get('order_by') != 'distance' &&
                 filters.get('order_by') != 'industry'
             ) {
-                sorted_results = getSortedRecords(result, filters.get('order_by'));
+                //sorted_results = getSortedRecords(result, filters.get('order_by'));
+                sorted_results = getRecordsFromAlgo(result);
             } else {
                 sorted_results = result;
             }
@@ -205,10 +206,55 @@ global with sharing class topResultFinder {
             error.put('message', 'Industry not selected.');
             result.put('Success', error);
         }
-        System.debug('result '+ result);
+
         System.debug('sorted results'+ sorted_results);
-        
+
         return sorted_results;
+    }
+
+    /**
+     * This function is to get Score from recordScore.cls
+     *
+     * @param Map<String, Map<String, String>> records Records.
+     * @return Map<String, Map<String, String>> result Return result map with score values.
+     */
+    private static Map<String, Map<String, String>> getRecordsFromAlgo(Map<String, Map<String, String>> records) {
+        Map<String, Map<String, String>> id_score_map = new Map<String, Map<String, String>>();
+        Map<String, Map<String, String>> result = new Map<String, Map<String, String>>();
+        Map<String, String> tmp_map = new Map<String, String>();
+        List<Integer> score_list = new List<Integer>();
+        id_score_map = recordScore.getRecordScore(records);
+
+        Integer rank = 0;
+        for (String record_rank : id_score_map.keySet()) {
+            Map<String, String> tmp_record = new Map<String, String>();
+            tmp_record = id_score_map.get(record_rank);
+            Integer score = Integer.valueOf(tmp_record.get('score'));
+            score_list.add(score);
+            tmp_map.put(record_rank, String.valueOf(score));
+        }
+        score_list.sort();
+        List<Integer>reverse_score = new List<Integer>();
+        for (Integer i = score_list.size() - 1; i >= 0; i--) {
+            reverse_score.add(score_list[i]);
+        }
+        Integer list_count = 1;
+        for (Integer value_key: reverse_score) {
+            if (list_count > LIMIT_CONST) {
+                break;
+            }
+
+            for (String order_by_key: tmp_map.keySet()) {
+                if (tmp_map.get(order_by_key) == String.valueOf(value_key)) {
+                    result.put(string.valueOf(list_count), id_score_map.get(order_by_key));
+                    tmp_map.remove(order_by_key);
+                    break;
+                }
+            }
+            list_count++;
+        }
+
+        return result;
     }
 
     /**
@@ -331,7 +377,7 @@ global with sharing class topResultFinder {
         Double new_lon = new_loc.longitude;
         Location to_loc = Location.newInstance(new_lat, new_lon);
 
-        String dist = String.valueof(from_loc.getDistance(to_loc, 'mi'));
+        String dist = String.valueof(Math.abs(from_loc.getDistance(to_loc, 'mi')));
         return dist;
     }
 
