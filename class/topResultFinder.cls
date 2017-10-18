@@ -377,7 +377,7 @@ global with sharing class topResultFinder {
         Double new_lon = new_loc.longitude;
         Location to_loc = Location.newInstance(new_lat, new_lon);
 
-        String dist = String.valueof(Math.abs(from_loc.getDistance(to_loc, 'mi')));
+        String dist = String.valueof(Math.ceil(from_loc.getDistance(to_loc, 'mi')));
         return dist;
     }
 
@@ -446,6 +446,7 @@ global with sharing class topResultFinder {
             String soql = 'SELECT Id FROM Top_Account_tracker__c WHERE Related_Lead__c = \''+main_record_id+
                 '\' AND Order__c = '+order+' LIMIT 1';
             System.debug('soql query '+soql);
+            List<Account> account_name = [SELECT Name FROM Account WHERE id =: related_object_id LIMIT 1];
             List<Top_Account_tracker__c> check_id = database.query(soql);
             Top_Account_Tracker__c top_record;
             if (!check_id.isEmpty()) {
@@ -455,16 +456,20 @@ global with sharing class topResultFinder {
                 top_record = new Top_Account_Tracker__c();
             }
 
+            String tmp_name = account_name[0].Name;
+            Integer tmp_score = Integer.valueOf(value_to_update.get('score'));
+            top_record.Score__c = tmp_score;
+            top_record.Name = tmp_name;
             top_record.Relates_To__c = related_object_id;
             top_record.Miles__c = Decimal.valueOf(dist);
             top_record.Related_Lead__c  = main_record_id;
             top_record.Order__c = order;
             top_record.Category__c = cat;
-            System.debug('object '+top_record);
+            System.debug('object ' + top_record);
             if (!check_id.isEmpty()) {
-                update top_record; 
+                update top_record;
             } else {
-                insert top_record;   
+                insert top_record;
             }
             order++;
         }
