@@ -28,7 +28,7 @@ global with sharing class getDataFromTracker {
                 String cat = results.Category__c;
                 accGetDetails.put('cat', results.Category__c);
                 accGetDetails.put('rank', String.valueOf(results.Order__c));
-                String accDetails = 'SELECT Id, Name, Industry, AnnualRevenue, Sic, Boxes_Per_Day__c, Of_Product_SKUs__c FROM Account WHERE id = \''+
+                String accDetails = 'SELECT Id, Name, Industry, AnnualRevenue, BillingCity, BillingState, Sic, Boxes_Per_Day__c, Of_Product_SKUs__c FROM Account WHERE id = \''+
                     ids+'\'';
                 System.debug('accDetails: ' + accDetails);
                 List<account> queryResultAccount = database.query(accDetails);
@@ -51,6 +51,8 @@ global with sharing class getDataFromTracker {
                     else {sku = '0';}
                     accGetDetails.put('id', ResultsAcc.Id);
                     accGetDetails.put('name', ResultsAcc.Name);
+                    accGetDetails.put('city', ResultsAcc.BillingCity);
+                    accGetDetails.put('state', ResultsAcc.BillingState);
                     accGetDetails.put('industry', ResultsAcc.Industry);
                     accGetDetails.put('revenue_actual', rev);
                     accGetDetails.put('sic_actual', sic);

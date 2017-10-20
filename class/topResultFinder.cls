@@ -136,12 +136,12 @@ global with sharing class topResultFinder {
             String soql_query   = getMainSOQLString(object_type);
 
             soql_query += getWhereForSOQL(object_type, distance_val, filters);
-            if ((filters.containsKey('order_by') &&
-                (filters.get('order_by') == 'distance' || filters.get('order_by') == 'industry')) ||
-                !filters.containsKey('order_by')
-            ) {
-                soql_query += ' ORDER BY '+distance_val+ ' ASC LIMIT '+LIMIT_CONST;
-            }
+            //if ((filters.containsKey('order_by') &&
+            //    (filters.get('order_by') == 'distance' || filters.get('order_by') == 'industry')) ||
+            //    !filters.containsKey('order_by')
+            //) {
+            //    soql_query += ' ORDER BY '+distance_val+ ' ASC LIMIT '+LIMIT_CONST;
+            //}
 
             System.debug('query'+ soql_query);
             List<Account> account_results = database.query(soql_query);
@@ -177,6 +177,8 @@ global with sharing class topResultFinder {
                 record_to_send.put('name', record.name);
                 record_to_send.put('industry', industry_name);
                 record_to_send.put('dist', dist);
+                record_to_send.put('city', record.BillingCity);
+                record_to_send.put('state', record.BillingState);
                 record_to_send.put('revenue', revenue_diff);
                 record_to_send.put('revenue_actual', String.valueof(record.AnnualRevenue));
                 record_to_send.put('boxes', boxes_per_day_diff);
@@ -191,15 +193,15 @@ global with sharing class topResultFinder {
                 order++;
             }
 
-            if (filters.containsKey('order_by') &&
-                filters.get('order_by') != 'distance' &&
-                filters.get('order_by') != 'industry'
-            ) {
+            //if (filters.containsKey('order_by') &&
+            //    filters.get('order_by') != 'distance' &&
+            //   filters.get('order_by') != 'industry'
+            //) {
                 //sorted_results = getSortedRecords(result, filters.get('order_by'));
                 sorted_results = getRecordsFromAlgo(result);
-            } else {
-                sorted_results = result;
-            }
+            //} else {
+            //    sorted_results = result;
+            //}
             sorted_results = addAssets(sorted_results);
         } else {
             error.put('success', '0');
@@ -333,9 +335,9 @@ global with sharing class topResultFinder {
     private static String getMainSOQLString (String object_type) {
         String sql_string = '';
         if (object_type == 'account') {
-            sql_string = 'SELECT Id, Name, BillingAddress, AnnualRevenue, Sic, Boxes_Per_Day__c, Of_Product_SKUs__c FROM Account WHERE ';
+            sql_string = 'SELECT Id, Name, BillingAddress, BillingCity, BillingState, AnnualRevenue, Sic, Boxes_Per_Day__c, Of_Product_SKUs__c FROM Account WHERE ';
         } else if (object_type == 'lead') {
-            sql_string = 'SELECT Id, Name, Address, AnnualRevenue, SIC_Code__c FROM Lead WHERE ';
+            sql_string = 'SELECT Id, Name, Address, City, AnnualRevenue, SIC_Code__c FROM Lead WHERE ';
         }
         return sql_string;
     }
@@ -358,6 +360,7 @@ global with sharing class topResultFinder {
             } else {
                 soql_query += '< 500';
             }
+            soql_query += ' AND type = \'Paying Customer\'';
         } else if (object_type == 'lead') {
 
         }
