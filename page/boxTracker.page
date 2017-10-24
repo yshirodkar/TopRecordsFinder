@@ -1,4 +1,4 @@
-<apex:page showHeader="true" standardController="Lead" extensions="getDataFromTracker"  tabStyle="lead" >
+<apex:page showHeader="true" Controller="getDataFromTracker"  tabStyle="lead" >
     <apex:includeScript value="{!$Resource.JQuery}" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous"></link>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
@@ -6,9 +6,15 @@
     <script>
     $( document ).ready(function() {
         $( window ).load(function() {
-            var leadId = document.getElementById('j_id0:j_id3:leadRecordId').value;
-            
-            if(!leadId){
+//            var leadId = document.getElementById('j_id0:j_id3:leadRecordId').value;
+            var urlMain = location.href;
+            var recordId = urlMain.substring(urlMain.indexOf('&id=')+4);
+            var sfIdPrefix = recordId.substr(0,3);
+            if (sfIdPrefix === '00Q'){
+                console.log('Lead ID: ' + recordId);
+                jsRemoting(recordId);
+            }
+            else {
                 // Only Display when Lead is present
                 $('#accordion').hide();
                 $('#message').show();
@@ -17,8 +23,6 @@
                 $('#collapseOne').attr("class","collapse");
                 $('#collapseOne').attr("aria-expanded",false);
             }
-            console.log('Lead ID: ' + leadId);
-            jsRemoting(leadId);
         });
     });
 
@@ -36,7 +40,8 @@
                         if(obj['rank'] === "1"){
                             $('#accountOne').text(obj['rank'] + '. ' + truncateString(result[0].name,'header'));
                             $('#industryOne').text('• Industry: ' + truncateString(result[0].industry,'text'));
-                            $('#actualRevenueCommitmentOne').text('• Revenue: $' + decimalFix(result[0].revenue_actual));
+                            $('#distOne').text('• Miles(Away): ' + truncateString(result[0].dist,'text') + '-' + truncateString(result[0].city,'text') + '/' + truncateString(result[0].state,'text'));
+                            $('#actualRevenueCommitmentOne').text('• CR Spend: ' + decimalFix(result[0].revenue_actual));
                             $('#boxesPerDayOne').text('• Boxes per Day: ' + result[0].boxes_actual);
                             $('#ofProductSkusOne').text('• Product SKU\'s: ' + result[0].product_actual);
                             $('#sicOne').text('• SIC Code: ' + result[0].sic_actual);
@@ -56,7 +61,8 @@
                         } else if (obj['rank'] === "2"){
                             $('#accountTwo').text(obj['rank'] + '. ' + truncateString(result[1].name,'header'));
                             $('#industryTwo').text('• Industry: ' + truncateString(result[1].industry,'text'));
-                            $('#actualRevenueCommitmentTwo').text('• Revenue: $' + decimalFix(result[1].revenue_actual));
+                            $('#distTwo').text('• Miles(Away): ' + truncateString(result[1].dist,'text') + '-' + truncateString(result[1].city,'text') + '/' + truncateString(result[1].state,'text'));
+                            $('#actualRevenueCommitmentTwo').text('• CR Spend: ' + decimalFix(result[1].revenue_actual));
                             $('#boxesPerDayTwo').text('• Boxes per Day: ' + result[1].boxes_actual);
                             $('#ofProductSkusTwo').text('• Product SKU\'s: ' + result[1].product_actual);
                             $('#sicTwo').text('• SIC Code: ' + result[1].sic_actual);
@@ -76,7 +82,8 @@
                         }  else if (obj['rank'] === "3"){
                             $('#accountThree').text(obj['rank'] + '. ' + truncateString(result[2].name,'header'));
                             $('#industryThree').text('• Industry: ' + truncateString(result[2].industry,'text'));
-                            $('#actualRevenueCommitmentThree').text('• Revenue: $' + decimalFix(result[2].revenue_actual));
+                            $('#distThree').text('• Miles(Away): ' + truncateString(result[2].dist,'text') + '-' + truncateString(result[2].city,'text') + '/' + truncateString(result[2].state,'text'));
+                            $('#actualRevenueCommitmentThree').text('• CR Spend: ' + decimalFix(result[2].revenue_actual));
                             $('#boxesPerDayThree').text('• Boxes per Day: ' + result[2].boxes_actual);
                             $('#ofProductSkusThree').text('• Product SKU\'s: ' + result[2].product_actual);
                             $('#sicThree').text('• SIC Code: ' + result[2].sic_actual);
@@ -145,14 +152,17 @@
     */
     var decimalFix = function(number){
         if(number !== undefined){
-            return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+            number = number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+            number = '$' + number;
+            return number;
+        } else {
+            number = 'Unknown';
+            return number;
         }
     }
     
     </script>
-    <apex:form >
-        <apex:inputHidden id="leadRecordId" value="{!Lead.Id}"/>
-    </apex:form>
+
     <div id='mainFrame' class='contBackground'>
     <apex:outputPanel id="BoxTracker" layout="block" style="width:185px">
             <div id="widgetHeader" class="image">
@@ -172,6 +182,9 @@
                   <div class="card-block">
                     <div id="industryDivOne" class="table">
                         <span id="industryOne"></span>
+                    </div>
+                    <div id="distDivOne" class="table">
+                        <span id="distOne"></span>
                     </div>
                     <div id="annualCorrugateSpendDivOne" class="table">
                         <span id="actualRevenueCommitmentOne"></span>
@@ -206,6 +219,9 @@
                     <div id="industryDivTwo" class="table">
                         <span id="industryTwo"></span>
                     </div>
+                    <div id="distDivTwo" class="table">
+                        <span id="distTwo"></span>
+                    </div>
                     <div id="annualCorrugateSpendDivTwo" class="table">
                         <span id="actualRevenueCommitmentTwo"></span>
                     </div>
@@ -238,6 +254,9 @@
                   <div class="card-block">
                     <div id="industryDivThree" class="table">
                         <span id="industryThree"></span>
+                    </div>
+                    <div id="distDivThree" class="table">
+                        <span id="distThree"></span>
                     </div>
                     <div id="annualCorrugateSpendDivThree" class="table">
                         <span id="actualRevenueCommitmentThree"></span>

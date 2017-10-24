@@ -50,7 +50,7 @@
         // Fields
         var industryId      = '#lea6j_id0_j_id3_j_id4_j_id5';
         var addrId          = '#lea16j_id0_j_id3_j_id4_j_id5';
-        var revenueId       = '#00N50000002UAQpj_id0_j_id3_j_id4_j_id5';
+        var revenueId       = '#00N50000002UAQpj_id0_j_id3_j_id4_j_id5';		// 00N50000009PZajj_id0_j_id3_j_id4_j_id5 - Annual Corrugate Spend
         var boxesId         = '#00N50000001f8IWj_id0_j_id3_j_id4_j_id5';
         var productskuId    = '#00N50000009PZatj_id0_j_id3_j_id4_j_id5';
         var sicId           = '#00N50000001w6I4j_id0_j_id3_j_id4_j_id5';
@@ -95,6 +95,10 @@
                     $('#' + leadLayoutSections[i]).css('border-top-left-radius','3px');
                     $('#' + leadLayoutSections[i]).css('border-top-right-radius','3px');
                 }
+                /*
+                    Change White Img to Black
+                */
+                $('.hideListButton').css('-webkit-filter','invert(100%)');
 
                 // Inline Fields
                 var industryInLine  = $(industryId + fieldEdit);
@@ -274,9 +278,14 @@
     /*
         This function will format the currency values
     */
-    var decimalFix = function(number) {
-        if (number !== undefined) {
-            return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+    var decimalFix = function(number){
+        if(number !== undefined){
+            number = number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+            number = '$' + number;
+            return number;
+        } else {
+            number = 'Unknown';
+            return number;
         }
     }
     /*
@@ -309,7 +318,8 @@
                                 // TODO - Change the .find for .append so it can create the divs dinamically
                                 $(iframeWidget).contents().find("#accountOne").text(key.toString() + '. ' + truncateString(toTitleCase(result[key].name),'header'));
                                 $(iframeWidget).contents().find("#industryOne").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
-                                $(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('• Revenue: $' + decimalFix(result[key].revenue_actual));
+                                $(iframeWidget).contents().find("#distOne").text('• Miles(Away): ' + truncateString(result[key].dist,'text') + '-' + truncateString(result[key].city,'text') + '/' + truncateString(result[key].state,'text'));
+                                $(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('• CR Spend: ' + decimalFix(result[key].revenue_actual));
                                 $(iframeWidget).contents().find("#boxesPerDayOne").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
                                 $(iframeWidget).contents().find("#ofProductSkusOne").text('• Product: ' + toTitleCase(result[key].product_actual));
                                 $(iframeWidget).contents().find("#sicOne").text(toTitleCase('• SIC Code: ' + result[key].sic_actual));
@@ -334,7 +344,8 @@
                                 console.log('box2');
                                 $(iframeWidget).contents().find("#accountTwo").text(key.toString() + '. ' + truncateString(toTitleCase(result[key].name),'header'));
                                 $(iframeWidget).contents().find("#industryTwo").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
-                                $(iframeWidget).contents().find("#actualRevenueCommitmentTwo").text('• Revenue: $' + decimalFix(result[key].revenue_actual));
+                                $(iframeWidget).contents().find("#distOne").text('• Miles(Away): ' + truncateString(result[key].dist,'text') + '-' + truncateString(result[key].city,'text') + '/' + truncateString(result[key].state,'text'));
+                                $(iframeWidget).contents().find("#actualRevenueCommitmentTwo").text('• CR Spend: ' + decimalFix(result[key].revenue_actual));
                                 $(iframeWidget).contents().find("#boxesPerDayTwo").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
                                 $(iframeWidget).contents().find("#ofProductSkusTwo").text('• Product: ' + toTitleCase(result[key].product_actual));
                                 $(iframeWidget).contents().find("#sicTwo").text(toTitleCase('• SIC Code: ' + result[key].sic_actual));
@@ -383,7 +394,8 @@
                                 console.log('box3');
                                 $(iframeWidget).contents().find("#accountThree").text(key.toString() + '. ' + truncateString(toTitleCase(result[key].name),'header'));
                                 $(iframeWidget).contents().find("#industryThree").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
-                                $(iframeWidget).contents().find("#actualRevenueCommitmentThree").text('• Revenue: $' + decimalFix(result[key].revenue_actual));
+                                $(iframeWidget).contents().find("#distOne").text('• Miles(Away): ' + truncateString(result[key].dist,'text') + '-' + truncateString(result[key].city,'text') + '/' + truncateString(result[key].state,'text'));
+                                $(iframeWidget).contents().find("#actualRevenueCommitmentThree").text('• CR Spend: ' + decimalFix(result[key].revenue_actual));
                                 $(iframeWidget).contents().find("#boxesPerDayThree").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
                                 $(iframeWidget).contents().find("#ofProductSkusThree").text('• Product: ' + toTitleCase(result[key].product_actual));
                                 $(iframeWidget).contents().find("#sicThree").text('• SIC Code: ' + toTitleCase(result[key].sic_actual));
@@ -421,10 +433,12 @@
             <iframe frameborder="false" height="400px" id="theIframe" name="theIframe" title="Hubspot Information" src="https://hubspot-inc.cs17.visual.force.com/apex/HubSpotLeadIntel?id={!Lead.Id}&isdtp=vw" width="100%"></iframe>
         </apex:pageBlock>
     </apex:form>
+
     <apex:relatedList subject="{!lead}" list="CampaignMembers" />
     <apex:relatedList subject="{!lead}" list="OpenActivities" />
     <apex:relatedList subject="{!lead}" list="ActivityHistories" />
     <apex:relatedList subject="{!lead}" list="CombinedAttachments" />
     <apex:relatedList subject="{!lead}" list="EmailStatuses" />
     <apex:relatedList subject="{!lead}" list="Histories" />
+    <apex:relatedList subject="{!lead}" list="Top_Accounts_Tracker__r" />
 </apex:page>
