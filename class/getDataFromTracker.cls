@@ -13,6 +13,10 @@ global with sharing class getDataFromTracker {
     @RemoteAction
     global static Map<String, Map<String, String>> tracker_Controller(String record_id){
         Map<String, Map<String, String>> accResults = new Map<String, Map<String, String>>();
+        Map<String, String> response_message = new Map<String, String>();
+        response_message.put('success', 'false');
+        response_message.put('message', 'No Record Id');
+        accResults.put('success', response_message);
         if (record_id.length() > 0) {
             Lead main_lead = [SELECT LastTopResultCategory__c FROM Lead WHERE Id=:record_id];
             String last_cat = main_lead.LastTopResultCategory__c;
@@ -65,6 +69,11 @@ global with sharing class getDataFromTracker {
                 accResults.put(string.valueof(countOrder), accGetDetails);
                 System.debug('acc res'+accResults);
                 countOrder++;
+            }
+            if (countOrder == 0) {
+                response_message.put('success', 'false');
+                response_message.put('message', 'No previous Records');
+                accResults.put('success', response_message);
             }
         }
         system.debug('here i was = ' + accResults);

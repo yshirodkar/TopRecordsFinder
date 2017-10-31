@@ -99,7 +99,11 @@ global with sharing class topResultFinder {
             // Getting revenue value
             Integer parent_revenue = 0;
             if (filters.containsKey('revenue') && (filters.get('revenue') != '' && filters.get('revenue') != null)) {
-                parent_revenue =  Integer.valueof(filters.get('revenue'));
+                List<String> parts = filters.get('revenue').split('.', 2);
+                System.debug('list '+ parts[1]);
+                String rev = parts[parts.size()-1];
+                if (rev.length() > 0)
+                parent_revenue =  Integer.valueof(rev);
             }
             Integer boxes_per_day = 0;
             if (filters.containsKey('boxes') && (filters.get('boxes') != '' && filters.get('boxes') != null)) {
@@ -158,8 +162,8 @@ global with sharing class topResultFinder {
 
                 //revenue calculation
                 String revenue_diff = String.valueof(parent_revenue);
-                if (record.AnnualRevenue > 0) {
-                    revenue_diff = String.valueof(Math.abs(record.AnnualRevenue - parent_revenue));
+                if (record.Actual_Revenue_Commitment__c > 0) {
+                    revenue_diff = String.valueof(Math.abs(record.Actual_Revenue_Commitment__c - parent_revenue));
                 }
                 String boxes_per_day_diff = String.valueof(boxes_per_day);
                 if (record.Boxes_Per_Day__c > 0) {
@@ -180,7 +184,7 @@ global with sharing class topResultFinder {
                 record_to_send.put('city', record.BillingCity);
                 record_to_send.put('state', record.BillingState);
                 record_to_send.put('revenue', revenue_diff);
-                record_to_send.put('revenue_actual', String.valueof(record.AnnualRevenue));
+                record_to_send.put('revenue_actual', String.valueof(record.Actual_Revenue_Commitment__c));
                 record_to_send.put('boxes', boxes_per_day_diff);
                 record_to_send.put('boxes_actual', String.valueof(record.Boxes_Per_Day__c));
                 record_to_send.put('sic', sic_diff);
@@ -335,7 +339,8 @@ global with sharing class topResultFinder {
     private static String getMainSOQLString (String object_type) {
         String sql_string = '';
         if (object_type == 'account') {
-            sql_string = 'SELECT Id, Name, BillingAddress, BillingCity, BillingState, AnnualRevenue, Sic, Boxes_Per_Day__c, Of_Product_SKUs__c FROM Account WHERE ';
+            sql_string = 'SELECT Id, Name, BillingAddress, BillingCity, BillingState, Actual_Revenue_Commitment__c,
+             Sic, Boxes_Per_Day__c, Of_Product_SKUs__c FROM Account WHERE ';
         } else if (object_type == 'lead') {
             sql_string = 'SELECT Id, Name, Address, City, AnnualRevenue, SIC_Code__c FROM Lead WHERE ';
         }

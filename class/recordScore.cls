@@ -56,7 +56,7 @@ global with sharing class recordScore {
     */
     private static Integer getDistanceScore(String distance, Integer distance_range) {
         Integer score = 0;
-        Integer dist = Integer.valueOf(distance);
+        Long dist = Long.valueOf(distance);
         if (distance_range > 0) {
             score = getScoreMap(distance_range, dist);
         } else {
@@ -73,7 +73,7 @@ global with sharing class recordScore {
     */
     private static Integer getRevenueScore(String revenue, Integer revenue_range) {
         Integer score = 0;
-        Integer rev = Integer.valueOf(revenue);
+        Long rev = Long.valueOf(revenue);
         if (revenue_range > 0) {
             score = getScoreMap(revenue_range, rev);
         } else {
@@ -90,7 +90,7 @@ global with sharing class recordScore {
     */
     private static Integer getBoxScore(String boxes, Integer box_range) {
         Integer score = 0;
-        Integer box = Integer.valueOf(boxes);
+        Long box = Long.valueOf(boxes);
         if (box_range > 0) {
             score = getScoreMap(box_range, box);
         } else {
@@ -107,7 +107,7 @@ global with sharing class recordScore {
     */
     private static Integer getSicScore(String sic, Integer sic_range) {
         Integer score = 0;
-        Integer sic_int = Integer.valueOf(sic);
+        Long sic_int = Long.valueOf(sic);
         if (sic_range > 0) {
             score = getScoreMap(sic_range, sic_int);
         } else {
@@ -124,7 +124,7 @@ global with sharing class recordScore {
     */
     private static Integer getProductSKUScore(String sku, Integer sku_range) {
         Integer score = 0;
-        Integer sku_int = Integer.valueOf(sku);
+        Long sku_int = Long.valueOf(sku);
         if (sku_range > 0) {
             score = getScoreMap(sku_range, sku_int);
         } else {
@@ -137,12 +137,12 @@ global with sharing class recordScore {
     * This function is used to get the score.
     * @param Integer start_diff Range map difference calculator value. This value decide the
     *                           exponential range starting point.
-    * @param Integer param_val Parameter value for which we are calculating the score.
+    * @param Long param_val Parameter value for which we are calculating the score.
     * @return Integer Score value.
     */
-    private static Integer getScoreMap(Integer start_diff, Integer param_val) {
-        Integer high_end = start_diff;
-        Integer low_end = 0;
+    private static Integer getScoreMap(Integer start_diff, Long param_val) {
+        Long high_end = start_diff;
+        Long low_end = 0;
         Integer score = 0;
         if (start_diff > 0) {
             for (score = 10; score>=0 ; score--) {
