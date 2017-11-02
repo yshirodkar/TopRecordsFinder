@@ -38,3 +38,10 @@ You need to add all the .cls files, .page files and also need to add jquery lib.
 1. topResultFinder.cls should go in apex classes.
 2. accountPage.page, boxTracker.page should go in apex page
 3. jquery lib file should go in static resource file
+
+### Implementation
+Enable VF for standard layout:
+1. Go to Setup.
+2. On the Quick Search look for "Buttons, Links, and Actions" under the lead object.
+3. Look for "View" and edit.
+4. Select for Override View: leadPage and Save.

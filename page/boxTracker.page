@@ -1,4 +1,4 @@
-<apex:page showHeader="true" Controller="getDataFromTracker"  tabStyle="lead" >
+<apex:page showHeader="true" Controller="getDataFromTracker" tabStyle="lead" >
     <apex:includeScript value="{!$Resource.JQuery}" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous"></link>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
@@ -22,6 +22,8 @@
                 $('#accountOne').attr("class","collapsed");
                 $('#collapseOne').attr("class","collapse");
                 $('#collapseOne').attr("aria-expanded",false);
+                $('#mainFrame').css("height",'394px');
+                $('#message').text('Please open a lead record to use this feature.');
             }
         });
     });
@@ -31,79 +33,90 @@
             '{!$RemoteAction.getDataFromTracker.tracker_Controller}',       // Accessing Class through remote action
             leadId,                                                         // Industry field value
             function(result,event){
-                if(event.status){
-                    for (var key in result) {
-                        // skip loop if the property is from prototype
-                        if (!result.hasOwnProperty(key)) continue;
-                        var obj = result[key];
-                        console.log(obj);
-                        if(obj['rank'] === "1"){
-                            $('#accountOne').text(obj['rank'] + '. ' + truncateString(result[0].name,'header'));
-                            $('#industryOne').text('• Industry: ' + truncateString(result[0].industry,'text'));
-                            $('#distOne').text('• Miles(Away): ' + truncateString(result[0].dist,'text') + '-' + truncateString(result[0].city,'text') + '/' + truncateString(result[0].state,'text'));
-                            $('#actualRevenueCommitmentOne').text('• CR Spend: ' + decimalFix(result[0].revenue_actual));
-                            $('#boxesPerDayOne').text('• Boxes per Day: ' + result[0].boxes_actual);
-                            $('#ofProductSkusOne').text('• Product SKU\'s: ' + result[0].product_actual);
-                            $('#sicOne').text('• SIC Code: ' + result[0].sic_actual);
-                            if(result[0].asset){
-                                var cleanString = removeSpaces(result[0].asset);
-                                var assetArray = cleanString.split(';');
-                                $('#assetsOne').show();
-                                var countDiv = 1;
-                                for(i=0;i<assetArray.length;i++){
-                                    $('#assetsOne').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
-                                    countDiv++;
-                                }                               
-                            } else {
-                                $('#assetsOne').hide();
-                            }
-                            $('input[name=accountOne]').val(result[0].id);
-                        } else if (obj['rank'] === "2"){
-                            $('#accountTwo').text(obj['rank'] + '. ' + truncateString(result[1].name,'header'));
-                            $('#industryTwo').text('• Industry: ' + truncateString(result[1].industry,'text'));
-                            $('#distTwo').text('• Miles(Away): ' + truncateString(result[1].dist,'text') + '-' + truncateString(result[1].city,'text') + '/' + truncateString(result[1].state,'text'));
-                            $('#actualRevenueCommitmentTwo').text('• CR Spend: ' + decimalFix(result[1].revenue_actual));
-                            $('#boxesPerDayTwo').text('• Boxes per Day: ' + result[1].boxes_actual);
-                            $('#ofProductSkusTwo').text('• Product SKU\'s: ' + result[1].product_actual);
-                            $('#sicTwo').text('• SIC Code: ' + result[1].sic_actual);
-                            if(result[1].asset){
-                                var cleanString = removeSpaces(result[1].asset);
-                                var assetArray = cleanString.split(';');
-                                $('#assetsTwo').show();
-                                var countDiv = 1;
-                                for(i=0;i<assetArray.length;i++){
-                                    $('#assetsTwo').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
-                                    countDiv++;
+                if(result['success'].message === 'No previous Records'){
+                    // Only Display when Lead is present
+                    $('#accordion').hide();
+                    $('#message').show();
+                    $('#accountOne').attr("aria-expanded",false);
+                    $('#accountOne').attr("class","collapsed");
+                    $('#collapseOne').attr("class","collapse");
+                    $('#collapseOne').attr("aria-expanded",false);
+                    $('#mainFrame').css("height",'394px');
+                    $('#message').text('No previous search made.');
+                } else {        
+                    if(event.status){
+                        for (var key in result) {
+                            // skip loop if the property is from prototype
+                            if (!result.hasOwnProperty(key)) continue;
+                            var obj = result[key];
+                            if(obj['rank'] === "1"){
+                                $('#accountOne').text(obj['rank'] + '. ' + decodeHtml(truncateString(result[0].name,'header')));
+                                $('#industryOne').text('• Industry: ' + truncateString(result[0].industry,'text'));
+                                $('#distOne').text('• Miles(Away): ' + truncateString(result[0].dist + '-' + result[0].city + '/' + result[0].state,'custom'));
+                                $('#actualRevenueCommitmentOne').text('• CR Spend: ' + decimalFix(result[0].revenue_actual));
+                                $('#boxesPerDayOne').text('• Boxes per Day: ' + toTitleCase(result[0].boxes_actual));
+                                $('#ofProductSkusOne').text('• Product SKU\'s: ' + toTitleCase(result[0].product_actual));
+                                $('#sicOne').text('• SIC Code: ' + toTitleCase(result[0].sic_actual));
+                                if(result[0].asset){
+                                    var cleanString = removeSpaces(result[0].asset);
+                                    var assetArray = cleanString.split(';');
+                                    $('#assetsOne').show();
+                                    var countDiv = 1;
+                                    for(i=0;i<assetArray.length;i++){
+                                        $('#assetsOne').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
+                                        countDiv++;
+                                    }                               
+                                } else {
+                                    $('#assetsOne').hide();
                                 }
-                            } else {
-                                $('#assetsTwo').hide();
-                            }
-                            $('input[name=accountTwo]').val(result[1].id);
-                        }  else if (obj['rank'] === "3"){
-                            $('#accountThree').text(obj['rank'] + '. ' + truncateString(result[2].name,'header'));
-                            $('#industryThree').text('• Industry: ' + truncateString(result[2].industry,'text'));
-                            $('#distThree').text('• Miles(Away): ' + truncateString(result[2].dist,'text') + '-' + truncateString(result[2].city,'text') + '/' + truncateString(result[2].state,'text'));
-                            $('#actualRevenueCommitmentThree').text('• CR Spend: ' + decimalFix(result[2].revenue_actual));
-                            $('#boxesPerDayThree').text('• Boxes per Day: ' + result[2].boxes_actual);
-                            $('#ofProductSkusThree').text('• Product SKU\'s: ' + result[2].product_actual);
-                            $('#sicThree').text('• SIC Code: ' + result[2].sic_actual);
-                            if(result[2].assets){
-                                var cleanString = removeSpaces(result[2].assets);
-                                var assetArray = cleanString.split(';');
-                                $('#assetsThree').show();
-                                var countDiv = 1;
-                                for(i=0;i<assetArray.length;i++){
-                                    $('#assetsThree').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
-                                    countDiv++;
+                                $('input[name=accountOne]').val(result[0].id);
+                            } else if (obj['rank'] === "2"){
+                                $('#accountTwo').text(obj['rank'] + '. ' + decodeHtml(truncateString(result[1].name,'header')));
+                                $('#industryTwo').text('• Industry: ' + truncateString(result[1].industry,'text'));
+                                $('#distTwo').text('• Miles(Away): ' + truncateString(result[1].dist + '-' + result[1].city + '/' + result[1].state,'custom'));
+                                $('#actualRevenueCommitmentTwo').text('• CR Spend: ' + decimalFix(result[1].revenue_actual));
+                                $('#boxesPerDayTwo').text('• Boxes per Day: ' + toTitleCase(result[1].boxes_actual));
+                                $('#ofProductSkusTwo').text('• Product SKU\'s: ' + toTitleCase(result[1].product_actual));
+                                $('#sicTwo').text('• SIC Code: ' + toTitleCase(result[1].sic_actual));
+                                if(result[1].asset){
+                                    var cleanString = removeSpaces(result[1].asset);
+                                    var assetArray = cleanString.split(';');
+                                    $('#assetsTwo').show();
+                                    var countDiv = 1;
+                                    for(i=0;i<assetArray.length;i++){
+                                        $('#assetsTwo').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
+                                        countDiv++;
+                                    }
+                                } else {
+                                    $('#assetsTwo').hide();
                                 }
-                            } else {
-                                $('#assetsThree').hide();
+                                $('input[name=accountTwo]').val(result[1].id);
+                            }  else if (obj['rank'] === "3"){
+                                $('#accountThree').text(obj['rank'] + '. ' + decodeHtml(truncateString(result[2].name,'header')));
+                                $('#industryThree').text('• Industry: ' + truncateString(result[2].industry,'text'));
+                                $('#distThree').text('• Miles(Away): ' + truncateString(result[2].dist + '-' + result[2].city + '/' + result[2].state,'custom'));
+                                $('#actualRevenueCommitmentThree').text('• CR Spend: ' + decimalFix(result[2].revenue_actual));
+                                $('#boxesPerDayThree').text('• Boxes per Day: ' + toTitleCase(result[2].boxes_actual));
+                                $('#ofProductSkusThree').text('• Product SKU\'s: ' + toTitleCase(result[2].product_actual));
+                                $('#sicThree').text('• SIC Code: ' + toTitleCase(result[2].sic_actual));
+                                if(result[2].assets){
+                                    var cleanString = removeSpaces(result[2].assets);
+                                    var assetArray = cleanString.split(';');
+                                    $('#assetsThree').show();
+                                    var countDiv = 1;
+                                    for(i=0;i<assetArray.length;i++){
+                                        $('#assetsThree').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
+                                        countDiv++;
+                                    }
+                                } else {
+                                    $('#assetsThree').hide();
+                                }
+                                $('input[name=accountThree]').val(result[2].id);
                             }
-                            $('input[name=accountThree]').val(result[2].id);
                         }
-                    }
-                } else {
-                    console.log('Broken :' + result);
+                    } else {
+                        console.log('Broken :' + result);
+                    }                   
                 }
             }
         )       
@@ -118,22 +131,29 @@
     /*
         This function will truncate long strings
     */
-    var truncateString = function(data, type){
+    var truncateString = function(data, type) {
         headerLength = 25;
         textLength = 17;
-        if(data){
-            if(type === "header"){
-                if(data.length <= headerLength){
+        otherLength = 12;
+        if (data) {
+            if (type === "header") {
+                if (data.length <= headerLength) {
                     newString = data.substring(0,headerLength)
                 } else {
                     newString = data.substring(0,headerLength) + '...';
                 }
-                                
-            } else if (type === "text"){
-                if(data.length <= textLength){
+
+            } else if (type === "text") {
+                if (data.length <= textLength) {
                     newString = data.substring(0,textLength)
                 } else {
                     newString = data.substring(0,textLength) + '...';
+                }
+            } else if (type === "custom"){
+                if (data.length <= otherLength) {
+                    newString = data.substring(0,otherLength)
+                } else {
+                    newString = data.substring(0,otherLength) + '...';
                 }
             }
         }
@@ -143,9 +163,13 @@
         This function will handle lower case string and convert them into title case
     */
     var toTitleCase = function(str) {
-        return str.replace(/(?:^|\s)\w/g, function(match) {
-            return match.toUpperCase();
-        });
+        if (str !== undefined) {
+            return str.replace(/(?:^|\s)\w/g, function(match) {
+                return match.toUpperCase();
+            });
+        } else {
+            return "Unknown";
+        }
     }
     /*
         This function will format the currency values
@@ -160,15 +184,22 @@
             return number;
         }
     }
-    
+    /*
+        Removing Special Character
+    */
+    var decodeHtml = function(data){
+        var txt = document.createElement("textarea");
+        txt.innerHTML = data;
+        return txt.value;
+    }
     </script>
 
     <div id='mainFrame' class='contBackground'>
-    <apex:outputPanel id="BoxTracker" layout="block" style="width:185px">
+    <apex:outputPanel id="BoxTracker" layout="block" style="width:185px;">
             <div id="widgetHeader" class="image">
                 <img src="http://www.packsize.com/wp-content/themes/packsize/images/packsize-logo-medium.png"></img>
             </div>
-            <div id="message" class="message">Please open a lead record to use this feature.</div>
+            <div id="message" class="message"></div>
             <div id="accordion" role="tablist" aria-multiselectable="true">
               <div class="card">
                 <div class="card-header" role="tab" id="headingOne">
