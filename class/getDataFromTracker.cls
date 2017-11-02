@@ -47,14 +47,10 @@ global with sharing class getDataFromTracker {
                     String asset_val = getAssetDetails(ResultsAcc.Id);
                     Decimal boxes_val = ResultsAcc.Boxes_Per_Day__c;
                     Decimal sku_val = ResultsAcc.Of_Product_SKUs__c;
-                    if (annual_rev > 0) {rev = String.valueOf(annual_rev);}
-                    else {rev = '0';}
-                    if (boxes_val > 0) {box = String.valueOf(boxes_val);}
-                    else {box = '0';}
-                    if (String.isNotEmpty(sic_val)) {sic = sic_val;}
-                    else {sic = '0';}
-                    if (sku_val > 0) {sku = String.valueOf(sku_val);}
-                    else {sku = '0';}
+                    rev = String.valueOf(annual_rev);
+                    box = String.valueOf(boxes_val);
+                    sic = sic_val;
+                    sku = String.valueOf(sku_val);
                     accGetDetails.put('id', ResultsAcc.Id);
                     accGetDetails.put('name', ResultsAcc.Name);
                     accGetDetails.put('city', ResultsAcc.BillingCity);

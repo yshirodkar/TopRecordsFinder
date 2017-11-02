@@ -339,8 +339,8 @@ global with sharing class topResultFinder {
     private static String getMainSOQLString (String object_type) {
         String sql_string = '';
         if (object_type == 'account') {
-            sql_string = 'SELECT Id, Name, BillingAddress, BillingCity, BillingState, Actual_Revenue_Commitment__c,
-             Sic, Boxes_Per_Day__c, Of_Product_SKUs__c FROM Account WHERE ';
+            sql_string = 'SELECT Id, Name, BillingAddress, BillingCity, BillingState, Actual_Revenue_Commitment__c,' +
+             ' Sic, Boxes_Per_Day__c, Of_Product_SKUs__c FROM Account WHERE ';
         } else if (object_type == 'lead') {
             sql_string = 'SELECT Id, Name, Address, City, AnnualRevenue, SIC_Code__c FROM Lead WHERE ';
         }
