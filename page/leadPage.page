@@ -44,17 +44,19 @@
         6. SIC Code
     */
     if (sandbox >= 0) {
-        var fieldEdit       = '_ileinner';
-        var fieldOutEdit    = '_ilecell';
-        var iframeWidget    = '#066g0000000FqFq';
+        var fieldEdit           = '_ileinner';
+        var fieldOutEdit        = '_ilecell';
+        var iframeWidget        = '#066g0000000FqFq';
+        var iframeWidgetPlain   = '066g0000000FqFq';
+        var addrButtonsPop      = '#InlineEditDialog_buttons';
         // Fields
-        var industryId      = '#lea6j_id0_j_id3_j_id4_j_id5';
-        var addrId          = '#lea16j_id0_j_id3_j_id4_j_id5';
+        var industryId          = '#lea6j_id0_j_id3_j_id4_j_id5';
+        var addrId              = '#lea16j_id0_j_id3_j_id4_j_id5';
         // var revenueId       = '#00N50000002UAQpj_id0_j_id3_j_id4_j_id5'; // Company Annual Revenue
-        var revenueId       = '#00N50000009PZajj_id0_j_id3_j_id4_j_id5';    // Annual Corrugate Spend 
-        var boxesId         = '#00N50000001f8IWj_id0_j_id3_j_id4_j_id5';
-        var productskuId    = '#00N50000009PZatj_id0_j_id3_j_id4_j_id5';
-        var sicId           = '#00N50000001w6I4j_id0_j_id3_j_id4_j_id5';
+        var revenueId           = '#00N50000009PZajj_id0_j_id3_j_id4_j_id5';    // Annual Corrugate Spend 
+        var boxesId             = '#00N50000001f8IWj_id0_j_id3_j_id4_j_id5';
+        var productskuId        = '#00N50000009PZatj_id0_j_id3_j_id4_j_id5';
+        var sicId               = '#00N50000001w6I4j_id0_j_id3_j_id4_j_id5';
         var leadLayoutSections = [
             'head_01Bg0000003FF2c_ep_j_id0_j_id3_j_id4_j_id5',
             'head_01B50000004zr6n_ep_j_id0_j_id3_j_id4_j_id5',
@@ -97,7 +99,6 @@
                     Change White Img to Black
                 */
                 $('.hideListButton').css('-webkit-filter','invert(100%)');
-
                 // Inline Fields
                 var industryInLine  = $(industryId + fieldEdit);
                 var addrInLine      = $(addrId + fieldEdit);
@@ -105,6 +106,8 @@
                 var boxesInLine     = $(boxesId + fieldEdit);
                 var productInLine   = $(productskuId + fieldEdit);
                 var sicInLine       = $(sicId + fieldEdit);
+                // Address Pop Binding for changes on the fly
+                objectBindButton(addrButtonsPop,addrInLine);
                 // Building array of inline fields to bind
                 inLineArray.push(industryInLine);
                 inLineArray.push(addrInLine);
@@ -112,7 +115,6 @@
                 inLineArray.push(boxesInLine);
                 inLineArray.push(productInLine);
                 inLineArray.push(sicInLine);
-
                 // Inline Fields
                 var industryInLineOut  = $(industryId + fieldOutEdit);
                 var addrInLineOut      = $(addrId + fieldOutEdit);
@@ -148,6 +150,15 @@
             fieldBind(object);
         });
     }
+    /* 
+        Single click binding for address change
+    */
+    var objectBindButton = function(buttonParent,data){
+        $(buttonParent).on('click', function(){
+            console.log('Single Binding');
+            fieldBind(data);
+        }); 
+    }
     /*
         This function does the following:
         1.  Finds the industry field on layout (Problematic seens SF do not 
@@ -168,6 +179,9 @@
                 clearInterval(b);
                 fieldValue = fieldId.replace('_ileinner','');
                 var industryValue = $('#' + fieldValue).val();
+                if(industryValue === undefined){
+                    industryValue = $('#' + fieldId).text();
+                }
                 var fieldElement = $('#' + fieldValue);
                 console.log( "Current field value: " + industryValue );
                 fieldElement.change(function() {
@@ -262,7 +276,7 @@
         This function will truncate long strings
     */
     var truncateString = function(data, type) {
-        headerLength = 25;
+        headerLength = 24;
         textLength = 17;
         otherLength = 13;
         if (data) {
@@ -334,12 +348,16 @@
             filters,                                                // var filter_json = {'industry':''+indDynamic+'', 'AnnualRevenue':'350000000'};
             function(result,event) {
                 if (event.status) {
-                    //console.log('Works: ' + JSON.stringify(result));
+                    console.log('Works: ' + JSON.stringify(result));
                     if (jQuery.isEmptyObject(result) == true) {
                         console.log('Empty JSON');
                     } else {
+                        // This if block is to handle the first seach attempt after a record is created
+                        if($($(iframeWidget).contents().find("#accountOne")).is(":visible") == false){
+                            document.getElementById(iframeWidgetPlain).contentDocument.location.reload(true);
+                        }
                         for (var key in result) {
-                            if (key === '1') {
+                            if (key === '1') {                              
                                 // TODO - Change the .find for .append so it can create the divs dinamically
                                 $(iframeWidget).contents().find("#accountOne").text(key.toString() + '. ' + decodeHtml(truncateString(toTitleCase(result[key].name),'header')));
                                 $(iframeWidget).contents().find("#industryOne").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));

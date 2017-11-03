@@ -132,7 +132,7 @@
         This function will truncate long strings
     */
     var truncateString = function(data, type) {
-        headerLength = 25;
+        headerLength = 24;
         textLength = 17;
         otherLength = 12;
         if (data) {
