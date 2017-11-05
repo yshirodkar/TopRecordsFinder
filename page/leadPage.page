@@ -149,6 +149,7 @@
         subObject.dblclick(function() {
             fieldBind(object);
         });
+        setTimeout(tmp, 2000);
     }
     /* 
         Single click binding for address change
@@ -158,6 +159,83 @@
             console.log('Single Binding');
             fieldBind(data);
         }); 
+    }
+    var tmp = function() {
+        var filters = {};
+        var revenue = "";
+        var boxes = "";
+        /* 
+            This if block is to prevent inline field to send spaces as values
+        */
+        revenue = $(revenueId + fieldEdit).text();
+        boxes = $(boxesId + fieldEdit).text();
+        product = $(productskuId + fieldEdit).text();
+        sic = $(sicId + fieldEdit).text();
+
+        if (revenue.replace(/\s/g, '') == "") { revenue = "0";}
+        else { 
+            revenue = revenue.replace("USD", "");
+            revenue = revenue.replace(/,/g, "");
+        }
+
+        if ((boxes).replace(/\s/g, '') == "") { boxes = "0"; }
+        else { boxes = boxes.replace(/,/g, ""); }
+
+        if (product.replace(/\s/g, '') == "") { product = "0";}
+        else { product = product.replace(/,/g, "");}
+
+        if (sic.replace(/\s/g, '') == "") { sic = "0"; }
+        else { sic = sic.replace(/,/g, ""); }
+
+        /*
+            Building array with all filter and their existing inline value
+        */
+        filters['industry'] = $(industryId + fieldEdit).text();
+        filters['address'] = $(addrId + fieldEdit).text();
+        filters['revenue'] = revenue;
+        filters['boxes'] = boxes;
+        filters['products'] = product;
+        filters['sic'] = sic;
+        filters['order_by'] = 'industry';
+        if(filters['address'] != 'United States'){
+            if (fieldValue == industryId.replace('#','')) {
+                filters['industry'] = $('#' + fieldValue).val();
+                filters['order_by'] = 'industry';
+            } else if (fieldValue == addrId.replace('#','')) {
+                filters['address'] = $('#' + fieldValue).val();
+                filters['order_by'] = 'address';
+            } else if (fieldValue == revenueId.replace('#','')) {
+                filters['revenue'] = $('#' + fieldValue).val();
+                filters['order_by'] = 'revenue';
+            } else if (fieldValue == boxesId.replace('#','')) {
+                if($(boxesId + fieldEdit).text() === " ") {
+                    filters['boxes'] = "";
+                } else {
+                    filters['boxes'] = $('#' + fieldValue).val();
+                }
+                filters['order_by'] = 'boxes';
+            } else if (fieldValue == productskuId.replace('#','')) {
+                filters['products'] = $('#' + fieldValue).val();
+                filters['order_by'] = 'products';
+            } else if (fieldValue == sicId.replace('#','')) {
+                filters['sic'] = $('#' + fieldValue).val();
+                filters['order_by'] = 'sic';
+            }
+
+            var leadId   = document.getElementById('j_id0:j_id3:leadId').value;
+            console.log("Change to: " + $('#' + fieldValue).val());
+            jsRemoting(leadId,filters,fieldValue);
+        } else {
+            console.log('Address and Industry fields are required to run a search');
+            $(iframeWidget).contents().find('#message').text('Address and Industry fields are required to run a search.');
+            $(iframeWidget).contents().find('#accordion').hide();
+            $(iframeWidget).contents().find('#message').show();
+            $(iframeWidget).contents().find('#accountOne').attr("aria-expanded",false);
+            $(iframeWidget).contents().find('#accountOne').attr("class","collapsed");
+            $(iframeWidget).contents().find('#collapseOne').attr("class","collapse");
+            $(iframeWidget).contents().find('#collapseOne').attr("aria-expanded",false);
+            $(iframeWidget).contents().find('#mainFrame').css('height','394px');
+        }
     }
     /*
         This function does the following:
@@ -184,83 +262,7 @@
                 }
                 var fieldElement = $('#' + fieldValue);
                 console.log( "Current field value: " + industryValue );
-                fieldElement.change(function() {
-                    var filters = {};
-                    var revenue = "";
-                    var boxes = "";
-                    /* 
-                        This if block is to prevent inline field to send spaces as values
-                    */
-                    revenue = $(revenueId + fieldEdit).text();
-                    boxes = $(boxesId + fieldEdit).text();
-                    product = $(productskuId + fieldEdit).text();
-                    sic = $(sicId + fieldEdit).text();
-
-                    if (revenue.replace(/\s/g, '') == "") { revenue = "0";}
-                    else { 
-                        revenue = revenue.replace("USD", "");
-                        revenue = revenue.replace(/,/g, "");
-                    }
-
-                    if ((boxes).replace(/\s/g, '') == "") { boxes = "0"; }
-                    else { boxes = boxes.replace(/,/g, ""); }
-
-                    if (product.replace(/\s/g, '') == "") { product = "0";}
-                    else { product = product.replace(/,/g, "");}
-
-                    if (sic.replace(/\s/g, '') == "") { sic = "0"; }
-                    else { sic = sic.replace(/,/g, ""); }
-
-                    /*
-                        Building array with all filter and their existing inline value
-                    */
-                    filters['industry'] = $(industryId + fieldEdit).text();
-                    filters['address'] = $(addrId + fieldEdit).text();
-                    filters['revenue'] = revenue;
-                    filters['boxes'] = boxes;
-                    filters['products'] = product;
-                    filters['sic'] = sic;
-                    filters['order_by'] = 'industry';
-                    if(filters['address'] != 'United States'){
-                        if (fieldValue == industryId.replace('#','')) {
-                            filters['industry'] = $('#' + fieldValue).val();
-                            filters['order_by'] = 'industry';
-                        } else if (fieldValue == addrId.replace('#','')) {
-                            filters['address'] = $('#' + fieldValue).val();
-                            filters['order_by'] = 'address';
-                        } else if (fieldValue == revenueId.replace('#','')) {
-                            filters['revenue'] = $('#' + fieldValue).val();
-                            filters['order_by'] = 'revenue';
-                        } else if (fieldValue == boxesId.replace('#','')) {
-                            if($(boxesId + fieldEdit).text() === " ") {
-                                filters['boxes'] = "";
-                            } else {
-                                filters['boxes'] = $('#' + fieldValue).val();
-                            }
-                            filters['order_by'] = 'boxes';
-                        } else if (fieldValue == productskuId.replace('#','')) {
-                            filters['products'] = $('#' + fieldValue).val();
-                            filters['order_by'] = 'products';
-                        } else if (fieldValue == sicId.replace('#','')) {
-                            filters['sic'] = $('#' + fieldValue).val();
-                            filters['order_by'] = 'sic';
-                        }
-
-                        var leadId   = document.getElementById('j_id0:j_id3:leadId').value;
-                        console.log("Change to: " + $('#' + fieldValue).val());
-                        jsRemoting(leadId,filters,fieldValue);
-                    } else {
-                        console.log('Address and Industry fields are required to run a search');
-                        $(iframeWidget).contents().find('#message').text('Address and Industry fields are required to run a search.');
-                        $(iframeWidget).contents().find('#accordion').hide();
-                        $(iframeWidget).contents().find('#message').show();
-                        $(iframeWidget).contents().find('#accountOne').attr("aria-expanded",false);
-                        $(iframeWidget).contents().find('#accountOne').attr("class","collapsed");
-                        $(iframeWidget).contents().find('#collapseOne').attr("class","collapse");
-                        $(iframeWidget).contents().find('#collapseOne').attr("aria-expanded",false);
-                        $(iframeWidget).contents().find('#mainFrame').css('height','394px');
-                    }
-                });
+                fieldElement.change(tmp);
             }
         }
     }
