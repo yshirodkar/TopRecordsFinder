@@ -58,13 +58,14 @@ div.table span {
 .contBackground {
 	background-color: #EAEAEA;
 	border-radius: 5px;
-	height:	358px;
+	// height:	358px;
 	width: 199px;
 	padding-left: 5px;
 	margin-left: -9.5px;
 	border-style: solid;
 	border-width: 2px;
 	border-color: #C8C8C8;
+	padding-bottom:	5px;
 }
 .assets {
 	border-style: solid;
@@ -89,4 +90,10 @@ div.table span {
 #assetHeader {
 	font-weight: bold;
 	text-decoration: underline;
+}
+.hideListButton {
+	-webkit-filter: invert(100%);
+}
+.distLocation {
+	padding-left: 10px;
 }
