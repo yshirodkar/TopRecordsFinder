@@ -52,10 +52,11 @@
                             if(obj['rank'] === "1"){
                                 $('#accountOne').text(obj['rank'] + '. ' + decodeHtml(truncateString(result[0].name,'header')));
                                 $('#industryOne').text('• Industry: ' + truncateString(result[0].industry,'text'));
-                                $('#distOne').text('• Miles(Away): ' + truncateString(result[0].dist + '-' + result[0].city + '/' + result[0].state,'custom'));
+                                $('#distOne').text('• Miles (Away): ' + result[0].dist);
+                                $('#distOneLocation').text(result[0].city + ' / ' + result[0].state,'custom');
                                 $('#actualRevenueCommitmentOne').text('• CR Spend: ' + decimalFix(result[0].revenue_actual));
-                                $('#boxesPerDayOne').text('• Boxes per Day: ' + toTitleCase(result[0].boxes_actual));
-                                $('#ofProductSkusOne').text('• Product SKU\'s: ' + toTitleCase(result[0].product_actual));
+                                $('#boxesPerDayOne').text('• Boxes: ' + toTitleCase(result[0].boxes_actual));
+                                $('#ofProductSkusOne').text('• Product: ' + toTitleCase(result[0].product_actual));
                                 $('#sicOne').text('• SIC Code: ' + toTitleCase(result[0].sic_actual));
                                 if(result[0].asset){
                                     var cleanString = removeSpaces(result[0].asset);
@@ -73,10 +74,11 @@
                             } else if (obj['rank'] === "2"){
                                 $('#accountTwo').text(obj['rank'] + '. ' + decodeHtml(truncateString(result[1].name,'header')));
                                 $('#industryTwo').text('• Industry: ' + truncateString(result[1].industry,'text'));
-                                $('#distTwo').text('• Miles(Away): ' + truncateString(result[1].dist + '-' + result[1].city + '/' + result[1].state,'custom'));
+                                $('#distTwo').text('• Miles (Away): ' + result[1].dist);
+                                $('#distTwoLocation').text(result[1].city + ' / ' + result[1].state,'custom');
                                 $('#actualRevenueCommitmentTwo').text('• CR Spend: ' + decimalFix(result[1].revenue_actual));
-                                $('#boxesPerDayTwo').text('• Boxes per Day: ' + toTitleCase(result[1].boxes_actual));
-                                $('#ofProductSkusTwo').text('• Product SKU\'s: ' + toTitleCase(result[1].product_actual));
+                                $('#boxesPerDayTwo').text('• Boxes: ' + toTitleCase(result[1].boxes_actual));
+                                $('#ofProductSkusTwo').text('• Product: ' + toTitleCase(result[1].product_actual));
                                 $('#sicTwo').text('• SIC Code: ' + toTitleCase(result[1].sic_actual));
                                 if(result[1].asset){
                                     var cleanString = removeSpaces(result[1].asset);
@@ -94,10 +96,11 @@
                             }  else if (obj['rank'] === "3"){
                                 $('#accountThree').text(obj['rank'] + '. ' + decodeHtml(truncateString(result[2].name,'header')));
                                 $('#industryThree').text('• Industry: ' + truncateString(result[2].industry,'text'));
-                                $('#distThree').text('• Miles(Away): ' + truncateString(result[2].dist + '-' + result[2].city + '/' + result[2].state,'custom'));
+                                $('#distThree').text('• Miles (Away): ' + result[2].dist);
+                                $('#distThreeLocation').text(result[2].city + ' / ' + result[2].state,'custom');
                                 $('#actualRevenueCommitmentThree').text('• CR Spend: ' + decimalFix(result[2].revenue_actual));
-                                $('#boxesPerDayThree').text('• Boxes per Day: ' + toTitleCase(result[2].boxes_actual));
-                                $('#ofProductSkusThree').text('• Product SKU\'s: ' + toTitleCase(result[2].product_actual));
+                                $('#boxesPerDayThree').text('• Boxes: ' + toTitleCase(result[2].boxes_actual));
+                                $('#ofProductSkusThree').text('• Product: ' + toTitleCase(result[2].product_actual));
                                 $('#sicThree').text('• SIC Code: ' + toTitleCase(result[2].sic_actual));
                                 if(result[2].assets){
                                     var cleanString = removeSpaces(result[2].assets);
@@ -215,7 +218,8 @@
                         <span id="industryOne"></span>
                     </div>
                     <div id="distDivOne" class="table">
-                        <span id="distOne"></span>
+                        <span id="distOne"></span><br/>
+                        <span id="distOneLocation" class="distLocation"></span>
                     </div>
                     <div id="annualCorrugateSpendDivOne" class="table">
                         <span id="actualRevenueCommitmentOne"></span>
@@ -251,7 +255,8 @@
                         <span id="industryTwo"></span>
                     </div>
                     <div id="distDivTwo" class="table">
-                        <span id="distTwo"></span>
+                        <span id="distTwo"></span><br/>
+                        <span id="distTwoLocation" class="distLocation"></span>
                     </div>
                     <div id="annualCorrugateSpendDivTwo" class="table">
                         <span id="actualRevenueCommitmentTwo"></span>
@@ -287,7 +292,8 @@
                         <span id="industryThree"></span>
                     </div>
                     <div id="distDivThree" class="table">
-                        <span id="distThree"></span>
+                        <span id="distThree"></span><br/>
+                        <span id="distThreeLocation" class="distLocation"></span>
                     </div>
                     <div id="annualCorrugateSpendDivThree" class="table">
                         <span id="actualRevenueCommitmentThree"></span>

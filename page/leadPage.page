@@ -363,7 +363,8 @@
                                 // TODO - Change the .find for .append so it can create the divs dinamically
                                 $(iframeWidget).contents().find("#accountOne").text(key.toString() + '. ' + decodeHtml(truncateString(toTitleCase(result[key].name),'header')));
                                 $(iframeWidget).contents().find("#industryOne").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
-                                $(iframeWidget).contents().find("#distOne").text('• Miles(Away): ' + truncateString(result[key].dist + '-' + result[key].city + '/' + result[key].state,'custom'));
+                                $(iframeWidget).contents().find("#distOne").text('• Miles (Away): ' + result[key].dist);
+                                $(iframeWidget).contents().find("#distOneLocation").text(result[key].city + ' / ' + result[key].state,'custom');
                                 $(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('• CR Spend: ' + decimalFix(result[key].revenue_actual));
                                 $(iframeWidget).contents().find("#boxesPerDayOne").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
                                 $(iframeWidget).contents().find("#ofProductSkusOne").text('• Product: ' + toTitleCase(result[key].product_actual));
@@ -388,7 +389,8 @@
                             } else if(key === '2') {
                                 $(iframeWidget).contents().find("#accountTwo").text(key.toString() + '. ' + decodeHtml(truncateString(toTitleCase(result[key].name),'header')));
                                 $(iframeWidget).contents().find("#industryTwo").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
-                                $(iframeWidget).contents().find("#distTwo").text('• Miles(Away): ' + truncateString(result[key].dist + '-' + result[key].city + '/' + result[key].state,'custom'));
+                                $(iframeWidget).contents().find("#distTwo").text('• Miles (Away): ' + result[key].dist);
+                                $(iframeWidget).contents().find("#distTwoLocation").text(result[key].city + ' / ' + result[key].state,'custom');
                                 $(iframeWidget).contents().find("#actualRevenueCommitmentTwo").text('• CR Spend: ' + decimalFix(result[key].revenue_actual));
                                 $(iframeWidget).contents().find("#boxesPerDayTwo").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
                                 $(iframeWidget).contents().find("#ofProductSkusTwo").text('• Product: ' + toTitleCase(result[key].product_actual));
@@ -437,7 +439,8 @@
                             } else if (key === '3') {
                                 $(iframeWidget).contents().find("#accountThree").text(key.toString() + '. ' + decodeHtml(truncateString(toTitleCase(result[key].name),'header')));
                                 $(iframeWidget).contents().find("#industryThree").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
-                                $(iframeWidget).contents().find("#distThree").text('• Miles(Away): ' + truncateString(result[key].dist + '-' + result[key].city + '/' + result[key].state,'custom'));
+                                $(iframeWidget).contents().find("#distThree").text('• Miles (Away): ' + result[key].dist);
+                                $(iframeWidget).contents().find("#distThreeLocation").text(result[key].city + ' / ' + result[key].state,'custom');
                                 $(iframeWidget).contents().find("#actualRevenueCommitmentThree").text('• CR Spend: ' + decimalFix(result[key].revenue_actual));
                                 $(iframeWidget).contents().find("#boxesPerDayThree").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
                                 $(iframeWidget).contents().find("#ofProductSkusThree").text('• Product: ' + toTitleCase(result[key].product_actual));
