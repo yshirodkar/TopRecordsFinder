@@ -365,7 +365,7 @@ global with sharing class topResultFinder {
             } else {
                 soql_query += '< 500';
             }
-            soql_query += ' AND type = \'Paying Customer\'';
+            soql_query += ' AND type = \'Paying Customer\' AND Install_Date__c <= TODAY AND (NOT contract_term__c LIKE \'%z-Fold%\')';
         } else if (object_type == 'lead') {
 
         }
