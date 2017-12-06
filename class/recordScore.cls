@@ -9,7 +9,9 @@ global with sharing class recordScore {
     static Integer SIC_PRIORITY_SCORE = 2;
     static Integer SKU_PRIORITY_SCORE = 1;
 
-    public recordScore() { }
+    public recordScore() {
+        setPriorityConst();
+    }
 
     /**
      * This function set the custom setting for record limit.
@@ -57,11 +59,37 @@ global with sharing class recordScore {
         Map<String, Map<String, String>> score_result = new Map<String, Map<String, String>>();
         Set<String> record_ids = record.keySet();
         topResultSettings__c trs = topResultSettings__c.getValues(userinfo.getProfileId());
-        Integer revenue_range = (Integer)trs.revenueRange__c;
-        Integer distance_range = (Integer)trs.distanceRange__c;
-        Integer box_range = (Integer)trs.boxRange__c;
-        Integer sic_range = (Integer)trs.sicRange__c;
-        Integer sku_range = (Integer)trs.skuRange__c;
+
+        Integer revenue_range = 0;
+        Integer box_range = 0;
+        Integer distance_range = 0;
+        Integer sic_range = 0;
+        Integer sku_range = 0;
+        try {
+           revenue_range = (Integer)trs.revenueRange__c;
+        } catch (Exception e) {
+            System.debug('No value set for revenue_range');
+        }
+        try {
+            box_range = (Integer)trs.boxRange__c;
+        } catch (Exception e) {
+            System.debug('No value set for box_range');        
+        }
+        try {
+            distance_range = (Integer)trs.distanceRange__c;
+        } catch (Exception e) {
+            System.debug('No value set for distance_range');        
+        }
+        try {
+            sku_range = (Integer)trs.skuRange__c;
+        } catch (Exception e) {
+            System.debug('No value set for sku_range');        
+        }
+        try {
+            sic_range = (Integer)trs.sicRange__c;
+        } catch (Exception e) {
+            System.debug('No value set for sic_range');        
+        }
         Integer score_rank = 0;
         for (String record_id : record_ids) {
             Map<String, String> record_vals = new Map<String, String>(record.get(record_id));

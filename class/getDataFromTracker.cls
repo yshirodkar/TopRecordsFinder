@@ -33,8 +33,8 @@ global with sharing class getDataFromTracker {
                 accGetDetails.put('cat', results.Category__c);
                 accGetDetails.put('rank', String.valueOf(results.Order__c));
                 accGetDetails.put('dist', String.valueOf(results.Miles__c));
-                String accDetails = 'SELECT Id, Name, Industry, AnnualRevenue, BillingCity, BillingState,'+
-                    ' Sic, Boxes_Per_Day__c, Of_Product_SKUs__c FROM Account WHERE id = \''+
+                String accDetails = 'SELECT Id, Name, Industry, Actual_Revenue_Commitment__c, BillingCity, BillingState,'+
+                    ' Sic, Boxes_Per_Day__c, Total_Box_SKUs__c FROM Account WHERE id = \''+
                     ids+'\'';
                 System.debug('accDetails: ' + accDetails);
                 List<account> queryResultAccount = database.query(accDetails);
@@ -42,11 +42,11 @@ global with sharing class getDataFromTracker {
 
                 for(account ResultsAcc: queryResultAccount) {
                     String rev, box, sic, sku;
-                    Decimal annual_rev = ResultsAcc.AnnualRevenue;
+                    Decimal annual_rev = ResultsAcc.Actual_Revenue_Commitment__c;
                     String sic_val = ResultsAcc.Sic;
                     String asset_val = getAssetDetails(ResultsAcc.Id);
                     Decimal boxes_val = ResultsAcc.Boxes_Per_Day__c;
-                    Decimal sku_val = ResultsAcc.Of_Product_SKUs__c;
+                    Decimal sku_val = ResultsAcc.Total_Box_SKUs__c;
                     rev = String.valueOf(annual_rev);
                     box = String.valueOf(boxes_val);
                     sic = sic_val;
@@ -98,13 +98,15 @@ global with sharing class getDataFromTracker {
                 } else {
                     soql = 'SELECT ProductCode FROM Product2 WHERE Id = \''+asset_val.Product2Id+'\' LIMIT 1';
                     List<Product2> product_code = database.query(soql);
-                    Product2 tmp_prod = product_code[0];
-                    String product_code_val = tmp_prod.ProductCode;
-                    System.debug('product val '+ product_code_val);
-                    Map<String, String> temp_count_n_name = new Map<String, String>{
-                        'productcode' => product_code_val,
-                        'count' => '1'};
-                    productcode_and_count.put(asset_val.Product2Id, temp_count_n_name);
+                    if (product_code.size() > 0) {
+                        Product2 tmp_prod = product_code[0];
+                        String product_code_val = tmp_prod.ProductCode;
+                        System.debug('product val '+ product_code_val);
+                        Map<String, String> temp_count_n_name = new Map<String, String>{
+                            'productcode' => product_code_val,
+                            'count' => '1'};
+                        productcode_and_count.put(asset_val.Product2Id, temp_count_n_name);
+                    }
                 }
             }
             for (String asset_key : productcode_and_count.keySet()) {
