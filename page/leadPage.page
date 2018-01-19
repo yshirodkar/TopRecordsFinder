@@ -23,7 +23,7 @@
         Find instance type
     */
     var sandboxId       = 'cs17';
-    var production      = 'cs20';                       // NEEDS TO BE CHANGED - This instance is not the correct one
+    var production      = 'na3';                       // NEEDS TO BE CHANGED - This instance is not the correct one
     var url             = $(location).attr('href');
     var sandbox         = url.search(sandbox);
     var production      = url.search(production);
@@ -57,6 +57,8 @@
         var boxesId             = '#00N50000001f8IWj_id0_j_id3_j_id4_j_id5';
         var productskuId        = '#00N50000009PZatj_id0_j_id3_j_id4_j_id5';
         var sicId               = '#00N50000001w6I4j_id0_j_id3_j_id4_j_id5';
+        var countGlobal         = 0;
+        var countBar            = 0;
         var leadLayoutSections = [
             'head_01Bg0000003FF2c_ep_j_id0_j_id3_j_id4_j_id5',
             'head_01B50000004zr6n_ep_j_id0_j_id3_j_id4_j_id5',
@@ -72,7 +74,32 @@
     } 
     // SANDBOX
     if (production >= 0) {
-        // When all fields in sandbox are working copy them here.
+        var fieldEdit           = '_ileinner';
+        var fieldOutEdit        = '_ilecell';
+        var iframeWidget        = '#06650000001cslh';
+        var iframeWidgetPlain   = '06650000001cslh';
+        var addrButtonsPop      = '#InlineEditDialog_buttons';
+        // Fields
+        var industryId          = '#lea6j_id0_j_id3_j_id4_j_id5';
+        var addrId              = '#lea16j_id0_j_id3_j_id4_j_id5';
+        // var revenueId       = '#00N50000002UAQpj_id0_j_id3_j_id4_j_id5'; // Company Annual Revenue
+        var revenueId           = '#00N50000009PZajj_id0_j_id3_j_id4_j_id5';    // Annual Corrugate Spend 
+        var boxesId             = '#00N50000001f8IWj_id0_j_id3_j_id4_j_id5';
+        var productskuId        = '#00N50000009PZatj_id0_j_id3_j_id4_j_id5';
+        var sicId               = '#00N50000001w6I4j_id0_j_id3_j_id4_j_id5';
+        var countGlobal         = 0;
+        var countBar            = 0;
+        var leadLayoutSections = [
+            'head_01Bg0000003FF2c_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B50000004zr6n_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B5000000AdcaE_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B50000006JHv1_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B50000002AQJ0_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B5000000AdhwG_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B50000009jBNJ_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B50000009mwoi_ep_j_id0_j_id3_j_id4_j_id5',
+            'head_01B50000002AQJ2_ep_j_id0_j_id3_j_id4_j_id5'
+        ]
         console.log('PRODUCTION!!');
     }
     // Is window LOADED and READY!
@@ -131,6 +158,7 @@
                 outLineArray.push(sicInLineOut);
 
                 if (industryInLine != null) {
+                    countGlobal = inLineArray.length;
                     for (var i = 0; i < inLineArray.length; i++) {
                         objectBind(inLineArray[i],outLineArray[i]);
                     }
@@ -149,7 +177,12 @@
         subObject.dblclick(function() {
             fieldBind(object);
         });
-        setTimeout(tmp, 2000);
+        countBar++;
+        if(countBar === countGlobal - 1){
+            // Enable for new record creation.
+            setTimeout(tmp, 2000);
+            countBar = 0;
+        }
     }
     /* 
         Single click binding for address change
@@ -249,7 +282,6 @@
         var b = setInterval(function() {
             findEditIndustry(object);
         }, 500);
-
         var findEditIndustry = function(data) {
             var fieldDynamic = data;
             var fieldId = data[0].id;
@@ -338,6 +370,19 @@
         return cleanString;
     }
     /*
+        Message Handler
+    */
+    var messageHandler = function(data){
+        $(iframeWidget).contents().find('#accordion').hide();
+        $(iframeWidget).contents().find('#message').show();
+        $(iframeWidget).contents().find('#accountOne').attr("aria-expanded",false);
+        $(iframeWidget).contents().find('#accountOne').attr("class","collapsed");
+        $(iframeWidget).contents().find('#collapseOne').attr("class","collapse");
+        $(iframeWidget).contents().find('#collapseOne').attr("aria-expanded",false);
+        $(iframeWidget).contents().find('#mainFrame').css("height",'394px');
+        $(iframeWidget).contents().find('#message').text(data + ".");
+    }   
+    /*
         This is JS remoting that will allow us to communicate to the controller
         and submit the information changed on the layout and returning back its
         result as well as passing it to the sidebar widget for visualization
@@ -346,127 +391,125 @@
         Visualforce.remoting.Manager.invokeAction(
             '{!$RemoteAction.topResultFinder.getTopResults}',       // Accessing Class through remote action
             'Account',
-            Id,                                              // Industry field value
+            Id,                                                     // Industry field value
             filters,                                                // var filter_json = {'industry':''+indDynamic+'', 'AnnualRevenue':'350000000'};
             function(result,event) {
                 if (event.status) {
-                    console.log('Works: ' + JSON.stringify(result));
-                    if (jQuery.isEmptyObject(result) == true) {
-                        console.log('Empty JSON');
-                    } else {
-                        // This if block is to handle the first seach attempt after a record is created
-                        if($($(iframeWidget).contents().find("#accountOne")).is(":visible") == false){
-                            document.getElementById(iframeWidgetPlain).contentDocument.location.reload(true);
-                        }
-                        for (var key in result) {
-                            if (key === '1') {                              
-                                // TODO - Change the .find for .append so it can create the divs dinamically
-                                $(iframeWidget).contents().find("#accountOne").text(key.toString() + '. ' + decodeHtml(truncateString(toTitleCase(result[key].name),'header')));
-                                $(iframeWidget).contents().find("#industryOne").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
-                                $(iframeWidget).contents().find("#distOne").text('• Miles (Away): ' + result[key].dist);
-                                $(iframeWidget).contents().find("#distOneLocation").text(result[key].city + ' / ' + result[key].state,'custom');
-                                $(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('• CR Spend: ' + decimalFix(result[key].revenue_actual));
-                                $(iframeWidget).contents().find("#boxesPerDayOne").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
-                                $(iframeWidget).contents().find("#ofProductSkusOne").text('• Product: ' + toTitleCase(result[key].product_actual));
-                                $(iframeWidget).contents().find("#sicOne").text('• SIC Code: ' + toTitleCase(result[key].sic_actual));
-                                $(iframeWidget).contents().find('input[name=accountOne]').val(result[key].id);
-
-                                if (result[key].asset) {
-                                    $(iframeWidget).contents().find('#assetsOne').empty();
-                                    var cleanString = removeSpaces(result[key].asset);
-                                    var assetArray = cleanString.split(';');
-                                    $(iframeWidget).contents().find('#assetsOne').show();
-                                    var countDiv = 1;
-                                    $(iframeWidget).contents().find('#assetsOne').append('<span id="assetHeader">Solution:</span>');
-                                    for (i=0;i<assetArray.length;i++) {
-                                        $(iframeWidget).contents().find('#assetsOne').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
-                                        countDiv++;
-                                    }
+                    if (result){
+                        if (!jQuery.isEmptyObject(result)){
+                            if ((typeof result.Success != undefined && result.Success["success"] == 1) || (result.Fail["value"] == 1 && result.Fail["message"] === "No results found")){
+                                console.log('Works: ' + JSON.stringify(result));
+                                if (jQuery.isEmptyObject(result) == true) {
+                                    console.log('Empty JSON');
                                 } else {
-                                    $(iframeWidget).contents().find('#assetsOne').hide();
-                                }
-
-                            } else if(key === '2') {
-                                $(iframeWidget).contents().find("#accountTwo").text(key.toString() + '. ' + decodeHtml(truncateString(toTitleCase(result[key].name),'header')));
-                                $(iframeWidget).contents().find("#industryTwo").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
-                                $(iframeWidget).contents().find("#distTwo").text('• Miles (Away): ' + result[key].dist);
-                                $(iframeWidget).contents().find("#distTwoLocation").text(result[key].city + ' / ' + result[key].state,'custom');
-                                $(iframeWidget).contents().find("#actualRevenueCommitmentTwo").text('• CR Spend: ' + decimalFix(result[key].revenue_actual));
-                                $(iframeWidget).contents().find("#boxesPerDayTwo").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
-                                $(iframeWidget).contents().find("#ofProductSkusTwo").text('• Product: ' + toTitleCase(result[key].product_actual));
-                                $(iframeWidget).contents().find("#sicTwo").text('• SIC Code: ' + toTitleCase(result[key].sic_actual));
-                                $(iframeWidget).contents().find('input[name=accountTwo]').val(result[key].id);
-
-                                if (result[key].asset) {
-                                    $(iframeWidget).contents().find('#assetsTwo').empty();
-                                    var cleanString = removeSpaces(result[key].asset);
-                                    var assetArray = cleanString.split(';');
-                                    $(iframeWidget).contents().find('#assetsTwo').show();
-                                    var countDiv = 1;
-                                    $(iframeWidget).contents().find('#assetsTwo').append('<span id="assetHeader">Solution:</span>');
-                                    for (i=0;i<assetArray.length;i++) {
-                                        $(iframeWidget).contents().find('#assetsTwo').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
-                                        countDiv++;
+                                    // This if block is to handle the first seach attempt after a record is created
+                                    if($($(iframeWidget).contents().find("#accountOne")).is(":visible") == false){
+                                        document.getElementById(iframeWidgetPlain).contentDocument.location.reload(true);
                                     }
-                                } else {
-                                    $(iframeWidget).contents().find('#assetsTwo').hide();
-                                }
+                                    for (var key in result) {
+                                        if (key === '1') {
+                                            // TODO - Change the .find for .append so it can create the divs dinamically
+                                            $(iframeWidget).contents().find("#accountOne").text(key.toString() + '. ' + decodeHtml(truncateString(toTitleCase(result[key].name),'header')));
+                                            $(iframeWidget).contents().find("#industryOne").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
+                                            $(iframeWidget).contents().find("#distOne").text('• Miles (Away): ' + result[key].dist);
+                                            $(iframeWidget).contents().find("#distOneLocation").text(result[key].city + ' / ' + result[key].state,'custom');
+                                            $(iframeWidget).contents().find("#actualRevenueCommitmentOne").text('• CR Spend: ' + decimalFix(result[key].revenue_actual));
+                                            $(iframeWidget).contents().find("#boxesPerDayOne").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
+                                            $(iframeWidget).contents().find("#ofProductSkusOne").text('• Product: ' + toTitleCase(result[key].product_actual));
+                                            $(iframeWidget).contents().find("#sicOne").text('• SIC Code: ' + toTitleCase(result[key].sic_actual));
+                                            $(iframeWidget).contents().find('input[name=accountOne]').val(result[key].id);
 
+                                            if (result[key].asset) {
+                                                $(iframeWidget).contents().find('#assetsOne').empty();
+                                                var cleanString = removeSpaces(result[key].asset);
+                                                var assetArray = cleanString.split(';');
+                                                $(iframeWidget).contents().find('#assetsOne').show();
+                                                var countDiv = 1;
+                                                $(iframeWidget).contents().find('#assetsOne').append('<span id="assetHeader">Solution:</span>');
+                                                for (i=0;i<assetArray.length;i++) {
+                                                    $(iframeWidget).contents().find('#assetsOne').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
+                                                    countDiv++;
+                                                }
+                                            } else {
+                                                $(iframeWidget).contents().find('#assetsOne').hide();
+                                            }
+
+                                        } else if(key === '2') {
+                                            $(iframeWidget).contents().find("#accountTwo").text(key.toString() + '. ' + decodeHtml(truncateString(toTitleCase(result[key].name),'header')));
+                                            $(iframeWidget).contents().find("#industryTwo").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
+                                            $(iframeWidget).contents().find("#distTwo").text('• Miles (Away): ' + result[key].dist);
+                                            $(iframeWidget).contents().find("#distTwoLocation").text(result[key].city + ' / ' + result[key].state,'custom');
+                                            $(iframeWidget).contents().find("#actualRevenueCommitmentTwo").text('• CR Spend: ' + decimalFix(result[key].revenue_actual));
+                                            $(iframeWidget).contents().find("#boxesPerDayTwo").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
+                                            $(iframeWidget).contents().find("#ofProductSkusTwo").text('• Product: ' + toTitleCase(result[key].product_actual));
+                                            $(iframeWidget).contents().find("#sicTwo").text('• SIC Code: ' + toTitleCase(result[key].sic_actual));
+                                            $(iframeWidget).contents().find('input[name=accountTwo]').val(result[key].id);
+
+                                            if (result[key].asset) {
+                                                $(iframeWidget).contents().find('#assetsTwo').empty();
+                                                var cleanString = removeSpaces(result[key].asset);
+                                                var assetArray = cleanString.split(';');
+                                                $(iframeWidget).contents().find('#assetsTwo').show();
+                                                var countDiv = 1;
+                                                $(iframeWidget).contents().find('#assetsTwo').append('<span id="assetHeader">Solution:</span>');
+                                                for (i=0;i<assetArray.length;i++) {
+                                                    $(iframeWidget).contents().find('#assetsTwo').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
+                                                    countDiv++;
+                                                }
+                                            } else {
+                                                $(iframeWidget).contents().find('#assetsTwo').hide();
+                                            }
+                                        } else if (key === '3') {
+                                            $(iframeWidget).contents().find("#accountThree").text(key.toString() + '. ' + decodeHtml(truncateString(toTitleCase(result[key].name),'header')));
+                                            $(iframeWidget).contents().find("#industryThree").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
+                                            $(iframeWidget).contents().find("#distThree").text('• Miles (Away): ' + result[key].dist);
+                                            $(iframeWidget).contents().find("#distThreeLocation").text(result[key].city + ' / ' + result[key].state,'custom');
+                                            $(iframeWidget).contents().find("#actualRevenueCommitmentThree").text('• CR Spend: ' + decimalFix(result[key].revenue_actual));
+                                            $(iframeWidget).contents().find("#boxesPerDayThree").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
+                                            $(iframeWidget).contents().find("#ofProductSkusThree").text('• Product: ' + toTitleCase(result[key].product_actual));
+                                            $(iframeWidget).contents().find("#sicThree").text('• SIC Code: ' + toTitleCase(result[key].sic_actual));
+                                            $(iframeWidget).contents().find('input[name=accountThree]').val(result[key].id);
+
+                                            if (result[key].asset) {
+                                                $(iframeWidget).contents().find('#assetsThree').empty();
+                                                var cleanString = removeSpaces(result[key].asset);
+                                                var assetArray = cleanString.split(';');
+                                                $(iframeWidget).contents().find('#assetsThree').show();
+                                                var countDiv = 1;
+                                                $(iframeWidget).contents().find('#assetsThree').append('<span id="assetHeader">Solution:</span>');
+                                                for (i=0;i<assetArray.length;i++) {
+                                                    $(iframeWidget).contents().find('#assetsThree').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
+                                                    countDiv++;
+                                                }
+                                            } else {
+                                                $(iframeWidget).contents().find('#assetsThree').hide();
+                                            }
+                                        }
+                                    }
+                                }
+                            } else if (result.Fail["value"] == 1){
                                 /*
-                                // NEW IMPLEMENTATION OF DYNAMYC GENERATION OF DIVS
-                                // Setting up card header
-                                $(iframeWidget).contents().find('#accordion').empty();
-                                $(iframeWidget).contents().find('#accordion').append('<div id="card' + key + '" class="card"></div>');
-                                $(iframeWidget).contents().find('#card' + key).append('<div id="card-header' + key + '" class="card-header" role="tab" id="heading' + key + '"></div>');
-                                $(iframeWidget).contents().find('#card-header' + key).append('<h5 id="mb-0' + key + '" class="mb-0"></h5>');
-                                $(iframeWidget).contents().find('#mb-0' + key).append('<a id="account' + key + '" data-toggle="collapse" data-parent="#accordion" href="#collapse' + key + '" aria-expanded="true" aria-controls="collapseOne" value="">' + truncateString(toTitleCase(result[key].name),'header') + '</a>');
-                                // Setting up card body
-                                $(iframeWidget).contents().find('#card' + key).append('<div id="collapse' + key + '" class="collapse show" role="tabpanel" aria-labelledby="heading' + key + '"></div>');
-                                $(iframeWidget).contents().find('#collapse' + key).append('<div id="card-block' + key + '" class="card-block"></div>');
-                                $(iframeWidget).contents().find('#card-block' + key).append('<div id="industryDiv' + key + '" class="table"></div>');
-                                $(iframeWidget).contents().find('#industryDiv' + key).append('<span id="industry' + key + '">' + '• Industry: ' + truncateString(toTitleCase(result[key].industry),'text') + '</span>');
-                                $(iframeWidget).contents().find('#card-block' + key).append('<div id="annualCorrugateSpendDiv' + key + '" class="table"></div>');
-                                $(iframeWidget).contents().find('#annualCorrugateSpendDiv' + key).append('<span id="actualRevenueCommitment' + key + '">' + '• Revenue: $' + decimalFix(result[key].revenue_actual) + '</span>');
-                                $(iframeWidget).contents().find('#card-block' + key).append('<div id="boxesPerDayDiv' + key + '" class="table"></div>');
-                                $(iframeWidget).contents().find('#boxesPerDayDiv' + key).append('<span id="boxesPerDay' + key + '">' + '• Boxes: ' + toTitleCase(result[key].boxes_actual) + '</span>');
-                                $(iframeWidget).contents().find('#card-block' + key).append('<div id="numberProductSkusDiv' + key + '" class="table"></div>');
-                                $(iframeWidget).contents().find('#numberProductSkusDiv' + key).append('<span id="ofProductSkus' + key + '">' + '• Product: ' + toTitleCase(result[key].product_actual) + '</span>');
-                                $(iframeWidget).contents().find('#card-block' + key).append('<div id="sicCodeDiv' + key + '" class="table"></div>');
-                                $(iframeWidget).contents().find('#sicCodeDiv' + key).append('<span id="sic' + key + '">' + toTitleCase('• SIC Code: ' + result[key].sic_actual) + '</span>');
-                                $(iframeWidget).contents().find('#card-block' + key).append('<div id="assets' + key + '" class="assets" style="display:none"></div>');
-                                $(iframeWidget).contents().find('#assets' + key).append('<span id="assetHeader">Solution:</span>'); 
+                                    Error Category:
+                                        No results found
+                                        Could Not Find address
+                                        Industry not selected
                                 */
-                            } else if (key === '3') {
-                                $(iframeWidget).contents().find("#accountThree").text(key.toString() + '. ' + decodeHtml(truncateString(toTitleCase(result[key].name),'header')));
-                                $(iframeWidget).contents().find("#industryThree").text('• Industry: ' + truncateString(toTitleCase(result[key].industry),'text'));
-                                $(iframeWidget).contents().find("#distThree").text('• Miles (Away): ' + result[key].dist);
-                                $(iframeWidget).contents().find("#distThreeLocation").text(result[key].city + ' / ' + result[key].state,'custom');
-                                $(iframeWidget).contents().find("#actualRevenueCommitmentThree").text('• CR Spend: ' + decimalFix(result[key].revenue_actual));
-                                $(iframeWidget).contents().find("#boxesPerDayThree").text('• Boxes: ' + toTitleCase(result[key].boxes_actual));
-                                $(iframeWidget).contents().find("#ofProductSkusThree").text('• Product: ' + toTitleCase(result[key].product_actual));
-                                $(iframeWidget).contents().find("#sicThree").text('• SIC Code: ' + toTitleCase(result[key].sic_actual));
-                                $(iframeWidget).contents().find('input[name=accountThree]').val(result[key].id);
-
-                                if (result[key].asset) {
-                                    $(iframeWidget).contents().find('#assetsThree').empty();
-                                    var cleanString = removeSpaces(result[key].asset);
-                                    var assetArray = cleanString.split(';');
-                                    $(iframeWidget).contents().find('#assetsThree').show();
-                                    var countDiv = 1;
-                                    $(iframeWidget).contents().find('#assetsThree').append('<span id="assetHeader">Solution:</span>');
-                                    for (i=0;i<assetArray.length;i++) {
-                                        $(iframeWidget).contents().find('#assetsThree').append('<div id="asset"' + countDiv + '">' + assetArray[i] + '</div>');
-                                        countDiv++;
-                                    }
-                                } else {
-                                    $(iframeWidget).contents().find('#assetsThree').hide();
-                                }
-                                
+                                messageHandler(result.Fail["message"]);
+                            } else {
+                                messageHandler("Something went wrong");
+                            }
+                        } else {
+                            console.log('Empty Object : Record newly created');
+                            if ($(iframeWidget).contents().find('#message').is(":visible")){
+                                message = "Either no match or no previous search was found. Please update the require fields and try the search again";
+                                messageHandler(message);
                             }
                         }
+                    } else {
+                        console.log('Broken 1 :' + result);
                     }
                 } else {
-                    console.log('Broken :' + result);
+                    console.log('Broken 2 :' + result);
                 }
             }
         )

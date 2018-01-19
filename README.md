@@ -40,8 +40,8 @@ You need to add all the .cls files, .page files and also need to add jquery lib.
 3. jquery lib file should go in static resource file
 
 ### Implementation
-Enable VF for standard layout:
+Enable VF for standard layout: (!!!!THIS STEP WILL BE COMPLETED BY THE CLIENT!!!!)
 1. Go to Setup.
 2. On the Quick Search look for "Buttons, Links, and Actions" under the lead object.
 3. Look for "View" and edit.
-4. Select for Override View: leadPage and Save.
+4. Select for Override View: "standardLeadPage" and Save.

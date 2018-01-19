@@ -33,17 +33,7 @@
             '{!$RemoteAction.getDataFromTracker.tracker_Controller}',       // Accessing Class through remote action
             leadId,                                                         // Industry field value
             function(result,event){
-                if(result['success'].message === 'No previous Records'){
-                    // Only Display when Lead is present
-                    $('#accordion').hide();
-                    $('#message').show();
-                    $('#accountOne').attr("aria-expanded",false);
-                    $('#accountOne').attr("class","collapsed");
-                    $('#collapseOne').attr("class","collapse");
-                    $('#collapseOne').attr("aria-expanded",false);
-                    $('#mainFrame').css("height",'394px');
-                    $('#message').text('No previous search made.');
-                } else {        
+                if(typeof result['success'] == "undefined"){
                     if(event.status){
                         for (var key in result) {
                             // skip loop if the property is from prototype
@@ -119,7 +109,17 @@
                         }
                     } else {
                         console.log('Broken :' + result);
-                    }                   
+                    }
+                } else {
+                    // Only Display when Lead is present
+                    $('#accordion').hide();
+                    $('#message').show();
+                    $('#accountOne').attr("aria-expanded",false);
+                    $('#accountOne').attr("class","collapsed");
+                    $('#collapseOne').attr("class","collapse");
+                    $('#collapseOne').attr("aria-expanded",false);
+                    $('#mainFrame').css("height",'394px');
+                    $('#message').text(result['success'].message + ".");   
                 }
             }
         )       
