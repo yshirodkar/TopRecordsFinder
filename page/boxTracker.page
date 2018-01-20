@@ -4,9 +4,22 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{!$Resource.customcss}"></link>
     <script>
+    var instance = '';
     $( document ).ready(function() {
         $( window ).load(function() {
 //            var leadId = document.getElementById('j_id0:j_id3:leadRecordId').value;
+            var sandboxId       = 'cs17';
+            var productionId      = 'na3';                       // NEEDS TO BE CHANGED - This instance is not the correct one
+            var url             = $(location).attr('href');
+            var sandbox         = url.search(sandboxId);
+            var production      = url.search(productionId);
+            if(production > 0){
+                console.log('Production');
+                instance = productionId;
+            } else if (sandbox > 0) {
+                console.log('Sandbox');
+                instance = sandboxId;
+            }
             var urlMain = location.href;
             var recordId = urlMain.substring(urlMain.indexOf('&id=')+4);
             var sfIdPrefix = recordId.substr(0,3);
@@ -236,7 +249,7 @@
                     <div id="assetsOne" class="assets" style="display:none">
                         <span id="assetHeader">Solution:</span>
                     </div>
-                    <div class="linkAccount" onclick="window.open('https://cs17.salesforce.com/' + $('input[name=accountOne]')[0].value);">Open Account</div>
+                    <div class="linkAccount" onclick="window.open('https://' + instance + '.salesforce.com/' + $('input[name=accountOne]')[0].value);">Open Account</div>
                     <input type="hidden" name="accountOne" value=""></input>
                   </div>
                 </div>
@@ -273,7 +286,7 @@
                     <div id="assetsTwo" class="assets" style="display:none">
                         <span id="assetHeader">Solution:</span>
                     </div>
-                    <div class="linkAccount" onclick="window.open('https://cs17.salesforce.com/' + $('input[name=accountTwo]')[0].value);">Open Account</div>
+                    <div class="linkAccount" onclick="window.open('https://' + instance + '.salesforce.com/' + $('input[name=accountTwo]')[0].value);">Open Account</div>
                     <input type="hidden" name="accountTwo" value=""></input>
                   </div>
                 </div>
@@ -310,7 +323,7 @@
                     <div id="assetsThree" class="assets" style="display:none">
                         <span id="assetHeader">Solution:</span>
                     </div>
-                    <div class="linkAccount" onclick="window.open('https://cs17.salesforce.com/' + $('input[name=accountThree]')[0].value);">Open Account</div>
+                    <div class="linkAccount" onclick="window.open('https://' + instance + '.salesforce.com/' + $('input[name=accountThree]')[0].value);">Open Account</div>
                     <input type="hidden" name="accountThree" value=""></input>
                   </div>
                 </div>
